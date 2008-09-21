@@ -1,7 +1,10 @@
 require 'couchrest'
 require 'validatable'
-require File.dirname(__FILE__) + '/persistence/class_methods'
-require File.dirname(__FILE__) + '/persistence/collection'
+require File.dirname(__FILE__) + '/persistence/inline_collection'
+require File.dirname(__FILE__) + '/persistence/lazy_collection'
+require File.dirname(__FILE__) + '/persistence/properties'
+require File.dirname(__FILE__) + '/persistence/callbacks'
+require File.dirname(__FILE__) + '/persistence/json'
 
 module CouchPotatoe
   module Persistence
@@ -11,23 +14,10 @@ module CouchPotatoe
     
     def self.included(base)
       base.send :extend, ClassMethods
-      base.send :include, Validatable
+      base.send :include, Callbacks, Properties, Validatable, Json
       base.class_eval do
         attr_accessor :_id, :_rev, :_attachments, :created_at, :updated_at
-        
         alias_method :id, :_id
-        
-        def self.properties
-          @@properties ||= {}
-          @@properties[self.name] ||= []
-        end
-        
-        def self.callbacks
-          @@callbacks ||= {}
-          @@callbacks[self.name] ||= {:before_validation_on_create => [], :before_create => [], 
-            :after_create => [], :before_validation_on_update => [], :before_update => [],
-            :after_update => []}
-        end
       end
     end
     
@@ -69,16 +59,6 @@ module CouchPotatoe
       self.send name
     end
     
-    def to_json(*args)
-      {
-        'json_class' => self.class.name,
-        'data' => (self.class.properties + [:created_at, :updated_at]).inject({}) do |props, name|
-          props[name] = self.send(name) if self.send(name)
-          props
-        end
-      }.to_json(*args)
-    end
-    
     def ==(other)
       other.class == self.class && self.class.properties.map{|name| self.send(name)} == self.class.properties.map{|name| other.send(name)}
     end
@@ -91,9 +71,10 @@ module CouchPotatoe
       run_callbacks :before_create
       self.created_at = Time.now
       self.updated_at = Time.now
-      record = self.class.db(@database_name).save(self)
+      record = self.class.db.save(self)
       self._id = record['id']
       self._rev = record['rev']
+      save_dependent_objects
       run_callbacks :after_create
       true
     end
@@ -103,19 +84,39 @@ module CouchPotatoe
       return unless valid?
       run_callbacks :before_update
       self.updated_at = Time.now
-      self.class.db(@database_name).save(self.to_json)
+      self.class.db.save(self.to_json)
+      save_dependent_objects
       run_callbacks :after_update
       true
     end
     
-    def run_callbacks(name)
-      self.class.callbacks[name].each do |callback|
-        self.send callback
+    def save_dependent_objects
+      self.class.properties.each do |name|
+        property = self.send name
+        property.owner_id = self._id if property.respond_to?(:owner_id=)
+        property.save if property.respond_to?(:save)
+      end
+    end
+    
+    module ClassMethods
+      
+      def create!(attributes)
+        record = self.new attributes
+        record.save!
+        record
+      end
+      
+      def find(id)
+        db.get(id)
+      end
+      
+      def db(name = nil)
+        ::CouchPotatoe::Persistence.Db(name)
       end
     end
     
     def self.Db(database_name = nil)
-      database_name ||= CouchPotatoe::Config.database_name || raise('No Databaseconfigured. See CouchPotatoe::Config')
+      database_name ||= CouchPotatoe::Config.database_name || raise('No Database configured. Set CouchPotatoe::Config.database')
       full_url_to_database = database_name
       if full_url_to_database !~ /^http:\/\//
         full_url_to_database = "http://localhost:5984/#{database_name}"

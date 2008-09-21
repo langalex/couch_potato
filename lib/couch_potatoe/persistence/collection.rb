@@ -1,6 +1,8 @@
 module CouchPotatoe
   module Persistence
     class Collection
+      attr_accessor :items, :item_class
+      
       def initialize(item_class)
         @item_class = item_class
         @items = []
@@ -13,35 +15,21 @@ module CouchPotatoe
         item
       end
       
-      def to_json(*args)
-        {
-          'json_class' => self.class.name,
-          'data' => {
-            'item_class' => @item_class.name,
-            'items' => @items
-          }
-         
-        }.to_json(*args)
+      def ==(other)
+        other.class == self.class && other.items == items && other.item_class == item_class
       end
       
-      def ==(other)
-        other.class == self.class && other.send(:items) == items && other.send(:item_class) == item_class
+      def to_json(*args)
+        raise 'implement me in a subclass'
       end
       
       def self.json_create(json)
-        collection = self.new json['data']['item_class'].constantize
-        json['data']['items'].each do |item|
-          item.position = collection.size if item.respond_to?(:position=)
-          collection << item
-        end
-        collection
+        raise 'implement me in a subclass'
       end
       
       delegate :[], :<<, :empty?, :any?, :each, :+, :size, :first, :last, :map, :inject, :join, :to => :items
       
-      private
       
-      attr_accessor :items, :item_class
     end
   end
 end

@@ -12,11 +12,18 @@ CouchPotatoe::Persistence.Db.delete!
 class User
   include CouchPotatoe::Persistence
   
-  has_many :comments
+  has_many :comments, :stored => :inline
+end
+
+class Commenter
+  include CouchPotatoe::Persistence
+  
+  has_many :comments, :stored => :separately
 end
 
 class Comment
   include CouchPotatoe::Persistence
   
   property :title
+  belongs_to :commenter
 end
