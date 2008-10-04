@@ -24,6 +24,8 @@ end
 class Comment
   include CouchPotatoe::Persistence
   
+  validates_presence_of :title
+  
   property :title
   belongs_to :commenter
 end

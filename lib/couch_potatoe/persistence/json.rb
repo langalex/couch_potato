@@ -12,20 +12,31 @@ module CouchPotatoe
             props[name] = self.send(name) if self.send(name)
             props
           end
-        }.to_json(*args)
+        }.merge(id_and_rev_json).to_json(*args)
+      end
+      
+      private
+      
+      def id_and_rev_json
+        [:_id, :_rev].inject({}) do |hash, key|
+          hash[key] = self.send(key) unless self.send(key).nil?
+          hash
+        end
       end
       
       module ClassMethods
         def json_create(json)
-          record = self.new
+          instance = self.new
           properties.each do |name|
             item = json['data'][name.to_s]
             item.owner_id = json['_id'] if item.respond_to?('owner_id=')
-            record.send "#{name}=", item
+            instance.send "#{name}=", item
           end
-          record.created_at = json['data']['created_at'] if json['data']['created_at']
-          record.updated_at = json['data']['updated_at'] if json['data']['updated_at']
-          record
+          instance.created_at = json['data']['created_at'] if json['data']['created_at']
+          instance.updated_at = json['data']['updated_at'] if json['data']['updated_at']
+          instance._id = json['_id']
+          instance._rev = json['_rev']
+          instance
         end
       end
     end

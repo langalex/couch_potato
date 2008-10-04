@@ -39,6 +39,14 @@ module CouchPotatoe
       end
     end
     
+    def destroy
+      run_callbacks(:before_destroy)
+      self.class.db.delete self
+      run_callbacks(:after_destroy)
+      self._id = nil
+      self._rev = nil
+    end
+    
     def reload
       raise(UnsavedRecordError.new) unless _id
       reloaded = self.class.find _id
@@ -66,8 +74,10 @@ module CouchPotatoe
     private
     
     def create_record
+      run_callbacks :before_validation_on_save
       run_callbacks :before_validation_on_create
       return unless valid?
+      run_callbacks :before_save
       run_callbacks :before_create
       self.created_at = Time.now
       self.updated_at = Time.now
@@ -75,17 +85,22 @@ module CouchPotatoe
       self._id = record['id']
       self._rev = record['rev']
       save_dependent_objects
+      run_callbacks :after_save
       run_callbacks :after_create
       true
     end
     
     def update_record
+      run_callbacks(:before_validation_on_save)
       run_callbacks(:before_validation_on_update)
       return unless valid?
+      run_callbacks :before_save
       run_callbacks :before_update
       self.updated_at = Time.now
-      self.class.db.save(self.to_json)
+      res = self.class.db.save(self)
       save_dependent_objects
+      self._rev = res['rev']
+      run_callbacks :after_save
       run_callbacks :after_update
       true
     end
@@ -101,13 +116,17 @@ module CouchPotatoe
     module ClassMethods
       
       def create!(attributes)
-        record = self.new attributes
-        record.save!
-        record
+        instance = self.new attributes
+        instance.save!
+        instance
       end
       
       def find(id)
-        db.get(id)
+        begin
+          db.get(id)
+        rescue(RestClient::ResourceNotFound)
+          nil
+        end
       end
       
       def db(name = nil)
