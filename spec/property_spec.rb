@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe 'properties' do
+  it "should return the property names" do
+    Comment.property_names.should == [:title, :commenter]
+  end
+  
   it "should persist a string" do
     c = Comment.new :title => 'my title'
     c.save!

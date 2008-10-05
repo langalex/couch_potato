@@ -1,7 +1,7 @@
 require 'couchrest'
 require 'validatable'
 require File.dirname(__FILE__) + '/persistence/inline_collection'
-require File.dirname(__FILE__) + '/persistence/lazy_collection'
+require File.dirname(__FILE__) + '/persistence/external_collection'
 require File.dirname(__FILE__) + '/persistence/properties'
 require File.dirname(__FILE__) + '/persistence/callbacks'
 require File.dirname(__FILE__) + '/persistence/json'
@@ -50,13 +50,15 @@ module CouchPotatoe
     def reload
       raise(UnsavedRecordError.new) unless _id
       reloaded = self.class.find _id
-      self.class.properties.each do |name|
-        self.send "#{name}=", reloaded.send(name)
+      self.class.properties.each do |property|
+        json = {}
+        property.serialize(json, reloaded)
+        property.build self, json
       end
     end
     
     def new_record?
-      _rev.nil?
+      _id.nil?
     end
     
     def to_param
@@ -68,7 +70,7 @@ module CouchPotatoe
     end
     
     def ==(other)
-      other.class == self.class && self.class.properties.map{|name| self.send(name)} == self.class.properties.map{|name| other.send(name)}
+      other.class == self.class && self.class.property_names.map{|name| self.send(name)} == self.class.property_names.map{|name| other.send(name)}
     end
     
     private
@@ -81,9 +83,9 @@ module CouchPotatoe
       run_callbacks :before_create
       self.created_at = Time.now
       self.updated_at = Time.now
-      record = self.class.db.save(self)
-      self._id = record['id']
-      self._rev = record['rev']
+      document = self.class.db.save(self)
+      self._id = document['id']
+      self._rev = document['rev']
       save_dependent_objects
       run_callbacks :after_save
       run_callbacks :after_create
@@ -106,16 +108,14 @@ module CouchPotatoe
     end
     
     def save_dependent_objects
-      self.class.properties.each do |name|
-        property = self.send name
-        property.owner_id = self._id if property.respond_to?(:owner_id=)
-        property.save if property.respond_to?(:save)
+      self.class.properties.each do |property|
+        property.save(self)
       end
     end
     
     module ClassMethods
       
-      def create!(attributes)
+      def create!(attributes = {})
         instance = self.new attributes
         instance.save!
         instance
@@ -123,7 +123,7 @@ module CouchPotatoe
       
       def find(id)
         begin
-          db.get(id)
+          self.json_create db.get(id)
         rescue(RestClient::ResourceNotFound)
           nil
         end

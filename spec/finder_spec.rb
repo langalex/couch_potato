@@ -1,5 +1,11 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
+class OtherComment
+  include CouchPotatoe::Persistence
+  
+  belongs_to :commenter
+end
+
 describe CouchPotatoe::Persistence::Finder, 'find children' do
   before(:each) do
     CouchPotatoe::Persistence.Db.delete!
@@ -18,5 +24,11 @@ describe CouchPotatoe::Persistence::Finder, 'find children' do
     CouchPotatoe::Persistence::Finder.new.find Comment, :commenter_id => '1'
     comment = CouchPotatoe::Persistence::Finder.new.find Comment, :commenter_id => '1'
     comment.should == [c1]
+  end
+  
+  it "should not find instances of other classes" do
+    OtherComment.create! :commenter_id => '1'
+    comment = CouchPotatoe::Persistence::Finder.new.find Comment, :commenter_id => '1'
+    comment.should be_empty
   end
 end

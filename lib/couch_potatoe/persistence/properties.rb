@@ -1,3 +1,8 @@
+require File.dirname(__FILE__) + '/simple_property'
+require File.dirname(__FILE__) + '/belongs_to_property'
+require File.dirname(__FILE__) + '/inline_has_many_property'
+require File.dirname(__FILE__) + '/external_has_many_property'
+
 module CouchPotatoe
   module Persistence
     module Properties
@@ -12,38 +17,26 @@ module CouchPotatoe
       end
       
       module ClassMethods
+        def property_names
+          properties.map(&:name)
+        end
+        
         def property(name, options = {})
-          properties << name
-          attr_accessor name
+          properties << (options[:class] || SimpleProperty).new(self, name)
         end
 
-        def belongs_to(name, options = {})
-          property name
-          property "#{name}_id"
+        def belongs_to(name)
+          property name, :class => BelongsToProperty
         end
 
         def has_many(name, options = {})
-          property name
-          getter =  <<-GETTER
-            def #{name}
-              @#{name} ||= #{collection_code(name.to_s.singularize.camelize, options[:stored])}
-            end
-          GETTER
-          self.class_eval getter, 'persistence.rb', 154
-        end
-        
-        private
-        
-        def collection_code(item_class, storage)
-          if storage == :separately
-            "CouchPotatoe::Persistence::LazyCollection.new(#{item_class}, :#{self.name.split('::').last.underscore}_id)"
+          if(options[:stored] == :inline)
+            property name, :class => InlineHasManyProperty
           else
-            "CouchPotatoe::Persistence::InlineCollection.new(#{item_class})"
+            property name, :class => ExternalHasManyProperty
           end
         end
       end
     end
-    
-    
   end
 end

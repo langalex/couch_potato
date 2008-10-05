@@ -16,16 +16,16 @@ describe "create" do
     end
 
     it "should store the class" do
-      CouchPotatoe::Persistence.Db.get(@comment.id).class.should == Comment
+      CouchPotatoe::Persistence.Db.get(@comment.id)['ruby_class'].should == 'Comment'
     end
 
     it "should set created at" do
-      CouchPotatoe::Persistence.Db.get(@comment.id).created_at.should >= 1.second.ago
+      DateTime.parse(CouchPotatoe::Persistence.Db.get(@comment.id)['created_at']).should >= 1.second.ago
       @comment.created_at.should >= 1.second.ago
     end
 
     it "should set updated at" do
-      CouchPotatoe::Persistence.Db.get(@comment.id).updated_at.should >= 1.second.ago
+      DateTime.parse(CouchPotatoe::Persistence.Db.get(@comment.id)['updated_at']).should >= 1.second.ago
       @comment.updated_at.should >= 1.second.ago
     end
   end

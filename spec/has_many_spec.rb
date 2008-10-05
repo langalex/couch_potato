@@ -20,7 +20,7 @@ describe 'has_many stored inline' do
   it "should persist child objects" do
     @user.comments.build(:title => 'my title')
     @user.save!
-    @user.reload
+    @user =  User.find @user._id
     @user.comments.first.class.should == Comment
     @user.comments.first.title.should == 'my title'
   end
@@ -46,7 +46,7 @@ describe 'has_many stored separately' do
   it "should persist child objects" do
     @commenter.comments.build(:title => 'my title')
     @commenter.save!
-    @commenter.reload
+    @commenter = Commenter.find @commenter._id
     @commenter.comments.first.class.should == Comment
     @commenter.comments.first.title.should == 'my title'
   end

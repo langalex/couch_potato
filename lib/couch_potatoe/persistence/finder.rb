@@ -24,18 +24,19 @@ module CouchPotatoe
           "_id" => "_design/#{params[:design_document]}", 
           :views => {
             params[:view] => {
-              :map => "function(doc){emit(doc.data['#{params[:search_field]}'], doc);}"
+              :map => "function(doc){if(doc.ruby_class == '#{params[:class]}') {emit(doc['#{params[:search_field]}'], doc)}}"
               }
             }
           })
       end
       
       def query_view(params)
-        db.view(params[:view_url], :key => params[:search_value])['rows'].map{|doc| doc['value']}
+        db.view(params[:view_url], :key => params[:search_value])['rows'].map{|doc| doc['value']}.map{|json| params[:class].json_create json}
       end
       
       def view_parameters(clazz, options)
         {
+          :class => clazz,
           :design_document => clazz.name.underscore,
           :search_field => options.keys.first,
           :search_value => options.values.first,

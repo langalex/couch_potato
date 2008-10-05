@@ -3,7 +3,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe "find" do
   before(:each) do
     @comment = Comment.create! :title => 'title'
-    
   end
   
   it "should find by id" do
