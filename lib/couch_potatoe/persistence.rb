@@ -49,7 +49,7 @@ module CouchPotatoe
     
     def reload
       raise(UnsavedRecordError.new) unless _id
-      reloaded = self.class.find _id
+      reloaded = self.class.get _id
       self.class.properties.each do |property|
         json = {}
         property.serialize(json, reloaded)
@@ -57,7 +57,7 @@ module CouchPotatoe
       end
     end
     
-    def new_record?
+    def new_document?
       _id.nil?
     end
     
@@ -121,7 +121,7 @@ module CouchPotatoe
         instance
       end
       
-      def find(id)
+      def get(id)
         begin
           self.json_create db.get(id)
         rescue(RestClient::ResourceNotFound)
@@ -135,7 +135,7 @@ module CouchPotatoe
     end
     
     def self.Db(database_name = nil)
-      database_name ||= CouchPotatoe::Config.database_name || raise('No Database configured. Set CouchPotatoe::Config.database')
+      database_name ||= CouchPotatoe::Config.database_name || raise('No Database configured. Set CouchPotatoe::Config.database_name')
       full_url_to_database = database_name
       if full_url_to_database !~ /^http:\/\//
         full_url_to_database = "http://localhost:5984/#{database_name}"

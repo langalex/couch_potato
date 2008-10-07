@@ -11,4 +11,5 @@ end
 
 
 require File.dirname(__FILE__) + '/couch_potatoe/persistence'
+require File.dirname(__FILE__) + '/couch_potatoe/active_record/compatibility'
 require File.dirname(__FILE__) + '/couch_potatoe/core_ext/time'
