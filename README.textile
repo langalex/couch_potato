@@ -41,22 +41,22 @@ If you want to store any properties you have to declare them:
 
 Now you can save your objects:
 
-  >> user = User.new :name => 'joe'
-  >> user.save # or save!
+  user = User.new :name => 'joe'
+  user.save # or save!
 
 Properties:
 
-  >> user.name # => 'joe'
-  >> user.name = {:first => ['joe', 'joey'], :last => 'doe', :middle => 'J'} # you can set any ruby object that responds_to :to_json (includes all core objects)
-  >> user._id # => "02097f33a0046123f1ebc0ebb6937269"
-  >> user._rev # => "2769180384"
-  >> user.created_at # => Fri Oct 24 19:05:54 +0200 2008
-  >> user.updated_at # => Fri Oct 24 19:05:54 +0200 2008
-  >> user.new_document? # => false, for compatibility new_record? will work as well
+  user.name # => 'joe'
+  user.name = {:first => ['joe', 'joey'], :last => 'doe', :middle => 'J'} # you can set any ruby object that responds_to :to_json (includes all core objects)
+  user._id # => "02097f33a0046123f1ebc0ebb6937269"
+  user._rev # => "2769180384"
+  user.created_at # => Fri Oct 24 19:05:54 +0200 2008
+  user.updated_at # => Fri Oct 24 19:05:54 +0200 2008
+  user.new_document? # => false, for compatibility new_record? will work as well
 
 You can of course also retrieve your instance:
 
-  >> User.get "02097f33a0046123f1ebc0ebb6937269" # => <#User 0x3075>
+  User.get "02097f33a0046123f1ebc0ebb6937269" # => <#User 0x3075>
 
 h4. Object validations
 
@@ -67,16 +67,16 @@ Couch Potato uses the validatable library for vaidation (http://validatable.ruby
     validates_presence_of :name
   end
 
-  >> user = User.new
-  >> user.valid? # => false
-  >> user.errors.on(:name) # => [:name, 'can't be blank']
+  user = User.new
+  user.valid? # => false
+  user.errors.on(:name) # => [:name, 'can't be blank']
 
 h4. Finding stuff
 
 For running finds (e.g. creating/querying views) as of now there is only the CouchPotato::Persistence::Finder class which allows you do basic searches:
 
-  >> user = User.new :first_name => 'joe'
-  >> Finder.new.find User, :first_name => 'joe'
+  user = User.new :first_name => 'joe'
+  Finder.new.find User, :first_name => 'joe'
 
 Be warned though that executing this find method will generate a new view for every new combination of class and attribute names it gets called with, so you really don't want to use this in a console on a production system.
 
@@ -95,11 +95,11 @@ As of now has_many and belongs_to are supported. By default the associated objec
     property :street
   end
   
-  >>  user = User.new
-  >> user.addresses.build :street => 'potato way'
-  >> user.addresses.first # => <#Address 0x987>
-  >> user.addresses.create! # raises an exception as street is blank
-  >> user.addresses.first.user == user # => true
+   user = User.new
+  user.addresses.build :street => 'potato way'
+  user.addresses.first # => <#Address 0x987>
+  user.addresses.create! # raises an exception as street is blank
+  user.addresses.first.user == user # => true
 
 As CouchDB can not only store flat structures you also store associations inline:
 
@@ -121,18 +121,18 @@ Couch Potato supports versioning your objects, very similar to the popular acts_
 
 After that your object will have a version that gets incremented on each save.
 
-  >> doc = Document.create
-  >> doc.version # => 1
-  >> doc.save
-  >> doc.version # => 2
+  doc = Document.create
+  doc.version # => 1
+  doc.save
+  doc.version # => 2
 
 You can access the older versions via the versions method.
 
-  >> doc.versions.first.version # => 1
+  doc.versions.first.version # => 1
 
 When passing a version number the version method will only return that version:
 
-  >> doc.versions(1).version # => 1
+  doc.versions(1).version # => 1
 
 You can set a condition for when to create a new version:
 
@@ -144,14 +144,14 @@ You can set a condition for when to create a new version:
     set_version_condition lambda {|doc| doc.update_version}
   end
 
-  >> doc = Document.create
-  >> doc.update_version = false
-  >> doc.version # => 1
-  >> doc.save
-  >> doc.version # => 1
-  >> doc.update_version = true
-  >> doc.save
-  >> doc.version # => 2
+  doc = Document.create
+  doc.update_version = false
+  doc.version # => 1
+  doc.save
+  doc.version # => 1
+  doc.update_version = true
+  doc.save
+  doc.version # => 2
 
 
 h3. Helping out
