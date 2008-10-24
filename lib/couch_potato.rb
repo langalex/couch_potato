@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'active_support'
 require 'json'
 require 'json/add/core'

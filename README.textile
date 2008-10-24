@@ -1,0 +1,168 @@
+h1. Couch Potato
+
+... is a persistence layer written in ruby for CouchDB.
+
+h2. Mission
+
+The goal of Couch Potato is to create a migration path for users of ActiveRecord and other object relational mappers to port their applications to CouchDB. It therefore offers a basic set of the functionality provided by most ORMs and adds functionality unique to CouchDB on top.
+
+h2. Core Features
+
+Couch Potato is a work in progress so this list will hopefully grow over time.
+
+* persisting objects by including the CouchPotato::Persistence module
+* has_many/belongs_to relationships between persistant objects
+* included versioning support via the CouchPotato::Versioning module
+
+h2. Introduction
+
+This is a basic tutorial on how to use Couch Potato. If you want to know all the details feel free to read the specs.
+
+h3. Save, load objects
+
+First you need a class.
+
+class User
+end
+
+To make instances of this class persistent include the persistence module:
+
+class User
+  include CouchPotato::Persistence
+end
+
+If you want to store any properties you have to declare them:
+
+class User
+  include CouchPotato::Persistence
+  
+  property :name
+end
+
+Now you can save your objects:
+
+>> user = User.new :name => 'joe'
+>> user.save # or save!
+
+Properties:
+
+>> user.name # => 'joe'
+>> user.name = {:first => ['joe', 'joey'], :last => 'doe', :middle => 'J'} # you can set any ruby object that responds_to :to_json (includes all core objects)
+>> user._id # => "02097f33a0046123f1ebc0ebb6937269"
+>> user._rev # => "2769180384"
+>> user.created_at # => Fri Oct 24 19:05:54 +0200 2008
+>> user.updated_at # => Fri Oct 24 19:05:54 +0200 2008
+>> user.new_document? # => false, for compatibility new_record? will work as well
+
+You can of course also retrieve your instance:
+
+>> User.get "02097f33a0046123f1ebc0ebb6937269" # => <#User 0x3075>
+
+h3. Object validations
+
+Couch Potato uses the validatable library for vaidation (http://validatable.rubyforge.org/)\
+
+class User
+  property :name
+  validates_presence_of :name
+end
+
+>> user = User.new
+>> user.valid? # => false
+>> user.errors.on(:name) # => [:name, 'can't be blank']
+
+h3. Finding stuff
+
+For running finds (e.g. creating/querying views) as of now there is only the CouchPotato::Persistence::Finder class which allows you do basic searches:
+
+>> user = User.new :first_name => 'joe'
+>> Finder.new.find User, :first_name => 'joe'
+
+Be warned though that executing this find method will generate a new view for every new combination of class and attribute names it gets called with, so you really don't want to use this in a console on a production system.
+
+Support for more sophisticated views will be added later.
+
+h3. Associations
+
+As of now has_many and belongs_to are supported. By default the associated objects are stored in separate documents linked via foreign keys just like in relational databases.
+
+class User
+  has_many :addresses, :dependent => :destroy
+end
+
+class Address
+  belongs_to :user
+  property :street
+end
+
+>>  user = User.new
+>> user.addresses.build :street => 'potato way'
+>> user.addresses.first # => <#Address 0x987>
+>> user.addresses.create! # raises an exception as street is blank
+>> user.addresses.first.user == user # => true
+
+As CouchDB can not only store flat structures you also store associations inline:
+
+class User
+  has_many :addresses, :stored => :inline
+end
+
+This will store the addresses of the user as an array within your CouchDB document.
+
+]
+
+h3. Versioning
+
+Couch Potato supports versioning your objects, very similar to the popular acts_as_versioned plugin for rails. To use it include the module:
+
+class Document
+  include CouchPotato::Persistence
+  include CouchPotato::Versioning
+end
+
+After that your object will have a version that gets incremented on each save.
+
+>> doc = Document.create
+>> doc.version # => 1
+>> doc.save
+>> doc.version # => 2
+
+You can access the older versions via the versions method.
+
+>> doc.versions.first.version # => 1
+
+When passing a version number the version method will only return that version:
+
+>> doc.versions(1).version # => 1
+
+You can set a condition for when to create a new version:
+
+class Document
+  attr_accessor :update_version
+  include CouchPotato::Persistence
+  include CouchPotato::Versioning
+  
+  set_version_condition lambda {|doc| doc.update_version}
+end
+
+>> doc = Document.create
+>> doc.update_version = false
+>> doc.version # => 1
+>> doc.save
+>> doc.version # => 1
+>> doc.update_version = true
+>> doc.save
+>> doc.version # => 2
+
+
+h2. Helping out
+
+Please fix bugs, add more specs, implement new features by forking the github repo at http://github.com/langalex/couch_potato.
+
+You can run all the specs by calling rake with no options in the root folder of Couch Potato. The specs require a running CouchDB instance at http://localhost:5984
+
+I will only accept patches that are covered by specs - sorry.
+
+h2. Contact
+
+If you have any questions/suggestions etc. please contact me at alex at upstream-berlin.com or @langalex on twitter.
