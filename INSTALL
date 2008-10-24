@@ -6,3 +6,6 @@
 - test: test_db_name
 - development: development_db_name
 - production: production_db_name
+
+= Required Gems =
+* validatable, json, couchrest, activesupport
