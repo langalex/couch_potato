@@ -21,5 +21,4 @@ describe 'destroy' do
     }.should raise_error(RestClient::ResourceNotFound)
   end
   
-  it "should destroy all dependent objects"
 end

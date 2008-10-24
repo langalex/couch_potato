@@ -42,6 +42,7 @@ module CouchPotato
     def destroy
       run_callbacks(:before_destroy)
       self.class.db.delete self
+      destroy_dependent_objects
       run_callbacks(:after_destroy)
       self._id = nil
       self._rev = nil
@@ -110,6 +111,12 @@ module CouchPotato
     def save_dependent_objects
       self.class.properties.each do |property|
         property.save(self)
+      end
+    end
+    
+    def destroy_dependent_objects
+      self.class.properties.each do |property|
+        property.destroy(self)
       end
     end
     

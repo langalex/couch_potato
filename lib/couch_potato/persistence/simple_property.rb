@@ -3,7 +3,7 @@ module CouchPotato
     class SimpleProperty
       attr_accessor :name
       
-      def initialize(owner_clazz, name)
+      def initialize(owner_clazz, name, options = {})
         self.name = name
         owner_clazz.send :attr_accessor, name
       end
@@ -13,6 +13,10 @@ module CouchPotato
       end
       
       def save(object)
+        
+      end
+      
+      def destroy(object)
         
       end
       

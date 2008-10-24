@@ -13,11 +13,23 @@ module CouchPotato
         @owner_id_attribute_name = owner_id_attribute_name
       end
       
-      def build(attributes)
+      def build(attributes = {})
         item = @item_class.new(attributes)
         self.<< item
         item.position = self.size if item.respond_to?(:position=)
         item.send "#{@owner_id_attribute_name}=", owner_id
+        item
+      end
+      
+      def create(attributes = {})
+        item = build(attributes)
+        item.save
+        item
+      end
+      
+      def create!(attributes = {})
+        item = build(attributes)
+        item.save!
         item
       end
       
@@ -31,6 +43,19 @@ module CouchPotato
       def save
         items.each do |item|
           item.send "#{@owner_id_attribute_name}=", owner_id
+          item.save
+        end
+      end
+      
+      def destroy
+        @items.each do |item|
+          item.destroy
+        end
+      end
+      
+      def nullify
+        @items.each do |item|
+          item.send "#{@owner_id_attribute_name}=", nil
           item.save
         end
       end

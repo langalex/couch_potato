@@ -22,7 +22,8 @@ module CouchPotato
         end
         
         def property(name, options = {})
-          properties << (options[:class] || SimpleProperty).new(self, name)
+          clazz = options.delete(:class)
+          properties << (clazz || SimpleProperty).new(self, name, options)
         end
 
         def belongs_to(name)
@@ -30,11 +31,8 @@ module CouchPotato
         end
 
         def has_many(name, options = {})
-          if(options[:stored] == :inline)
-            property name, :class => InlineHasManyProperty
-          else
-            property name, :class => ExternalHasManyProperty
-          end
+          stored = options.delete(:stored)
+          property name, options.merge(:class => (stored == :inline ? InlineHasManyProperty : ExternalHasManyProperty))
         end
       end
     end

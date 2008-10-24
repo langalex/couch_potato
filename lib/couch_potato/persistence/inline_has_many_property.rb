@@ -1,7 +1,7 @@
 class InlineHasManyProperty
   attr_accessor :name
   
-  def initialize(owner_clazz, name)
+  def initialize(owner_clazz, name, options = {})
     @name = name
     getter =  <<-GETTER
       def #{name}
@@ -26,9 +26,13 @@ class InlineHasManyProperty
     json[name.to_s] = object.send(name)
   end
   
+  def destroy(object)
+    
+  end
+  
   private
   
   def item_class_name
-    @name.to_s.singularize.capitalize
+    @name.to_s.singularize.camelcase
   end
 end

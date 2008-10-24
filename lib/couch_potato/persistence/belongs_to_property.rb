@@ -3,7 +3,7 @@ module CouchPotato
     class BelongsToProperty
       attr_accessor :name
       
-      def initialize(owner_clazz, name)
+      def initialize(owner_clazz, name, options = {})
         self.name = name
         accessors =  <<-ACCESSORS
           def #{name}
@@ -23,6 +23,10 @@ module CouchPotato
         
       end
       
+      def destroy(object)
+        
+      end
+      
       def build(object, json)
         object.send "#{name}_id=", json["#{name}_id"]
       end
@@ -32,8 +36,9 @@ module CouchPotato
       end
       
       def item_class_name
-        @name.to_s.singularize.capitalize
+        @name.to_s.singularize.camelcase
       end
+      
     end
   end
 end
