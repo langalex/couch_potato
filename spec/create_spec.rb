@@ -16,23 +16,23 @@ describe "create" do
     end
 
     it "should store the class" do
-      CouchPotatoe::Persistence.Db.get(@comment.id)['ruby_class'].should == 'Comment'
+      CouchPotato::Persistence.Db.get(@comment.id)['ruby_class'].should == 'Comment'
     end
 
     it "should set created at" do
-      DateTime.parse(CouchPotatoe::Persistence.Db.get(@comment.id)['created_at']).should >= 1.second.ago
-      @comment.created_at.should >= 1.second.ago
+      DateTime.parse(CouchPotato::Persistence.Db.get(@comment.id)['created_at']).should >= 1.second.ago
+      @comment.created_at.should <= Time.now
     end
 
     it "should set updated at" do
-      DateTime.parse(CouchPotatoe::Persistence.Db.get(@comment.id)['updated_at']).should >= 1.second.ago
+      DateTime.parse(CouchPotato::Persistence.Db.get(@comment.id)['updated_at']).should >= 1.second.ago
       @comment.updated_at.should >= 1.second.ago
     end
   end
   
   describe "fails" do
     before(:each) do
-      CouchPotatoe::Persistence.Db.delete!
+      CouchPotato::Persistence.Db.delete!
       @comment = Comment.new
       @comment.save
     end
@@ -46,7 +46,7 @@ describe "create" do
     end
 
     it "should not store anything" do
-      CouchPotatoe::Persistence.Db.documents['rows'].should be_empty
+      CouchPotato::Persistence.Db.documents['rows'].should be_empty
     end
 
     it "should not set created at" do

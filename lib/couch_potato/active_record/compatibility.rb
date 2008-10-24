@@ -1,4 +1,4 @@
-module CouchPotatoe
+module CouchPotato
   module Persistence
     alias_method :new_record?, :new_document?
   

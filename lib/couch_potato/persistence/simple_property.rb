@@ -1,4 +1,4 @@
-module CouchPotatoe
+module CouchPotato
   module Persistence
     class SimpleProperty
       attr_accessor :name

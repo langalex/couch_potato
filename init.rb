@@ -1,3 +1,3 @@
-require File.dirname(__FILE__) + '/lib/couch_potatoe'
+require File.dirname(__FILE__) + '/lib/couch_potato'
 
-CouchPotatoe::Config.database_name = YAML::load(File.read(RAILS_ROOT + '/config/couchdb.yml'))[RAILS_ENV]
+CouchPotato::Config.database_name = YAML::load(File.read(RAILS_ROOT + '/config/couchdb.yml'))[RAILS_ENV]

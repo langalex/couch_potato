@@ -1,4 +1,4 @@
-module CouchPotatoe
+module CouchPotato
   module Persistence
     module Json
       def self.included(base)

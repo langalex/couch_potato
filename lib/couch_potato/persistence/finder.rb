@@ -1,4 +1,4 @@
-module CouchPotatoe
+module CouchPotato
   module Persistence
     class Finder
       # finds all objects of a given type by a given key
@@ -16,7 +16,7 @@ module CouchPotatoe
       private
       
       def db(name = nil)
-        ::CouchPotatoe::Persistence.Db(name)
+        ::CouchPotato::Persistence.Db(name)
       end
       
       def create_view(params)

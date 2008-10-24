@@ -5,7 +5,7 @@ class InlineHasManyProperty
     @name = name
     getter =  <<-GETTER
       def #{name}
-        @#{name} ||= CouchPotatoe::Persistence::InlineCollection.new(#{item_class_name})
+        @#{name} ||= CouchPotato::Persistence::InlineCollection.new(#{item_class_name})
       end
     GETTER
     owner_clazz.class_eval getter

@@ -1,4 +1,4 @@
-module CouchPotatoe
+module CouchPotato
   module Persistence
     class Collection
       attr_accessor :items, :item_class
@@ -35,7 +35,7 @@ module CouchPotatoe
 end
 
 if Object.const_defined? 'WillPaginate'
-  module CouchPotatoe
+  module CouchPotato
     module Persistence
       class Collection
         def paginate(options = {})

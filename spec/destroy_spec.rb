@@ -17,7 +17,7 @@ describe 'destroy' do
   
   it "should remove the document from the database" do
     lambda {
-      CouchPotatoe::Persistence.Db.get(@comment_id).should
+      CouchPotato::Persistence.Db.get(@comment_id).should
     }.should raise_error(RestClient::ResourceNotFound)
   end
   

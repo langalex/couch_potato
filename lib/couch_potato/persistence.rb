@@ -6,7 +6,7 @@ require File.dirname(__FILE__) + '/persistence/properties'
 require File.dirname(__FILE__) + '/persistence/callbacks'
 require File.dirname(__FILE__) + '/persistence/json'
 
-module CouchPotatoe
+module CouchPotato
   module Persistence
     
     class ValidationsFailedError < ::Exception; end
@@ -130,12 +130,12 @@ module CouchPotatoe
       end
       
       def db(name = nil)
-        ::CouchPotatoe::Persistence.Db(name)
+        ::CouchPotato::Persistence.Db(name)
       end
     end
     
     def self.Db(database_name = nil)
-      database_name ||= CouchPotatoe::Config.database_name || raise('No Database configured. Set CouchPotatoe::Config.database_name')
+      database_name ||= CouchPotato::Config.database_name || raise('No Database configured. Set CouchPotato::Config.database_name')
       full_url_to_database = database_name
       if full_url_to_database !~ /^http:\/\//
         full_url_to_database = "http://localhost:5984/#{database_name}"

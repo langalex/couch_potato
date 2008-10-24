@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/belongs_to_property'
 require File.dirname(__FILE__) + '/inline_has_many_property'
 require File.dirname(__FILE__) + '/external_has_many_property'
 
-module CouchPotatoe
+module CouchPotato
   module Persistence
     module Properties
       def self.included(base)

@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 class CallbackRecorder
-  include CouchPotatoe::Persistence
+  include CouchPotato::Persistence
   
   property :required_property
   

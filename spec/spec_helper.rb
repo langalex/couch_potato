@@ -4,25 +4,25 @@ require 'spec'
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 
-require 'couch_potatoe'
+require 'couch_potato'
 
-CouchPotatoe::Config.database_name = 'couchpotatoe_test'
-CouchPotatoe::Persistence.Db.delete!
+CouchPotato::Config.database_name = 'couchotato_test'
+CouchPotato::Persistence.Db.delete!
 
 class User
-  include CouchPotatoe::Persistence
+  include CouchPotato::Persistence
   
   has_many :comments, :stored => :inline
 end
 
 class Commenter
-  include CouchPotatoe::Persistence
+  include CouchPotato::Persistence
   
   has_many :comments, :stored => :separately
 end
 
 class Comment
-  include CouchPotatoe::Persistence
+  include CouchPotato::Persistence
   
   validates_presence_of :title
   

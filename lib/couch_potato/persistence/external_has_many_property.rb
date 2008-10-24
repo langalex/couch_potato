@@ -1,4 +1,4 @@
-module CouchPotatoe
+module CouchPotato
   module Persistence
     class ExternalHasManyProperty
       attr_accessor :name
@@ -6,7 +6,7 @@ module CouchPotatoe
         @name, @owner_clazz = name, owner_clazz
         getter =  <<-ACCESORS
           def #{name}
-            @#{name} ||= CouchPotatoe::Persistence::ExternalCollection.new(#{item_class_name}, :#{owner_clazz.name.underscore}_id)
+            @#{name} ||= CouchPotato::Persistence::ExternalCollection.new(#{item_class_name}, :#{owner_clazz.name.underscore}_id)
           end
           
           def #{name}=(items)

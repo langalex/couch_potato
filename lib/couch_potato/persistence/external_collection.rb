@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/collection'
 require File.dirname(__FILE__) + '/finder'
 
-module CouchPotatoe
+module CouchPotato
   module Persistence
     class ExternalCollection < Collection
       

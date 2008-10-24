@@ -28,6 +28,6 @@ describe "create" do
   it "should update the attributes" do
     @comment.title = 'new title'
     @comment.save!
-    CouchPotatoe::Persistence.Db.get("#{@comment.id}")['title'].should == 'new title'
+    CouchPotato::Persistence.Db.get("#{@comment.id}")['title'].should == 'new title'
   end
 end

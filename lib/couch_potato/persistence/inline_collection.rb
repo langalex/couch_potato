@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/collection'
 
-module CouchPotatoe
+module CouchPotato
   module Persistence
     class InlineCollection < Collection
       
