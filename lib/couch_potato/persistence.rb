@@ -35,6 +35,19 @@ module CouchPotato
       @bulk_save_queues.last
     end
     
+    def attributes=(hash)
+      hash.each do |attribute, value|
+        self.send "#{attribute}=", value
+      end
+    end
+    
+    def attributes
+      self.class.properties.inject({}) do |res, property|
+        property.serialize(res, self)
+        res
+      end
+    end
+    
     def save!
       save || raise(ValidationsFailedError.new(self.errors.full_messages))
     end
