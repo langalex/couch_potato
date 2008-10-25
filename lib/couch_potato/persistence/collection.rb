@@ -11,7 +11,6 @@ module CouchPotato
       def build(attributes)
         item = @item_class.new(attributes)
         self.<< item
-        item.position = self.size if item.respond_to?(:position=)
         item
       end
       

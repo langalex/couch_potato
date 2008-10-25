@@ -5,41 +5,76 @@ module CouchPotato
     class Finder
       # finds all objects of a given type by the given attribute/value pairs
       # options: attribute_name => value pairs to search for
-      # WARNING: calling this methods creates a new view in couchdb if it's not resent already so don't overuse this
+      # value can also be a range which will do a range search with startkey/endkey
+      # WARNING: calling this methods creates a new view in couchdb if it's not present already so don't overuse this
       def find(clazz, options = {})
         params = view_parameters(clazz, options)
-        begin
-          query_view params
-        rescue RestClient::ResourceNotFound => e
-          create_view params
-          query_view params
-        end
+        to_instances clazz, query_view!(params)
+      end
+      
+      def count(clazz, options = {})
+        params = view_parameters(clazz, options)
+        query_view!(params, '_count')['rows'].first.try(:[], 'value') || 0
       end
       
       private
+      
+      def query_view!(params, view_postfix = nil)
+        begin
+          query_view params, view_postfix
+        rescue RestClient::ResourceNotFound => e
+          create_view params
+          query_view params, view_postfix
+        end
+      end
       
       def db(name = nil)
         ::CouchPotato::Persistence.Db(name)
       end
       
       def create_view(params)
+        # in couchdb 0.9 we could use only 1 view and pass reduce=false for find and count with reduce
+        design_doc = db.get "_design/#{params[:design_document]}" rescue nil
         db.save({
-          "_id" => "_design/#{params[:design_document]}", 
+          "_id" => "_design/#{params[:design_document]}",
           :views => {
             params[:view] => {
-              :map => "function(doc) {
-                if(doc.ruby_class == '#{params[:class]}') {
-                  emit(
-                    [#{params[:search_fields].map{|attr| "doc[\"#{attr}\"]"}.join(', ')}], doc
-                      );
-                }
+              :map => map_function(params)
+            },
+            params[:view] + '_count' => {
+              :map => map_function(params),
+              :reduce => "function(keys, values) {
+                return values.length;
               }"
             }
-          }})
+          }
+        }.merge(design_doc ? {'_rev' => design_doc['_rev']} : {}))
       end
       
-      def query_view(params)
-        db.view(params[:view_url], :key => (params[:search_values]))['rows'].map{|doc| doc['value']}.map{|json| params[:class].json_create json}
+      def map_function(params)
+        "function(doc) {
+          if(doc.ruby_class == '#{params[:class]}') {
+            emit(
+              [#{params[:search_fields].map{|attr| "doc[\"#{attr}\"]"}.join(', ')}], doc
+                );
+          }
+        }"
+      end
+      
+      def to_instances(clazz, query_result)
+        query_result['rows'].map{|doc| doc['value']}.map{|json| clazz.json_create json}
+      end
+      
+      def query_view(params, view_postfix)
+        db.view params[:view_url] + view_postfix.to_s, search_keys(params)
+      end
+      
+      def search_keys(params)
+        if params[:search_values].select{|v| v.is_a?(Range)}.any?
+          {:startkey => params[:search_values].map{|v| v.is_a?(Range) ? v.first : v}, :endkey => params[:search_values].map{|v| v.is_a?(Range) ? v.last : v}}
+        else
+          {:key => params[:search_values]}
+        end
       end
       
       def view_parameters(clazz, options)

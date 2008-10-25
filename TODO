@@ -1,0 +1,2 @@
+* update _rev in child objects when updating
+* unset _id and _rev in child objects when destroying

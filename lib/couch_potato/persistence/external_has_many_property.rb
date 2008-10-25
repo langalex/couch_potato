@@ -23,15 +23,27 @@ module CouchPotato
         object.send(name).owner_id = object._id
         object.send(name).each do |item|
           item.send("#{@owner_clazz.name.underscore}_id=", object.id)
-          item.save
+          begin
+            item.bulk_save_queues.push object.bulk_save_queue
+            item.save
+          ensure
+            item.bulk_save_queues.pop
+          end
         end
       end
       
       def destroy(object)
-        if dependent == :destroy
-          object.send(name).destroy
-        else
-          object.send(name).nullify
+        object.send(name).each do |item|
+          if dependent == :destroy
+            begin
+              item.bulk_save_queues.push object.bulk_save_queue
+              item.destroy
+            ensure
+              item.bulk_save_queues.pop
+            end
+          else
+            item.send("#{@owner_clazz.name.underscore}_id=", nil)
+          end
         end
       end
       

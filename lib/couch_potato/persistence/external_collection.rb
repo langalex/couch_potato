@@ -16,7 +16,6 @@ module CouchPotato
       def build(attributes = {})
         item = @item_class.new(attributes)
         self.<< item
-        item.position = self.size if item.respond_to?(:position=)
         item.send "#{@owner_id_attribute_name}=", owner_id
         item
       end
@@ -34,10 +33,7 @@ module CouchPotato
       end
       
       def items
-        if @items.nil?
-          @items = Finder.new.find @item_class, @owner_id_attribute_name => owner_id
-        end
-        @items
+        @items ||= Finder.new.find @item_class, @owner_id_attribute_name => owner_id
       end
       
       def save
@@ -50,13 +46,6 @@ module CouchPotato
       def destroy
         @items.each do |item|
           item.destroy
-        end
-      end
-      
-      def nullify
-        @items.each do |item|
-          item.send "#{@owner_id_attribute_name}=", nil
-          item.save
         end
       end
       

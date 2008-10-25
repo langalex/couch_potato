@@ -12,7 +12,10 @@ Couch Potato is a work in progress so this list will hopefully grow over time.
 
 * persisting objects by including the CouchPotato::Persistence module
 * has_many/belongs_to relationships between persistant objects
+* atomic write operations spanning multiple objects using bulk save queues
+* extensive spec suite
 * included versioning support via the CouchPotato::Versioning module
+* included ordered lists support via the CouchPotato::Ordering module
 
 h3. Introduction
 
@@ -75,8 +78,14 @@ h4. Finding stuff
 
 For running finds (e.g. creating/querying views) as of now there is only the CouchPotato::Persistence::Finder class which allows you do basic searches:
 
-  user = User.new :first_name => 'joe'
-  Finder.new.find User, :first_name => 'joe'
+  user = User.create! :first_name => 'joe'
+  Finder.new.find User, :first_name => 'joe' # => [user]
+  
+You can also count:
+
+  user = User.create! :first_name => 'joe'
+  Finder.new.count User, :first_name => 'joe' # => 1
+  
 
 Be warned though that executing this find method will generate a new view for every new combination of class and attribute names it gets called with, so you really don't want to use this in a console on a production system.
 
@@ -109,10 +118,51 @@ As CouchDB can not only store flat structures you also store associations inline
 
 This will store the addresses of the user as an array within your CouchDB document.
 
+h5. callbacks
+
+Couch Potato supports the usual lifecycle callbacks known from ActiveRecord:
+
+  class User
+    include CouchPotato::Persistence
+    
+    before_create :do_something_before_create
+    after_update :do_something_else
+  end
+
+This will call the method do_something_before_create before creating an object and do_something_else after updating one. Supported callbacks are: :before_validation_on_create, :before_validation_on_update, :before_validation_on_save, :before_create, :after_create, :before_update, :after_update, :before_save, :after_save, :before_destroy, :after_destroy
+
+If you want to do any CouchDB update/create/delete operation in your callback methods...
+
+  class User
+    include CouchPotato::Persistence
+    has_many :comments
+    
+    before_update :create_a_comment
+    
+    private    
+    def create_a_comment
+      comments.create :body => 'i was updated'
+    end
+  end
+
+... and you want the entire operation including its hooks to be atomic you can do this:
+
+  class User
+    include CouchPotato::Persistence
+    has_many :comments
+    
+    before_update :create_a_comment
+    
+    private    
+    def create_a_comment
+      bulk_save_queue << Comment.new(:body => 'i was updated')
+    end
+  end
+
 
 h4. Versioning
 
-Couch Potato supports versioning your objects, very similar to the popular acts_as_versioned plugin for rails. To use it include the module:
+Couch Potato supports versioning your objects, very similar to the popular acts_as_versioned plugin for ActiveRecord. To use it include the module:
 
   class Document
     include CouchPotato::Persistence
@@ -152,7 +202,43 @@ You can set a condition for when to create a new version:
   doc.update_version = true
   doc.save
   doc.version # => 2
+  
+h4. Ordered Lists
 
+Couch Potato supports ordered lists for has_many relationships (with the :stored => :separately option only), very similar to the popular acts_as_list plugin for ActiveRecord. To use it include the module:
+
+  class PersistenArray
+    include CouchPotato::Persistence
+    has_many :items
+  end
+  
+  class Item
+    include CouchPotato::Ordering
+    belongs_to :persistent_array
+    set_ordering_scope :persistent_array_id
+  end
+  
+  array = PersistenArray.new
+  item1 = array.items.create!
+  item1.position # => 1
+  item2 = array.items.create!
+  item2.position # => 2
+  
+You can move items up and down simply by changing the position:
+
+  item2.position = 1
+  item2.save!
+  item1.position # => 2
+  
+And you can insert new items at any position you want:
+
+  item3 = array.items.create! :position => 2
+  item1.position # => 3
+  
+And remove:
+
+  item3.destroy
+  item1.position # => 2
 
 h3. Helping out
 

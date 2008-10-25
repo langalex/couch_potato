@@ -15,7 +15,7 @@ module CouchPotato
       private
       
       def id_and_rev_json
-        [:_id, :_rev].inject({}) do |hash, key|
+        [:_id, :_rev, :_deleted].inject({}) do |hash, key|
           hash[key] = self.send(key) unless self.send(key).nil?
           hash
         end
