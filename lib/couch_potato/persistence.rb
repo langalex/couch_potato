@@ -60,13 +60,10 @@ module CouchPotato
       run_callbacks(:after_destroy)
     end
 
-    # TODO this is not working very well yet
     def reload
       raise(UnsavedRecordError.new) unless _id
-      reloaded = self.class.get _id
+      json = self.class.db.get _id
       self.class.properties.each do |property|
-        json = {}
-        property.serialize(json, reloaded)
         property.build self, json
       end
     end

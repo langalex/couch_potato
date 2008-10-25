@@ -20,7 +20,7 @@ describe 'has_many stored inline' do
   it "should persist child objects" do
     @user.comments.build(:title => 'my title')
     @user.save!
-    @user =  User.find @user._id
+    @user = User.find @user._id
     @user.comments.first.class.should == Comment
     @user.comments.first.title.should == 'my title'
   end

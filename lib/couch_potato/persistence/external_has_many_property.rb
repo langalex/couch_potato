@@ -50,6 +50,7 @@ module CouchPotato
       def build(object, json)
         collection = ExternalCollection.new(item_class_name.constantize, "#{@owner_clazz.name.underscore}_id")
         collection.owner_id = object.id
+        object.send("#{name}").clear
         object.send "#{name}=", collection
       end
       

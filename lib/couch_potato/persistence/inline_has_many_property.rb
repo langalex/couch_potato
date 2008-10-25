@@ -12,6 +12,7 @@ class InlineHasManyProperty
   end
   
   def build(object, json)
+    object.send("#{name}").clear
     json[name.to_s].each do |item|
       item.delete 'ruby_class'
       object.send("#{name}").build item

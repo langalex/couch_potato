@@ -9,7 +9,7 @@ module CouchPotato
       end
       
       def build(object, json)
-        object.send "#{name}=", json[name.to_s]
+        object.send "#{name}=", json.stringify_keys[name.to_s]
       end
       
       def save(object)
