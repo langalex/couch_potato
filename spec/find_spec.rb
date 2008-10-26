@@ -26,6 +26,7 @@ describe 'first' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
     @comment = Comment.create! :title => 'title'
+    Comment.create! :title => 'title3'
   end
   
   it "should find the first matching object" do
@@ -36,6 +37,23 @@ describe 'first' do
     Comment.first(:title =>'title2').should be_nil
   end
 end
+
+describe 'last' do
+  before(:each) do
+    CouchPotato::Persistence.Db.delete!
+    Comment.create! :title => 'title'
+    @comment = Comment.create! :title => 'title'
+  end
+  
+  it "should find the last matching object" do
+    Comment.last(:title =>'title').should == @comment
+  end
+  
+  it "should return nil if nothing found" do
+    Comment.last(:title =>'title2').should be_nil
+  end
+end
+
 
 describe 'all' do
   before(:each) do

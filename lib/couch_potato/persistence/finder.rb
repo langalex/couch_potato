@@ -7,13 +7,13 @@ module CouchPotato
       # options: attribute_name => value pairs to search for
       # value can also be a range which will do a range search with startkey/endkey
       # WARNING: calling this methods creates a new view in couchdb if it's not present already so don't overuse this
-      def find(clazz, options = {})
-        params = view_parameters(clazz, options)
+      def find(clazz, conditions = {}, view_options = {})
+        params = view_parameters(clazz, conditions, view_options)
         to_instances clazz, query_view!(params)
       end
       
-      def count(clazz, options = {})
-        params = view_parameters(clazz, options)
+      def count(clazz, conditions = {}, view_options = {})
+        params = view_parameters(clazz, conditions, view_options)
         query_view!(params, '_count')['rows'].first.try(:[], 'value') || 0
       end
       
@@ -71,11 +71,11 @@ module CouchPotato
       
       def search_keys(params)
         if params[:search_values].select{|v| v.is_a?(Range)}.any?
-          {:startkey => params[:search_values].map{|v| v.is_a?(Range) ? v.first : v}, :endkey => params[:search_values].map{|v| v.is_a?(Range) ? v.last : v}}
+          {:startkey => params[:search_values].map{|v| v.is_a?(Range) ? v.first : v}, :endkey => params[:search_values].map{|v| v.is_a?(Range) ? v.last : v}}.merge(params[:view_options])
         elsif params[:search_values].select{|v| v.is_a?(Array)}.any?
-          {:keys => prepare_multi_key_search(params[:search_values])}
+          {:keys => prepare_multi_key_search(params[:search_values])}.merge(params[:view_options])
         else
-          {:key => params[:search_values]}
+          {:key => params[:search_values]}.merge(params[:view_options])
         end
       end
       
@@ -89,14 +89,15 @@ module CouchPotato
         end
       end
       
-      def view_parameters(clazz, options)
+      def view_parameters(clazz, conditions, view_options)
         {
           :class => clazz,
           :design_document => clazz.name.underscore,
-          :search_fields => options.to_a.sort_by{|f| f.first.to_s}.map(&:first),
-          :search_values => options.to_a.sort_by{|f| f.first.to_s}.map(&:last),
-          :view => "by_#{view_name(options)}",
-          :view_url => "#{clazz.name.underscore}/by_#{view_name(options)}"
+          :search_fields => conditions.to_a.sort_by{|f| f.first.to_s}.map(&:first),
+          :search_values => conditions.to_a.sort_by{|f| f.first.to_s}.map(&:last),
+          :view_options => view_options,
+          :view => "by_#{view_name(conditions)}",
+          :view_url => "#{clazz.name.underscore}/by_#{view_name(conditions)}"
         }
       end
       

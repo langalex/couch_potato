@@ -5,6 +5,10 @@ module CouchPotato
         Finder.new.find(self, options).first
       end
       
+      def last(options = {})
+        Finder.new.find(self, options, :descending => true).first
+      end
+      
       def all(options = {})
         Finder.new.find(self, options)
       end
