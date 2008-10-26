@@ -7,6 +7,7 @@ require File.dirname(__FILE__) + '/persistence/properties'
 require File.dirname(__FILE__) + '/persistence/callbacks'
 require File.dirname(__FILE__) + '/persistence/json'
 require File.dirname(__FILE__) + '/persistence/bulk_save_queue'
+require File.dirname(__FILE__) + '/persistence/find'
 
 module CouchPotato
   module Persistence
@@ -15,7 +16,7 @@ module CouchPotato
     class UnsavedRecordError < ::Exception; end
     
     def self.included(base)
-      base.send :extend, ClassMethods
+      base.send :extend, ClassMethods, Find
       base.send :include, Callbacks, Properties, Validatable, Json
       base.class_eval do
         attr_accessor :_id, :_rev, :_attachments, :_deleted, :created_at, :updated_at
