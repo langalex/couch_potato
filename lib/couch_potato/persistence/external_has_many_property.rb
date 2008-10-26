@@ -24,10 +24,10 @@ module CouchPotato
         object.send(name).each do |item|
           item.send("#{@owner_clazz.name.underscore}_id=", object.id)
           begin
-            item.bulk_save_queues.push object.bulk_save_queue
+            item.bulk_save_queue.push_queue object.bulk_save_queue
             item.save
           ensure
-            item.bulk_save_queues.pop
+            item.bulk_save_queue.pop_queue
           end
         end
       end
@@ -36,10 +36,10 @@ module CouchPotato
         object.send(name).each do |item|
           if dependent == :destroy
             begin
-              item.bulk_save_queues.push object.bulk_save_queue
+              item.bulk_save_queue.push_queue object.bulk_save_queue
               item.destroy
             ensure
-              item.bulk_save_queues.pop
+              item.bulk_save_queue.pop_queue
             end
           else
             item.send("#{@owner_clazz.name.underscore}_id=", nil)

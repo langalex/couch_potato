@@ -20,20 +20,16 @@ module CouchPotato
       base.send :include, Callbacks, Properties, Validatable, Json
       base.class_eval do
         attr_accessor :_id, :_rev, :_attachments, :_deleted, :created_at, :updated_at
-        attr_reader :bulk_save_queues
+        attr_reader :bulk_save_queue
         alias_method :id, :_id
       end
     end
     
     def initialize(attributes = {})
-      @bulk_save_queues = [BulkSaveQueue.new]
+      @bulk_save_queue = BulkSaveQueue.new
       attributes.each do |name, value|
         self.send("#{name}=", value)
       end if attributes
-    end
-    
-    def bulk_save_queue
-      @bulk_save_queues.last
     end
     
     def attributes=(hash)
@@ -66,8 +62,7 @@ module CouchPotato
       self._deleted = true
       bulk_save_queue << self
       destroy_dependent_objects
-      if own_bulk_save_queue?
-        bulk_save_queue.save 
+      bulk_save_queue.save do |res|
         self._id = nil
         self._rev = nil
       end
@@ -111,8 +106,7 @@ module CouchPotato
       self._id = self.class.db.server.next_uuid rescue Digest::MD5.hexdigest(rand(1000000000000).to_s) # only works with couchdb 0.9
       bulk_save_queue << self
       save_dependent_objects
-      if own_bulk_save_queue?
-        res = bulk_save_queue.save
+      bulk_save_queue.save do |res|
         self._rev = extract_rev(res)
       end
       run_callbacks :after_save
@@ -133,8 +127,7 @@ module CouchPotato
       self.updated_at = Time.now
       bulk_save_queue << self
       save_dependent_objects
-      if own_bulk_save_queue?
-        res = bulk_save_queue.save
+      bulk_save_queue.save do |res|
         self._rev = extract_rev(res)
       end
       run_callbacks :after_save
@@ -152,10 +145,6 @@ module CouchPotato
       self.class.properties.each do |property|
         property.destroy(self)
       end
-    end
-    
-    def own_bulk_save_queue?
-      bulk_save_queues.size == 1
     end
     
     module ClassMethods
