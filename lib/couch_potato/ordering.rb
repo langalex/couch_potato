@@ -26,7 +26,7 @@ module CouchPotato
     MAX = 9999999
     
     def set_position
-      self.position ||= CouchPotato::Persistence::Finder.new.count(self.class, scope_conditions) + 1
+      self.position ||= self.class.count(scope_conditions) + 1
     end
     
     def update_positions
@@ -47,7 +47,7 @@ module CouchPotato
     end
     
     def find_in_positions(from, to)
-      CouchPotato::Persistence::Finder.new.find self.class, scope_conditions.merge(:position => from..to)
+      self.class.all scope_conditions.merge(:position => from..to)
     end
     
     def scope_conditions

@@ -44,11 +44,27 @@ describe 'all' do
     @comment2 = Comment.create! :title => 'title'
   end
   
-  it "should find the first matching object" do
+  it "should find the matching objects" do
     Comment.all(:title =>'title').should == [@comment, @comment2]
   end
   
   it "should return [] if nothing found" do
     Comment.all(:title =>'title2').should == []
+  end
+end
+
+describe 'count' do
+  before(:each) do
+    CouchPotato::Persistence.Db.delete!
+    @comment = Comment.create! :title => 'title'
+    @comment2 = Comment.create! :title => 'title'
+  end
+  
+  it "should count the matching objects" do
+    Comment.count(:title =>'title').should == 2
+  end
+  
+  it "should not count non matching objects" do
+    Comment.count(:title =>'title2').should == 0
   end
 end
