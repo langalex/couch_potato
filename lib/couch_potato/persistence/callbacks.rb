@@ -25,48 +25,70 @@ module CouchPotato
       end
       
       module ClassMethods
-        def before_validation_on_create(name)
-          callbacks[:before_validation_on_create] << name
+        def before_validation_on_create(*names)
+          names.each do |name|
+            callbacks[:before_validation_on_create] << name
+          end
         end
         
-        def before_validation_on_update(name)
-          callbacks[:before_validation_on_update] << name
+        def before_validation_on_update(*names)
+          names.each do |name|
+            callbacks[:before_validation_on_update] << name
+          end
         end
         
-        def before_validation_on_save(name)
-          callbacks[:before_validation_on_save] << name
+        def before_validation_on_save(*names)
+          names.each do |name|
+            callbacks[:before_validation_on_save] << name
+          end
         end
         
-        def before_create(name)
-          callbacks[:before_create] << name
+        def before_create(*names)
+          names.each do |name|
+            callbacks[:before_create] << name
+          end
         end
         
-        def before_save(name)
-          callbacks[:before_save] << name
+        def before_save(*names)
+          names.each do |name|
+            callbacks[:before_save] << name
+          end
         end
         
-        def before_update(name)
-          callbacks[:before_update] << name
+        def before_update(*names)
+          names.each do |name|
+            callbacks[:before_update] << name
+          end
         end
         
-        def before_destroy(name)
-          callbacks[:before_destroy] << name
+        def before_destroy(*names)
+          names.each do |name|
+            callbacks[:before_destroy] << name
+          end
         end
 
-        def after_update(name)
-          callbacks[:after_update] << name
+        def after_update(*names)
+          names.each do |name|
+            callbacks[:after_update] << name
+          end
         end
         
-        def after_save(name)
-          callbacks[:after_save] << name
+        def after_save(*names)
+          names.each do |name|
+            callbacks[:after_save] << name
+          end
         end
         
-        def after_create(name)
-          callbacks[:after_create] << name
+        def after_create(*names)
+          names.each do |name|
+            callbacks[:after_create] << name
+          end
         end
 
-        def after_destroy(name)
-          callbacks[:after_destroy] << name
+        def after_destroy(*names)
+          names.each do |name|
+            callbacks[:after_destroy] << name
+          end
         end
       end
     end

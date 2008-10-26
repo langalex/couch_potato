@@ -26,6 +26,30 @@ class CallbackRecorder
   
 end
 
+describe "multiple callbacks at once" do
+  class Monkey
+    include CouchPotato::Persistence
+    attr_accessor :eaten_banana, :eaten_apple
+    
+    before_create :eat_apple, :eat_banana
+    
+    private
+    
+    def eat_banana
+      self.eaten_banana = true
+    end
+    
+    def eat_apple
+      self.eaten_apple = true
+    end
+  end
+  it "should run all callback methods given to the callback method call" do
+    monkey = Monkey.create!
+    monkey.eaten_banana.should be_true
+    monkey.eaten_apple.should be_true
+  end
+end
+
 describe 'create callbacks' do
   
   before(:each) do
