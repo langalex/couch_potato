@@ -3,9 +3,9 @@
 * create a couchdb.yml file in your RAILS_ROOT/config diretory that looks like this:
   
 # couchdb.yml
-- test: test_db_name
-- development: development_db_name
-- production: production_db_name
+test: test_db_name
+development: development_db_name
+production: production_db_name
 
 = Required Gems =
 * validatable, json, couchrest, activesupport
