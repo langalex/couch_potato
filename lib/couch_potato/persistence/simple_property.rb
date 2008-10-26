@@ -5,7 +5,12 @@ module CouchPotato
       
       def initialize(owner_clazz, name, options = {})
         self.name = name
-        owner_clazz.send :attr_accessor, name
+        owner_clazz.class_eval do
+          attr_accessor name
+          define_method "#{name}?" do
+            !self.send(name).nil? && !self.send(name).try(:blank?)
+          end
+        end
       end
       
       def build(object, json)

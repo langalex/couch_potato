@@ -25,4 +25,22 @@ describe 'properties' do
     c = Comment.find c.id
     c.title.should == {'key' => 'value'}
   end
+  
+  describe "predicate" do
+    it "should return true if property set" do
+      Comment.new(:title => 'title').title?.should be_true
+    end
+    
+    it "should return false if property nil" do
+      Comment.new.title?.should be_false
+    end
+    
+    it "should return false if property false" do
+      Comment.new(:title => false).title?.should be_false
+    end
+    
+    it "should return false if property blank" do
+      Comment.new(:title => '').title?.should be_false
+    end
+  end
 end
