@@ -26,8 +26,7 @@ module CouchPotato
         raise 'implement me in a subclass'
       end
       
-      delegate :[], :<<, :empty?, :any?, :each, :+, :size, :first, :last, :map, :inject, :join, :clear, :to => :items
-      
+      delegate :[], :<<, :empty?, :any?, :each, :+, :size, :first, :last, :map, :inject, :join, :clear, :select, :reject, :to => :items
       
     end
   end

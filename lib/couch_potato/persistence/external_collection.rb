@@ -48,7 +48,6 @@ module CouchPotato
           item.destroy
         end
       end
-      
     end
   end
 end
