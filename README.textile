@@ -76,7 +76,7 @@ Couch Potato uses the validatable library for vaidation (http://validatable.ruby
 
 h4. Finding stuff
 
-For running finds (e.g. creating/querying views) as of now there is only the CouchPotato::Persistence::Finder class which allows you do basic searches:
+For running basic finds (e.g. creating/querying views) you can either use the CouchPotato::Persistence::Finder class:
 
   user = User.create! :first_name => 'joe'
   Finder.new.find User, :first_name => 'joe' # => [user]
@@ -86,8 +86,13 @@ You can also count:
   user = User.create! :first_name => 'joe'
   Finder.new.count User, :first_name => 'joe' # => 1
   
+Or you can call first/all/count on a class persistent class which will call the Finder.find, e.g.:
 
-Be warned though that executing this find method will generate a new view for every new combination of class and attribute names it gets called with, so you really don't want to use this in a console on a production system.
+  User.first :login => 'alex'
+  User.all
+  User.count :activated => true
+
+Be warned though that executing these finder methods will generate a new view for every new combination of class and attribute names it gets called with, so you really don't want to use this in a console on a production system.
 
 Support for more sophisticated views will be added later.
 
