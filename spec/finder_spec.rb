@@ -11,6 +11,24 @@ describe CouchPotato::Persistence::Finder, 'find' do
     CouchPotato::Persistence.Db.delete!
   end
   
+  describe "couchdb 0.9+" do
+    it "should find items by an array of values" do
+      c1 = Comment.create! :title => 'test', :commenter_id => '1'
+      c2 = Comment.create! :title => 'test', :commenter_id => '2'
+      c3 = Comment.create! :title => 'test', :commenter_id => '3'
+      comments = CouchPotato::Persistence::Finder.new.find Comment, :commenter_id => ['2', '3']
+      comments.should == [c2, c3]
+    end
+    
+    it "should find items by an array of values combined with other attributes" do
+      c1 = Comment.create! :title => 'test', :commenter_id => '1'
+      c2 = Comment.create! :title => 'test', :commenter_id => '2'
+      c3 = Comment.create! :title => 'test2', :commenter_id => '3'
+      comments = CouchPotato::Persistence::Finder.new.find Comment, :commenter_id => ['2', '3'], :title => 'test'
+      comments.should == [c2]
+    end
+  end
+  
   it "should find objects with a given attribute value pair" do
     c1 = Comment.create! :title => 'test', :commenter_id => '1'
     c2 = Comment.create! :title => 'test', :commenter_id => '2'

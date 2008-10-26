@@ -166,6 +166,12 @@ module CouchPotato
         instance
       end
       
+      def create(attributes = {})
+        instance = self.new attributes
+        instance.save
+        instance
+      end
+      
       def get(id)
         begin
           self.json_create db.get(id)

@@ -8,4 +8,4 @@ development: development_db_name
 production: production_db_name
 
 = Required Gems =
-* validatable, json, couchrest, activesupport
+* validatable, json, couchrest >= 0.9.12, activesupport

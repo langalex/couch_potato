@@ -78,8 +78,11 @@ h4. Finding stuff
 
 For running basic finds (e.g. creating/querying views) you can either use the CouchPotato::Persistence::Finder class:
 
-  user = User.create! :first_name => 'joe'
-  Finder.new.find User, :first_name => 'joe' # => [user]
+  joe = User.create! :first_name => 'joe', :position => 1
+  jane = User.create! :first_name => 'jane', :position => 2
+  Finder.new.find User, :first_name => 'joe' # => [joe]
+  Finder.new.find User, :first_name => ['joe', 'jane'] # => [joe, jane]
+  Finder.new.find User, :position => 1..2 # => [joe, jane]
   
 You can also count:
 

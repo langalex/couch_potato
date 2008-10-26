@@ -72,8 +72,20 @@ module CouchPotato
       def search_keys(params)
         if params[:search_values].select{|v| v.is_a?(Range)}.any?
           {:startkey => params[:search_values].map{|v| v.is_a?(Range) ? v.first : v}, :endkey => params[:search_values].map{|v| v.is_a?(Range) ? v.last : v}}
+        elsif params[:search_values].select{|v| v.is_a?(Array)}.any?
+          {:keys => prepare_multi_key_search(params[:search_values])}
         else
           {:key => params[:search_values]}
+        end
+      end
+      
+      def prepare_multi_key_search(values)
+        array = values.select{|v| v.is_a?(Array)}.first
+        index = values.index array
+        array.map do |item|
+          copy = values.dup
+          copy[index] = item
+          copy
         end
       end
       
@@ -89,7 +101,7 @@ module CouchPotato
       end
       
       def view_name(options)
-        options.to_a.map(&:first).join('_and_')
+        options.to_a.sort_by{|f| f.first.to_s}.map(&:first).join('_and_')
       end
     end
   end
