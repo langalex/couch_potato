@@ -10,4 +10,8 @@ spec = Gem::Specification.new do |s|
     s.summary   =   "a couchdb persistence layer in ruby"
     s.files     =   FileList['lib/**/*.rb', 'spec/*', 'init.rb', 'Readme.textile', 'MIT-LICENSE.txt', 'CREDITS'].to_a
     s.require_paths  <<  "lib"
+    s.add_dependency('json')
+    s.add_dependency('validatable')
+    s.add_dependency('activesupport')
+    s.add_dependency 'jchris-couchrest', '>=0.9.12'
 end
