@@ -90,7 +90,7 @@ module CouchPotato
     end
     
     def ==(other)
-      other.class == self.class && self.class.property_names.map{|name| self.send(name)} == self.class.property_names.map{|name| other.send(name)}
+      other.class == self.class && self.to_json == other.to_json
     end
     
     private

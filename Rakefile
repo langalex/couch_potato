@@ -3,11 +3,18 @@ require 'rake/gempackagetask'
 
 task :default => :spec
 
-desc "Run all specs in spec directory"
-Spec::Rake::SpecTask.new(:spec) do |t|
+desc "Run all functional specs"
+Spec::Rake::SpecTask.new(:spec_functional) do |t|
   t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
-  t.spec_files = FileList['spec/**/*_spec.rb']
+  t.spec_files = FileList['spec/*_spec.rb']
 end
+
+desc "Run all unit specs"
+Spec::Rake::SpecTask.new(:spec_unit) do |t|
+  t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
+  t.spec_files = FileList['spec/unit/*_spec.rb']
+end
+
 
 spec = Gem::Specification.new do |s|
     s.name      =   "couch_potato"

@@ -147,6 +147,12 @@ As CouchDB can not only store flat structures you also store associations inline
 
 This will store the addresses of the user as an array within your CouchDB document.
 
+You can also find stuff on associations (not the :stored => :inline):
+
+  user.addresses.all :street => 'potato way'
+  
+... returns only adresses belonging to this user instance and also matching the given conditions. You can call #count a well, #first and #last are not implemented here since those collide with the methods in Enumerable.
+
 h5. callbacks
 
 Couch Potato supports the usual lifecycle callbacks known from ActiveRecord:

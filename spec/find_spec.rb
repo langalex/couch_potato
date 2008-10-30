@@ -26,7 +26,6 @@ describe 'first' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
     @comment = Comment.create! :title => 'title'
-    Comment.create! :title => 'title3'
   end
   
   it "should find the first matching object" do
@@ -41,7 +40,6 @@ end
 describe 'last' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
-    Comment.create! :title => 'title'
     @comment = Comment.create! :title => 'title'
   end
   
@@ -63,7 +61,10 @@ describe 'all' do
   end
   
   it "should find the matching objects" do
-    Comment.all(:title =>'title').should == [@comment, @comment2]
+    comments = Comment.all(:title =>'title')
+    comments.size.should == 2
+    comments.should include(@comment)
+    comments.should include(@comment2)
   end
   
   it "should return [] if nothing found" do

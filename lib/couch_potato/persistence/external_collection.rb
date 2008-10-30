@@ -13,6 +13,14 @@ module CouchPotato
         @owner_id_attribute_name = owner_id_attribute_name
       end
       
+      def all(options = {}, view_options = {})
+        Finder.new.find @item_class, options.merge(@owner_id_attribute_name => @owner_id), view_options
+      end
+      
+      def count(options = {}, view_options = {})
+        Finder.new.count @item_class, options.merge(@owner_id_attribute_name => @owner_id), view_options
+      end
+      
       def build(attributes = {})
         item = @item_class.new(attributes)
         self.<< item

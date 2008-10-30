@@ -59,6 +59,27 @@ describe 'has_many stored separately' do
     @commenter.comments.first.title.should == 'my title'
   end
   
+  describe "find" do
+    it "should find all dependent objects" do
+      @commenter = Commenter.create!
+      comment1 = @commenter.comments.create! :title => 'my title'
+      comment2 = @commenter.comments.create! :title => 'my title'
+      @commenter.comments.create! :title => 'my title2'
+      comments = @commenter.comments.all(:title => 'my title')
+      comments.size.should == 2
+      comments.should include(comment1)
+      comments.should include(comment2)
+    end
+    
+    it "should count the dependent objects" do
+      @commenter = Commenter.create!
+      @commenter.comments.create! :title => 'my title'
+      @commenter.comments.create! :title => 'my title'
+      @commenter.comments.create! :title => 'my title2'
+      @commenter.comments.count(:title => 'my title').should == 2
+    end
+  end
+  
   describe "create" do
     it "should persist child objects" do
       @commenter.comments.build(:title => 'my title')
