@@ -279,7 +279,7 @@ h3. Helping out
 
 Please fix bugs, add more specs, implement new features by forking the github repo at http://github.com/langalex/couch_potato.
 
-You can run all the specs by calling rake with no options in the root folder of Couch Potato. The specs require a running CouchDB instance at http://localhost:5984
+You can run all the specs by calling 'rake spec_unit' and 'rake spec_functional' in the root folder of Couch Potato. The specs require a running CouchDB instance at http://localhost:5984
 
 I will only accept patches that are covered by specs - sorry.
 
