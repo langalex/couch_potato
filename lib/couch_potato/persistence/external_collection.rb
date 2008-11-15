@@ -52,8 +52,17 @@ module CouchPotato
         item
       end
       
+      def dirty?
+        return unless @items
+        @original_item_ids != @items.map(&:_id) || @items.inject(false) {|res, item| res || item.dirty?}
+      end
+      
       def items
-        @items ||= Finder.new.find @item_class, @owner_id_attribute_name => owner_id
+        unless @items
+          @items = Finder.new.find @item_class, @owner_id_attribute_name => owner_id
+          @original_item_ids = @items.map(&:_id)
+        end
+        @items
       end
       
       def save
@@ -64,7 +73,7 @@ module CouchPotato
       end
       
       def destroy
-        @items.each do |item|
+        items.each do |item|
           item.destroy
         end
       end

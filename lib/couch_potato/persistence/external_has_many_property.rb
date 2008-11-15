@@ -19,6 +19,10 @@ module CouchPotato
         owner_clazz.class_eval getter
       end
       
+      def dirty?(object)
+        object.send("#{name}").dirty?
+      end
+      
       def save(object)
         object.send(name).owner_id = object._id
         object.send(name).each do |item|

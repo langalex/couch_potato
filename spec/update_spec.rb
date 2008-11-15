@@ -8,6 +8,7 @@ describe "create" do
   
   it "should update the revision" do
     old_rev = @comment._rev
+    @comment.title = 'xyz'
     @comment.save!
     @comment._rev.should_not == old_rev
     @comment._rev.should_not be_nil
@@ -21,6 +22,7 @@ describe "create" do
   
   it "should update updated at" do
     old_updated_at = @comment.updated_at
+    @comment.title = 'xyz'
     @comment.save!
     @comment.updated_at.should > old_updated_at
   end

@@ -19,6 +19,10 @@ class InlineHasManyProperty
     end
   end
   
+  def dirty?(object)
+    object.send("#{name}").dirty?
+  end
+  
   def save(object)
     
   end

@@ -134,38 +134,37 @@ describe "update callbacks" do
   
   before(:each) do
     @recorder = CallbackRecorder.create! :required_property => 1
+    @recorder.required_property = 2
     @recorder.callbacks.clear
   end
   
   describe "successful update" do
     
-    it "should call before_validation_on_update" do
+    before(:each) do
       @recorder.save!
+    end
+    
+    it "should call before_validation_on_update" do
       @recorder.callbacks.should include(:before_validation_on_update)
     end
     
     it "should call before_validation_on_save" do
-      @recorder.save!
       @recorder.callbacks.should include(:before_validation_on_save)
     end
     
     it "should call before_save" do
-      @recorder.save!
       @recorder.callbacks.should include(:before_save)
     end
     
     it "should call after_save" do
-      @recorder.save!
       @recorder.callbacks.should include(:after_save)
     end
     
     it "should call before_update" do
-      @recorder.save!
       @recorder.callbacks.should include(:before_update)
     end
     
     it "should call after_update" do
-      @recorder.save!
       @recorder.callbacks.should include(:after_update)
     end
     
@@ -175,35 +174,30 @@ describe "update callbacks" do
     
     before(:each) do
        @recorder.required_property = nil
+       @recorder.save
     end
     
     it "should call before_validation_on_update" do
-      @recorder.save
       @recorder.callbacks.should include(:before_validation_on_update)
     end
     
     it "should call before_validation_on_save" do
-      @recorder.save
       @recorder.callbacks.should include(:before_validation_on_save)
     end
     
     it "should not call before_save" do
-      @recorder.save
       @recorder.callbacks.should_not include(:before_save)
     end
     
     it "should not call after_save" do
-      @recorder.save
       @recorder.callbacks.should_not include(:after_save)
     end
     
     it "should not call before_update" do
-      @recorder.save
       @recorder.callbacks.should_not include(:before_update)
     end
     
     it "should not call after_update" do
-      @recorder.save
       @recorder.callbacks.should_not include(:after_update)
     end
     

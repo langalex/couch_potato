@@ -71,15 +71,11 @@ module CouchPotato
   end
   
   module ExternalCollectionOrderedFindExtension
-    def self.included(base)
-      base.class_eval do
-        def items
-          if @item_class.property_names.include?(:position)
-            @items ||= CouchPotato::Persistence::Finder.new.find @item_class, @owner_id_attribute_name => owner_id, :position => 1..CouchPotato::Ordering::MAX
-          else
-            @items ||= CouchPotato::Persistence::Finder.new.find @item_class, @owner_id_attribute_name => owner_id
-          end
-        end
+    def items
+      if @item_class.property_names.include?(:position)
+        super @item_class, @owner_id_attribute_name => owner_id, :position => 1..CouchPotato::Ordering::MAX
+      else
+        super
       end
     end
   end

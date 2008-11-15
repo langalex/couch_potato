@@ -8,6 +8,7 @@ require File.dirname(__FILE__) + '/persistence/callbacks'
 require File.dirname(__FILE__) + '/persistence/json'
 require File.dirname(__FILE__) + '/persistence/bulk_save_queue'
 require File.dirname(__FILE__) + '/persistence/find'
+require File.dirname(__FILE__) + '/persistence/dirty_attributes'
 
 module CouchPotato
   module Persistence
@@ -17,7 +18,7 @@ module CouchPotato
     
     def self.included(base)
       base.send :extend, ClassMethods, Find
-      base.send :include, Callbacks, Properties, Validatable, Json
+      base.send :include, Callbacks, Properties, Validatable, Json, DirtyAttributes
       base.class_eval do
         attr_accessor :_id, :_rev, :_attachments, :_deleted, :created_at, :updated_at
         attr_reader :bulk_save_queue

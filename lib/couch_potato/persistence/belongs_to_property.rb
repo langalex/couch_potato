@@ -23,6 +23,10 @@ module CouchPotato
         
       end
       
+      def dirty?(object)
+        false
+      end
+      
       def destroy(object)
         
       end

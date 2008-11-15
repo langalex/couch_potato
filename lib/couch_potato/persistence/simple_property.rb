@@ -6,15 +6,35 @@ module CouchPotato
       def initialize(owner_clazz, name, options = {})
         self.name = name
         owner_clazz.class_eval do
-          attr_accessor name
+          attr_reader name, "#{name}_was"
+          
+          def initialize(attributes = {})
+            super attributes
+            attributes.each do |name, value|
+              self.instance_variable_set("@#{name}_was", value)
+            end if attributes
+          end
+          
+          define_method "#{name}=" do |value|
+            self.instance_variable_set("@#{name}", value)
+          end
+          
           define_method "#{name}?" do
             !self.send(name).nil? && !self.send(name).try(:blank?)
+          end
+          
+          define_method "#{name}_changed?" do
+            self.send(name) != self.send("#{name}_was")
           end
         end
       end
       
       def build(object, json)
         object.send "#{name}=", json.stringify_keys[name.to_s]
+      end
+      
+      def dirty?(object)
+        object.send("#{name}_changed?")
       end
       
       def save(object)
