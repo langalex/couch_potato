@@ -227,3 +227,11 @@ describe "destroy callbacks" do
     @recorder.callbacks.should include(:after_destroy)
   end
 end
+
+describe 'save_without_callbacks' do
+  it "should not run any callbacks" do
+    @recorder = CallbackRecorder.new
+    @recorder.save_without_callbacks
+    @recorder.callbacks.should be_empty
+  end
+end

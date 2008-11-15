@@ -5,6 +5,7 @@ module CouchPotato
         base.extend ClassMethods
         
         base.class_eval do
+          attr_accessor :skip_callbacks
           def self.callbacks
             @@callbacks ||= {}
             @@callbacks[self.name] ||= {:before_validation_on_create => [], 
@@ -16,9 +17,17 @@ module CouchPotato
         end
       end
       
+      def save_without_callbacks
+        self.skip_callbacks = true
+        result = save
+        self.skip_callbacks = false
+        result
+      end
+      
       private
       
       def run_callbacks(name)
+        return if skip_callbacks
         self.class.callbacks[name].each do |callback|
           self.send callback
         end

@@ -36,7 +36,7 @@ module CouchPotato
         copy._id = nil
         copy._rev = nil
         copy.master_version_id = self._id
-        copy.save
+        copy.save_without_callbacks
         self.master_version_id ||= self.id
         self.version += 1
       end
