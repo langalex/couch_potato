@@ -22,7 +22,7 @@ end
 
 spec = Gem::Specification.new do |s|
     s.name      =   "couch_potato"
-    s.version   =   "0.1"
+    s.version   =   "0.1.1"
     s.author    =   "Alexander Lang"
     s.email     =   "alex@upstream-berlin.com"
     s.homepage  = 'http://github.com/langalex/couch_potato'

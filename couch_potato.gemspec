@@ -4,11 +4,12 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport", [">= 0"]
   s.add_dependency "jchris-couchrest", [">= 0.9.12"]
   s.require_paths = ["lib", "lib"]
-  s.date = "Mon Oct 27 00:00:00 +0100 2008"
+  s.date = "Sat Nov 15 00:00:00 +0100 2008"
   s.authors = ["Alexander Lang"]
   s.name = "couch_potato"
   s.required_rubygems_version = ">= 0"
-  s.files = ["README.textile",
+  s.files = ["init.rb",
+ "Readme.textile",
  "MIT-LICENSE.txt",
  "CREDITS",
  "lib/core_ext",
@@ -23,6 +24,7 @@ Gem::Specification.new do |s|
  "lib/couch_potato/persistence/bulk_save_queue.rb",
  "lib/couch_potato/persistence/callbacks.rb",
  "lib/couch_potato/persistence/collection.rb",
+ "lib/couch_potato/persistence/dirty_attributes.rb",
  "lib/couch_potato/persistence/external_collection.rb",
  "lib/couch_potato/persistence/external_has_many_property.rb",
  "lib/couch_potato/persistence/find.rb",
@@ -35,12 +37,12 @@ Gem::Specification.new do |s|
  "lib/couch_potato/persistence.rb",
  "lib/couch_potato/versioning.rb",
  "lib/couch_potato.rb",
- "rails/init.rb",
  "spec/attributes_spec.rb",
  "spec/belongs_to_spec.rb",
  "spec/callbacks_spec.rb",
  "spec/create_spec.rb",
  "spec/destroy_spec.rb",
+ "spec/dirty_attributes_spec.rb",
  "spec/find_spec.rb",
  "spec/finder_spec.rb",
  "spec/has_many_spec.rb",
@@ -50,6 +52,9 @@ Gem::Specification.new do |s|
  "spec/reload_spec.rb",
  "spec/spec.opts",
  "spec/spec_helper.rb",
+ "spec/unit",
+ "spec/unit/external_collection_spec.rb",
+ "spec/unit/finder_spec.rb",
  "spec/update_spec.rb",
  "spec/versioning_spec.rb"]
   s.has_rdoc = "false"
@@ -62,5 +67,5 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/langalex/couch_potato"
   s.platform = "ruby"
   s.summary = "a couchdb persistence layer in ruby"
-  s.version = "0.1"
+  s.version = "0.1.1"
 end
