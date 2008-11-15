@@ -9,7 +9,7 @@ describe CouchPotato::Persistence::ExternalCollection, 'all' do
   end
   
   it "should delegate to a new finder" do
-    @finder.should_receive(:find).with(Comment, {:commenter_id => 3}, {})
+    @finder.should_receive(:find).with(Comment, {:commenter_id => 3})
     @collection.all
   end
   

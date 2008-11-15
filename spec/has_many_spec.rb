@@ -59,25 +59,60 @@ describe 'has_many stored separately' do
     @commenter.comments.first.title.should == 'my title'
   end
   
-  describe "find" do
-    it "should find all dependent objects" do
-      @commenter = Commenter.create!
-      comment1 = @commenter.comments.create! :title => 'my title'
-      comment2 = @commenter.comments.create! :title => 'my title'
-      @commenter.comments.create! :title => 'my title2'
-      comments = @commenter.comments.all(:title => 'my title')
+  describe "all" do
+    it "should find all dependent objects by search conditions" do
+      commenter = Commenter.create!
+      comment1 = commenter.comments.create! :title => 'my title'
+      comment2 = commenter.comments.create! :title => 'my title'
+      commenter.comments.create! :title => 'my title2'
+      comments = commenter.comments.all(:title => 'my title')
       comments.size.should == 2
       comments.should include(comment1)
       comments.should include(comment2)
     end
     
-    it "should count the dependent objects" do
+    it "should return all dependent objects" do
       @commenter = Commenter.create!
-      @commenter.comments.create! :title => 'my title'
-      @commenter.comments.create! :title => 'my title'
-      @commenter.comments.create! :title => 'my title2'
-      @commenter.comments.count(:title => 'my title').should == 2
+      comment1 = @commenter.comments.create! :title => 'my title'
+      comment2 = @commenter.comments.create! :title => 'my title2'
+      comments = @commenter.comments.all
+      comments.size.should == 2
+      comments.should include(comment1)
+      comments.should include(comment2)
+    end    
+  end
+  
+  describe "count" do
+    it "should count the dependent objects by search criteria" do
+      commenter = Commenter.create!
+      commenter.comments.create! :title => 'my title'
+      commenter.comments.create! :title => 'my title'
+      commenter.comments.create! :title => 'my title2'
+      commenter.comments.count(:title => 'my title').should == 2
     end
+    
+    it "should count all dependent objects" do
+      commenter = Commenter.create!
+      commenter.comments.create! :title => 'my title'
+      commenter.comments.create! :title => 'my title'
+      commenter.comments.create! :title => 'my title2'
+      commenter.comments.count.should == 3
+    end
+  end
+  
+  describe "first" do
+    it "should find the first dependent object by search conditions" do
+      commenter = Commenter.create!
+      comment1 = commenter.comments.create! :title => 'my title'
+      comment2 = commenter.comments.create! :title => 'my title2'
+      commenter.comments.first(:title => 'my title2').should == comment2
+    end
+    
+    it "should return the first dependent object" do
+      comment1 = @commenter.comments.build :title => 'my title'
+      comment2 = @commenter.comments.build :title => 'my title2'
+      @commenter.comments.first.should == comment1
+    end    
   end
   
   describe "create" do

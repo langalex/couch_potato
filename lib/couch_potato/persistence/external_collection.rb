@@ -14,7 +14,19 @@ module CouchPotato
       end
       
       def all(options = {}, view_options = {})
-        Finder.new.find @item_class, options.merge(@owner_id_attribute_name => @owner_id), view_options
+        if options.empty? && view_options.empty?
+          items
+        else
+          Finder.new.find @item_class, options.merge(@owner_id_attribute_name => @owner_id), view_options
+        end
+      end
+      
+      def first(options = {}, view_options = {})
+        if options.empty? && view_options.empty?
+          items.first
+        else
+          Finder.new.find(@item_class, options.merge(@owner_id_attribute_name => @owner_id), view_options).first
+        end
       end
       
       def count(options = {}, view_options = {})
