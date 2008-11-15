@@ -38,6 +38,11 @@ module CouchPotato
       end
     end
     
+    def update_attributes(hash)
+      self.attributes = hash
+      save
+    end
+    
     def attributes
       self.class.properties.inject({}) do |res, property|
         property.serialize(res, self)
