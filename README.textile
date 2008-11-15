@@ -38,9 +38,8 @@ Add to your config/environment.rb:
 
   config.gem 'langalex-couch_potato', :lib => 'couch_potato', :source => 'http://gems.github.com'
 
-Then create a RAILS_ROOT/config/couchdb.yml file that looks like this:
+Then create a RAILS_ROOT/config/couchdb.yml:
 
-  # couchdb.yml
   development: development_db_name
   test: test_db_name
   production: production_db_name
