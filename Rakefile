@@ -15,6 +15,10 @@ Spec::Rake::SpecTask.new(:spec_unit) do |t|
   t.spec_files = FileList['spec/unit/*_spec.rb']
 end
 
+desc "Run all specs"
+task :spec => [:spec_unit, :spec_functional] do
+  
+end
 
 spec = Gem::Specification.new do |s|
     s.name      =   "couch_potato"
