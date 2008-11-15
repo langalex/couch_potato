@@ -24,19 +24,28 @@ Couch Potato is hosted as a gem on github which you can install like this:
   sudo gem source --add http://gems.github.com # if you haven't alread
   sudo gem install langalex-couch_potato
   
-To use it in your ruby application:
+h4. Using with your ruby application:
 
   require 'rubygems'
   gem 'couch_potato'
   require 'couch_potato'
   CouchPotato::Config.database_name = 'name of the db'
   
-Alternatively you can download or clone the source repository and then require lib/couhc_potato.rb. If you are using Rails you can also install Couch Potato directly as a plugin. Then create a RAILS_ROOT/config/couchdb.yml file that looks like this:
+Alternatively you can download or clone the source repository and then require lib/couhc_potato.rb. 
 
- # couchdb.yml
- test: test_db_name
- development: development_db_name
- production: production_db_name
+h4. Using with Rails
+
+Add to your config/environment.rb:
+
+  config.gem 'langalex-couch_potato', :lib => 'couch_potato', :source => 'http://gems.github.com'
+
+Then create a config/couchdb.yml:
+
+  development: development_db_name
+  test: test_db_name
+  production: production_db_name
+
+Alternatively you can also install Couch Potato directly as a plugin. 
  
 h3. Introduction
 
