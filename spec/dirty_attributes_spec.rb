@@ -24,24 +24,55 @@ describe 'dirty attribute tracking' do
     end
   end
   
-  describe "access old values" do
-    it "should return the old value" do
-      plate = Plate.create! :food => 'sushi'
-      plate.food = 'burger'
-      plate.food_was.should == 'sushi'
+  describe "newly created object" do
+    
+    before(:each) do
+      @plate = Plate.new :food => 'sushi'
+    end
+    
+    describe "access old values" do
+      it "should return the old value" do
+        @plate.food = 'burger'
+        @plate.food_was.should == 'sushi'
+      end
+    end
+
+    describe "check for dirty" do
+      it "should return true if attribute changed" do
+        @plate.food = 'burger'
+        @plate.should be_food_changed
+      end
+
+      it "should return false if attribute not changed" do
+        @plate.should_not be_food_changed
+      end
     end
   end
   
-  describe "check for dirty" do
-    it "should return try if attribute changed" do
-      plate = Plate.create! :food => 'sushi'
-      plate.food = 'burger'
-      plate.should be_food_changed
+  describe "object loaded from database" do
+    before(:each) do
+      @plate = Plate.create! :food => 'sushi'
+      @plate = Plate.get @plate._id
     end
     
-    it "should return false if attribute not changed" do
-      plate = Plate.create! :food => 'sushi'
-      plate.should_not be_food_changed
+    describe "access old values" do
+      it "should return the old value" do
+        @plate.food = 'burger'
+        @plate.food_was.should == 'sushi'
+      end
+    end
+
+    describe "check for dirty" do
+      it "should return true if attribute changed" do
+        @plate.food = 'burger'
+        @plate.should be_food_changed
+      end
+
+      it "should return false if attribute not changed" do
+        @plate.should_not be_food_changed
+      end
     end
   end
+  
+  
 end

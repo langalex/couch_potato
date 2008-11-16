@@ -15,6 +15,14 @@ module CouchPotato
             end if attributes
           end
           
+          def self.json_create(json)
+            instance = super
+            instance.attributes.each do |name, value|
+              instance.instance_variable_set("@#{name}_was", value)
+            end
+            instance
+          end
+          
           define_method "#{name}=" do |value|
             self.instance_variable_set("@#{name}", value)
           end
