@@ -12,11 +12,20 @@ module CouchPotato
           
           def #{name}=(value)
             @#{name} = value
-            @#{name}_id = value.id
+            if value.nil?
+              @#{name}_id = nil
+            else
+              @#{name}_id = value.id
+            end
+          end
+          
+          def #{name}_id=(id)
+            @#{name}_id = id
+            @#{name} = nil if id.nil?
           end
         ACCESSORS
         owner_clazz.class_eval accessors
-        owner_clazz.send :attr_accessor, "#{name}_id"
+        owner_clazz.send :attr_reader, "#{name}_id"
       end
       
       def save(object)

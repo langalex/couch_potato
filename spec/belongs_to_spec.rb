@@ -25,6 +25,20 @@ describe 'belongs_to' do
     c.commenter_id.should == @commenter.id
   end
   
+  it "should unassign the parent object" do
+    c = Comment.new :title => 'title', :commenter => stub('comenter', :id => 1)
+    c.commenter = nil
+    c.commenter.should be_nil
+    c.commenter_id.should be_nil
+  end
+  
+  it "should unassign the parent object id" do
+    c = Comment.new :title => 'title', :commenter => stub('comenter', :id => 1)
+    c.commenter_id = nil
+    c.commenter.should be_nil
+    c.commenter_id.should be_nil
+  end
+  
   it "should persist the link to the parent object" do
     c = Comment.new :title => 'title'
     c.commenter_id = @commenter.id

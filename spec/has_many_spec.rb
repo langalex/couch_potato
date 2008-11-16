@@ -178,7 +178,6 @@ describe 'has_many stored separately' do
     end
   end
   
-  
   describe "destroy" do
     
     class AdminComment
