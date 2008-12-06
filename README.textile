@@ -162,7 +162,7 @@ You can also find stuff on associations (not the :stored => :inline):
   
 ... returns only adresses belonging to this user instance and also matching the given conditions. You can call #count a well, #first and #last are not implemented here since those collide with the methods in Enumerable.
 
-h5. callbacks
+h4. callbacks
 
 Couch Potato supports the usual lifecycle callbacks known from ActiveRecord:
 
@@ -202,6 +202,49 @@ If you want to do any CouchDB update/create/delete operation in your callback me
       bulk_save_queue << Comment.new(:body => 'i was updated')
     end
   end
+  
+h4. Custom Views
+
+*This is still in very early in development and of limited use*
+
+This is useful if you have a set of documents that has not been created with Couch Potato, for example doesn't have a ruby_class attribute but you still want to be able to load those documents as instances of a Couch Potato class.
+
+Example: Assuming you have a document like this:
+
+{name: "joe"}
+
+And a class:
+
+  class User
+    include CouchPotato::Persistence
+    property :name
+  end
+
+To be able to load that user all you have to do is this:
+  
+  class User
+    ...
+    
+    view :everyone
+  end
+  
+  User.everyone
+
+This will load all documents in your database as instances of User and assign their _id and name attributes.
+
+If you have larger structures and you only want to load some attributes you can customize the view:
+
+  {name: "joe", bio: "52 pages of text ...."}
+
+  class User
+    property :name
+    property :bio
+    
+    view :everyone, :properties => [:name]
+  end
+  
+  User.everyone.first.name # => "joe"
+  User.everyone.first.bio # => nil
 
 
 h4. Versioning
