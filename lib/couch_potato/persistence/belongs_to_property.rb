@@ -7,7 +7,8 @@ module CouchPotato
         self.name = name
         accessors =  <<-ACCESSORS
           def #{name}
-            @#{name} || @#{name}_id ? #{item_class_name}.find(@#{name}_id) : nil
+            return @#{name} if instance_variable_defined?(:@#{name})
+            @#{name} = @#{name}_id ? #{item_class_name}.find(@#{name}_id) : nil
           end
           
           def #{name}=(value)
@@ -20,8 +21,8 @@ module CouchPotato
           end
           
           def #{name}_id=(id)
+            remove_instance_variable(:@#{name}) if instance_variable_defined?(:@#{name})
             @#{name}_id = id
-            @#{name} = nil if id.nil?
           end
         ACCESSORS
         owner_clazz.class_eval accessors
