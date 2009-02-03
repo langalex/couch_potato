@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe 'destroy' do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+  
   before(:each) do
     @comment = Comment.create! :title => 'title'
     @comment_id = @comment.id

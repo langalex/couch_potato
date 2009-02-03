@@ -19,6 +19,10 @@ describe 'reload' do
     property :name
   end
   
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+  
   it "should reload simple properties" do
     table = Table.create! :rows => 3
     table.rows = 4

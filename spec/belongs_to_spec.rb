@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe 'belongs_to' do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+  
   before(:each) do
     @commenter = Commenter.create!
   end

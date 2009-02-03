@@ -36,7 +36,7 @@ module CouchPotato
           instance._id = json['_id']
           instance._rev = json['_rev']
           properties.each do |property|
-            property.build(instance, json)
+            property.build(instance, json) unless property.is_a?(ExternalHasManyProperty)
           end
           instance
         end

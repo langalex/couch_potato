@@ -13,6 +13,7 @@ end
 describe 'custom view' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
   end
   
   it "should return instances of the class" do

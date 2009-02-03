@@ -27,6 +27,9 @@ class CallbackRecorder
 end
 
 describe "multiple callbacks at once" do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
   class Monkey
     include CouchPotato::Persistence
     attr_accessor :eaten_banana, :eaten_apple
@@ -51,6 +54,9 @@ describe "multiple callbacks at once" do
 end
 
 describe 'create callbacks' do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
   
   before(:each) do
     @recorder = CallbackRecorder.new
@@ -131,6 +137,9 @@ describe 'create callbacks' do
 end
 
 describe "update callbacks" do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
   
   before(:each) do
     @recorder = CallbackRecorder.create! :required_property => 1
@@ -206,6 +215,10 @@ describe "update callbacks" do
 end
 
 describe "destroy callbacks" do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+  
   before(:each) do
     @recorder = CallbackRecorder.create! :required_property => 1
     @recorder.callbacks.clear
@@ -223,6 +236,10 @@ describe "destroy callbacks" do
 end
 
 describe 'save_without_callbacks' do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+  
   it "should not run any callbacks" do
     @recorder = CallbackRecorder.new
     @recorder.save_without_callbacks

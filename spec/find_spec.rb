@@ -1,6 +1,9 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "find" do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
   before(:each) do
     @comment = Comment.create! :title => 'title'
   end
@@ -25,6 +28,7 @@ end
 describe 'first' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
     @comment = Comment.create! :title => 'title'
   end
   
@@ -40,6 +44,7 @@ end
 describe 'last' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
     @comment = Comment.create! :title => 'title'
   end
   
@@ -56,6 +61,7 @@ end
 describe 'all' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
     @comment = Comment.create! :title => 'title'
     @comment2 = Comment.create! :title => 'title'
   end
@@ -75,6 +81,7 @@ end
 describe 'count' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
     @comment = Comment.create! :title => 'title'
     @comment2 = Comment.create! :title => 'title'
   end

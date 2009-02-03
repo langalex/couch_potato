@@ -7,6 +7,10 @@ class Plate
 end
 
 describe 'dirty attribute tracking' do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+  
   describe "save" do
     it "should not save when nothing dirty" do
       plate = Plate.create! :food => 'sushi'

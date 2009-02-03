@@ -21,6 +21,7 @@ describe CouchPotato::Versioning do
   
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
   end
   
   describe "create" do

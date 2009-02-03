@@ -9,6 +9,7 @@ end
 describe CouchPotato::Persistence::Finder, 'find' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
   end
   
   describe "couchdb 0.9+" do
@@ -86,6 +87,7 @@ end
 describe CouchPotato::Persistence::Finder, 'count' do
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
   end
   
   it "should count objects with a given attribute value pair" do

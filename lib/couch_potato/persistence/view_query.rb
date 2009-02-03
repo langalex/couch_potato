@@ -25,15 +25,12 @@ module CouchPotato
       def create_view
         # in couchdb 0.9 we could use only 1 view and pass reduce=false for find and count with reduce
         design_doc = db.get "_design/#{@design_document_name}" rescue nil
-        db.save({
-          "_id" => "_design/#{@design_document_name}",
-            :views => {
-              @view_name => {
-                :map => @map_function,
-                :reduce => @reduce_function
-              }
-            }
-          }.merge(design_doc ? {'_rev' => design_doc['_rev']} : {}))
+        design_doc ||= {'views' => {}, "_id" => "_design/#{@design_document_name}"}
+        design_doc['views'][@view_name.to_s] = {
+          'map' => @map_function,
+          'reduce' => @reduce_function
+        }
+        db.save(design_doc)
       end
       
       def db(name = nil)

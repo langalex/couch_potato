@@ -7,7 +7,8 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'couch_potato'
 
 CouchPotato::Config.database_name = 'couch_potato_test'
-CouchPotato::Persistence.Db.delete!
+CouchPotato::Persistence.Db.delete! rescue nil
+CouchPotato::Persistence.Db!
 
 class User
   include CouchPotato::Persistence

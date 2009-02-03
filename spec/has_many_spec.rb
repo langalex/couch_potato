@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe 'has_many stored inline' do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+    
   before(:each) do
     @user = User.new
   end
@@ -27,6 +31,10 @@ describe 'has_many stored inline' do
 end
 
 describe 'has_many stored separately' do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+  
   before(:each) do
     @commenter = Commenter.new
   end

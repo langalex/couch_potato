@@ -111,7 +111,7 @@ module CouchPotato
       run_callbacks :before_create
       self.created_at = Time.now
       self.updated_at = Time.now
-      self._id = self.class.db.server.next_uuid rescue Digest::MD5.hexdigest(rand(1000000000000).to_s) # only works with couchdb 0.9
+      self._id = generate_uuid
       bulk_save_queue << self
       save_dependent_objects
       bulk_save_queue.save do |res|
@@ -120,6 +120,10 @@ module CouchPotato
       run_callbacks :after_save
       run_callbacks :after_create
       true
+    end
+    
+    def generate_uuid
+      self.class.server.next_uuid rescue Digest::MD5.hexdigest(rand(1000000000000).to_s) # only works with couchdb 0.9
     end
     
     def extract_rev(res)
@@ -180,15 +184,28 @@ module CouchPotato
       def db(name = nil)
         ::CouchPotato::Persistence.Db(name)
       end
+      
     end
     
     def self.Db(database_name = nil)
+      @@__database ||= CouchRest.database(full_url_to_database(database_name))
+    end
+    
+    def self.Server(database_name = nil)
+      @@_server ||= Db(database_name).server
+    end
+    
+    def self.Db!(database_name = nil)
+      CouchRest.database!(full_url_to_database(database_name))
+    end
+    
+    def self.full_url_to_database(database_name)
       database_name ||= CouchPotato::Config.database_name || raise('No Database configured. Set CouchPotato::Config.database_name')
-      full_url_to_database = database_name
-      if full_url_to_database !~ /^http:\/\//
-        full_url_to_database = "http://localhost:5984/#{database_name}"
+      url = database_name
+      if url !~ /^http:\/\//
+        url = "http://localhost:5984/#{database_name}"
       end
-      CouchRest.database!(full_url_to_database)
+      url
     end
   end    
 end

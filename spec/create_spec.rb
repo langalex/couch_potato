@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "create" do
+  before(:all) do
+    CouchPotato::Persistence.Db!
+  end
+  
   describe "succeeds" do
     before(:each) do
       @comment = Comment.new :title => 'my_title'
@@ -33,6 +37,7 @@ describe "create" do
   describe "fails" do
     before(:each) do
       CouchPotato::Persistence.Db.delete!
+      CouchPotato::Persistence.Db!
       @comment = Comment.new
       @comment.save
     end

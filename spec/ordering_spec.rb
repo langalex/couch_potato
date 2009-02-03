@@ -17,6 +17,7 @@ describe CouchPotato::Ordering do
   
   before(:each) do
     CouchPotato::Persistence.Db.delete!
+    CouchPotato::Persistence.Db!
     @album = Album.create!
   end
   
