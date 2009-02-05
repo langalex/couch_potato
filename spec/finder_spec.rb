@@ -114,4 +114,12 @@ describe CouchPotato::Persistence::Finder, 'count' do
     OtherComment.create! :commenter_id => '1'
     CouchPotato::Persistence::Finder.new.count(Comment, :commenter_id => '1').should == 0
   end
+  
+  it "should return correct count when view engine performs group reduce" do
+    100.times do |t|
+      Comment.create! :title => 'testing mass count', :commenter_id => '1'
+    end
+    
+    CouchPotato::Persistence::Finder.new.count(Comment, :commenter_id => '1').should == 100
+  end
 end

@@ -36,8 +36,12 @@ module CouchPotato
       end
       
       def count_reduce_function
-        "function(keys, values) {
-          return values.length;
+        "function(keys, values, combine) {
+          if (combine) {
+            return sum(values);
+          } else {
+            return values.length;
+          }
         }"
       end
       
