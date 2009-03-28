@@ -50,7 +50,7 @@ module CouchPotato
       end
       
       def item_class_name
-        @name.to_s.singularize.camelcase
+        @name.to_s.camelize
       end
       
     end

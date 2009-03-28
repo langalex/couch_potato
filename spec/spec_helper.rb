@@ -22,3 +22,9 @@ def recreate_db
   CouchPotato::Persistence.Server.create_db CouchPotato::Config.database_name
 end
 recreate_db
+
+Spec::Matchers.create :string_matching do |regex|
+  match do |string|
+    string =~ regex
+  end
+end

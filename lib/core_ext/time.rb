@@ -1,11 +1,11 @@
 class Time
   def to_json(*a)
-    self.strftime("%Y/%m/%d %H:%M:%S %z")
+    strftime("%Y/%m/%d %H:%M:%S %z")
   end
-end
-
-class Time
-  def self.json_create(*o)
-    parse(*o)
+  
+  def self.parse string
+    return nil if string.nil?
+    d = DateTime.parse(string).new_offset
+    self.utc(d.year, d.month, d.day, d.hour, d.min, d.sec)
   end
 end

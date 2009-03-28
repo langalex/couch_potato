@@ -8,6 +8,7 @@ class Build
   
   view :timeline, :key => :time
   view :minimal_timeline, :key => :time, :properties => [:state]
+  view :key_array_timeline, :key => [:time, :state]
   view :custom_timeline, :map => "function(doc) { emit(doc._id, {state: 'custom_' + doc.state}); }"
   
 end
@@ -18,7 +19,7 @@ describe 'view' do
   end
   
   it "should return instances of the class" do
-    Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+    Build.create!(:state => 'success', :time => '2008-01-01')
     Build.timeline.map(&:class).should == [Build]
   end
   
@@ -48,9 +49,11 @@ describe 'view' do
   
   describe "no properties defined" do
     it "should assign all properties to the objects by default" do
-      Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
-      Build.timeline.first.state.should == 'success'
-      Build.timeline.first.time.should == '2008-01-01'
+      id = Build.db.save_doc({:state => 'success', :time => '2008-01-01'})['id']
+      result = Build.timeline.first
+      result.state.should == 'success'
+      result.time.should == '2008-01-01'
+      result._id.should == id
     end
   end
   
@@ -68,6 +71,13 @@ describe 'view' do
     it "should leave the other properties blank" do
       Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
       Build.custom_timeline.map(&:time).should == [nil]
+    end
+  end
+  
+  describe "with array as key" do
+    it "should create a map function with the composite key" do
+      CouchPotato::Persistence::ViewQuery.should_receive(:new).with(anything, anything, string_matching(/emit\(\[doc\['time'\], doc\['state'\]\]/)).and_return(stub('view query').as_null_object)
+      Build.key_array_timeline
     end
   end
   

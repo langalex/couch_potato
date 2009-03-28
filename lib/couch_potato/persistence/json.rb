@@ -37,8 +37,8 @@ module CouchPotato
           instance = self.new
           instance.created_at = Time.parse(json['created_at']) 
           instance.updated_at = Time.parse(json['updated_at'])
-          instance._id = json['_id']
-          instance._rev = json['_rev']
+          instance._id = json[:_id] || json['_id']
+          instance._rev = json[:_rev] || json['_rev']
           properties.each do |property|
             property.build(instance, json)
           end

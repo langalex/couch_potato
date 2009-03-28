@@ -11,7 +11,7 @@ module CouchPotato
   module Persistence
     
     class ValidationsFailedError < ::Exception; end
-    class UnsavedRecordError < ::Exception; end
+    class UnsavedDocumentError < ::Exception; end
     
     def self.included(base)
       base.send :extend, ClassMethods
@@ -59,7 +59,7 @@ module CouchPotato
     end
 
     def reload
-      raise(UnsavedRecordError.new) unless _id
+      raise(UnsavedDocumentError.new) unless _id
       json = self.class.db.get _id
       self.class.properties.each do |property|
         property.build self, json
@@ -73,10 +73,6 @@ module CouchPotato
     def to_param
       _id
     end
-    
-    # def [](name)
-    #       self.send name
-    #     end
     
     def ==(other)
       other.class == self.class && self.to_json == other.to_json
