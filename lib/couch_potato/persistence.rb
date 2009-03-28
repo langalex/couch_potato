@@ -5,6 +5,7 @@ require File.dirname(__FILE__) + '/persistence/json'
 require File.dirname(__FILE__) + '/persistence/dirty_attributes'
 require File.dirname(__FILE__) + '/persistence/custom_view'
 require File.dirname(__FILE__) + '/persistence/view_query'
+require File.dirname(__FILE__) + '/persistence/persister'
 
 module CouchPotato
   module Persistence
@@ -50,20 +51,11 @@ module CouchPotato
     end
     
     def save
-      if new_document?
-        create_document 
-      else
-        update_document
-      end
+      persister.save_document self
     end
     
     def destroy
-      run_callbacks(:before_destroy)
-      self._deleted = true
-      db.delete_doc self.to_hash
-      run_callbacks(:after_destroy)
-      self._id = nil
-      self._rev = nil
+      persister.destroy_document self
     end
 
     def reload
@@ -74,7 +66,7 @@ module CouchPotato
       end
     end
     
-    def new_document?
+    def new?
       _id.nil?
     end
     
@@ -82,9 +74,9 @@ module CouchPotato
       _id
     end
     
-    def [](name)
-      self.send name
-    end
+    # def [](name)
+    #       self.send name
+    #     end
     
     def ==(other)
       other.class == self.class && self.to_json == other.to_json
@@ -92,38 +84,8 @@ module CouchPotato
     
     private
     
-    def create_document
-      run_callbacks :before_validation_on_save
-      run_callbacks :before_validation_on_create
-      return unless valid?
-      run_callbacks :before_save
-      run_callbacks :before_create
-      self.created_at = Time.now
-      self.updated_at = Time.now
-      res = db.save_doc self.to_hash
-      self._rev = res['rev']
-      self._id = res['id']
-      run_callbacks :after_save
-      run_callbacks :after_create
-      true
-    end
-    
-    def generate_uuid
-      self.class.server.next_uuid rescue Digest::MD5.hexdigest(rand(1000000000000).to_s) # only works with couchdb 0.9
-    end
-    
-    def update_document
-      run_callbacks(:before_validation_on_save)
-      run_callbacks(:before_validation_on_update)
-      return unless valid?
-      run_callbacks :before_save
-      run_callbacks :before_update
-      self.updated_at = Time.now
-      res = db.save_doc self.to_hash
-      self._rev = res['rev']
-      run_callbacks :after_save
-      run_callbacks :after_update
-      true
+    def persister
+      @__persister ||= Persister.new(db)
     end
     
     def db(name = nil)

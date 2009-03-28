@@ -10,7 +10,7 @@ module CouchPotato
       end
       
       def dirty?
-        new_document? || self.class.properties.inject(false) do |res, property|
+        new? || self.class.properties.inject(false) do |res, property|
           res || property.dirty?(self)
         end
       end

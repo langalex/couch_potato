@@ -35,7 +35,7 @@ describe "attributes" do
     it "should save the object" do
       plant = Plant.new 
       plant.update_attributes :leaf_count => 1
-      plant.should_not be_new_document
+      plant.should_not be_new
     end
   end
 end
