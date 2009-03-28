@@ -1,5 +1,5 @@
-require 'rubygems'
 require 'active_support'
+require 'couchrest'
 require 'json'
 require 'json/add/core'
 require 'json/add/rails'

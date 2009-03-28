@@ -9,18 +9,17 @@ module CouchPotato
       module ClassMethods
         
         def view(name, options)
-          (class << self; self; end).instance_eval do
-            if options[:properties]
-              define_method name do
-                ViewQuery.new(self.name.underscore, name, map_function(options[:key], options[:properties]), nil).query_view!['rows'].map{|doc| self.new(doc['value'].merge(:_id => doc['id']))}
-              end
-            else
-              define_method name do
-                ViewQuery.new(self.name.underscore, name, map_function(options[:key], options[:properties]), nil).query_view!(:include_docs =>  true)['rows'].map{|doc| self.new(doc['doc'])}
-              end
+          map_function = options[:map] || map_function(options[:key], options[:properties])
+          basic_view_options = options[:properties] || options[:map] ? {} : {:include_docs => true}
+          instance_eval <<-EVAL
+            def #{name}(view_options = {})
+              rows = ViewQuery.new(self.name.underscore, #{name.inspect}, #{map_function.inspect}).query_view!(#{basic_view_options.inspect}.merge(view_options))
+              rows['rows'].map{|row| self.new(row['doc'] || row['value'].merge(:_id => row['id']))}
             end
-          end
+          EVAL
+          
         end
+          
         
         def map_function(key, properties)
           "function(doc) {

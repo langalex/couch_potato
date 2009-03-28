@@ -18,6 +18,8 @@ h3. Core Features
 
 h3. Installation
 
+Couch Potato requires Ruby 1.9.
+
 Couch Potato is hosted as a gem on github which you can install like this:
 
   sudo gem source --add http://gems.github.com # if you haven't already

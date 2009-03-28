@@ -1,10 +1,8 @@
 require 'rubygems'
-gem 'rspec'
 require 'spec'
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 
-require 'couchrest'
 require 'couch_potato'
 
 CouchPotato::Config.database_name = 'couch_potato_test'
