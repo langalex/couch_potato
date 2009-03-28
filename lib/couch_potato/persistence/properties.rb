@@ -8,8 +8,8 @@ module CouchPotato
         base.extend ClassMethods
         base.class_eval do
           def self.properties
-            @@properties ||= {}
-            @@properties[self.name] ||= []
+            @properties ||= {}
+            @properties[self.name] ||= []
           end
         end
       end
