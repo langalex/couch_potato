@@ -28,7 +28,7 @@ end
 
 describe "multiple callbacks at once" do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   class Monkey
     include CouchPotato::Persistence
@@ -55,7 +55,7 @@ end
 
 describe 'create callbacks' do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   
   before(:each) do
@@ -138,7 +138,7 @@ end
 
 describe "update callbacks" do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   
   before(:each) do
@@ -216,7 +216,7 @@ end
 
 describe "destroy callbacks" do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   
   before(:each) do
@@ -237,7 +237,7 @@ end
 
 describe 'save_without_callbacks' do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   
   it "should not run any callbacks" do

@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe "create" do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   
   describe "succeeds" do
@@ -37,7 +37,7 @@ describe "create" do
   describe "fails" do
     before(:each) do
       CouchPotato::Persistence.Db.delete!
-      CouchPotato::Persistence.Db!
+      recreate_db
       @comment = Comment.new
       @comment.save
     end

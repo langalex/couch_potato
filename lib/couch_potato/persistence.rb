@@ -1,13 +1,7 @@
 require 'digest/md5'
-require 'couchrest'
-require 'validatable'
-require File.dirname(__FILE__) + '/persistence/inline_collection'
-require File.dirname(__FILE__) + '/persistence/external_collection'
 require File.dirname(__FILE__) + '/persistence/properties'
 require File.dirname(__FILE__) + '/persistence/callbacks'
 require File.dirname(__FILE__) + '/persistence/json'
-require File.dirname(__FILE__) + '/persistence/bulk_save_queue'
-require File.dirname(__FILE__) + '/persistence/find'
 require File.dirname(__FILE__) + '/persistence/dirty_attributes'
 require File.dirname(__FILE__) + '/persistence/custom_view'
 require File.dirname(__FILE__) + '/persistence/view_query'
@@ -19,17 +13,15 @@ module CouchPotato
     class UnsavedRecordError < ::Exception; end
     
     def self.included(base)
-      base.send :extend, ClassMethods, Find
+      base.send :extend, ClassMethods
       base.send :include, Callbacks, Properties, Validatable, Json, DirtyAttributes, CustomView
       base.class_eval do
         attr_accessor :_id, :_rev, :_attachments, :_deleted, :created_at, :updated_at
-        attr_reader :bulk_save_queue
         alias_method :id, :_id
       end
     end
     
     def initialize(attributes = {})
-      @bulk_save_queue = BulkSaveQueue.new
       attributes.each do |name, value|
         self.send("#{name}=", value)
       end if attributes
@@ -68,13 +60,10 @@ module CouchPotato
     def destroy
       run_callbacks(:before_destroy)
       self._deleted = true
-      bulk_save_queue << self
-      destroy_dependent_objects
-      bulk_save_queue.save do |res|
-        self._id = nil
-        self._rev = nil
-      end
+      db.delete_doc self.to_hash
       run_callbacks(:after_destroy)
+      self._id = nil
+      self._rev = nil
     end
 
     def reload
@@ -111,12 +100,9 @@ module CouchPotato
       run_callbacks :before_create
       self.created_at = Time.now
       self.updated_at = Time.now
-      self._id = generate_uuid
-      bulk_save_queue << self
-      save_dependent_objects
-      bulk_save_queue.save do |res|
-        self._rev = extract_rev(res)
-      end
+      res = db.save_doc self.to_hash
+      self._rev = res['rev']
+      self._id = res['id']
       run_callbacks :after_save
       run_callbacks :after_create
       true
@@ -126,10 +112,6 @@ module CouchPotato
       self.class.server.next_uuid rescue Digest::MD5.hexdigest(rand(1000000000000).to_s) # only works with couchdb 0.9
     end
     
-    def extract_rev(res)
-      res['new_revs'].select{|hash| hash['id'] == self.id}.first['rev']
-    end
-    
     def update_document
       run_callbacks(:before_validation_on_save)
       run_callbacks(:before_validation_on_update)
@@ -137,26 +119,15 @@ module CouchPotato
       run_callbacks :before_save
       run_callbacks :before_update
       self.updated_at = Time.now
-      bulk_save_queue << self
-      save_dependent_objects
-      bulk_save_queue.save do |res|
-        self._rev = extract_rev(res)
-      end
+      res = db.save_doc self.to_hash
+      self._rev = res['rev']
       run_callbacks :after_save
       run_callbacks :after_update
       true
     end
     
-    def save_dependent_objects
-      self.class.properties.each do |property|
-        property.save(self)
-      end
-    end
-    
-    def destroy_dependent_objects
-      self.class.properties.each do |property|
-        property.destroy(self)
-      end
+    def db(name = nil)
+      self.class.db name
     end
     
     module ClassMethods
@@ -193,10 +164,6 @@ module CouchPotato
     
     def self.Server(database_name = nil)
       @@_server ||= Db(database_name).server
-    end
-    
-    def self.Db!(database_name = nil)
-      CouchRest.database!(full_url_to_database(database_name))
     end
     
     def self.full_url_to_database(database_name)

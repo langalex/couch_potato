@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe 'destroy' do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   
   before(:each) do

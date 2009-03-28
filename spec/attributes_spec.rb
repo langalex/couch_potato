@@ -7,7 +7,7 @@ end
 
 describe "attributes" do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   
   describe 'attributes=' do

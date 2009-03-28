@@ -6,23 +6,27 @@ module CouchPotato
       end
       
       def to_json(*args)
+        to_hash.to_json(*args)
+      end
+      
+      def to_hash
         (self.class.properties).inject({}) do |props, property|
           property.serialize(props, self)
           props
-        end.merge('ruby_class' => self.class.name).merge(id_and_rev_json).merge(timestamps_json).to_json(*args)
+        end.merge('ruby_class' => self.class.name).merge(id_and_rev_json).merge(timestamps_json)
       end
       
       private
       
       def id_and_rev_json
-        [:_id, :_rev, :_deleted].inject({}) do |hash, key|
+        ['_id', '_rev', '_deleted'].inject({}) do |hash, key|
           hash[key] = self.send(key) unless self.send(key).nil?
           hash
         end
       end
       
       def timestamps_json
-        [:created_at, :updated_at].inject({}) do |hash, key|
+        ['created_at', 'updated_at'].inject({}) do |hash, key|
           hash[key] = self.send(key).to_s unless self.send(key).nil?
           hash
         end
@@ -36,7 +40,7 @@ module CouchPotato
           instance._id = json['_id']
           instance._rev = json['_rev']
           properties.each do |property|
-            property.build(instance, json) unless property.is_a?(ExternalHasManyProperty)
+            property.build(instance, json)
           end
           instance
         end

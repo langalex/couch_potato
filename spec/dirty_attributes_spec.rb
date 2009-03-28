@@ -8,7 +8,7 @@ end
 
 describe 'dirty attribute tracking' do
   before(:all) do
-    CouchPotato::Persistence.Db!
+    recreate_db
   end
   
   describe "save" do
