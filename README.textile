@@ -4,34 +4,33 @@ h2. Couch Potato
 
 h3. Mission
 
-The goal of Couch Potato is to create a migration path for users of ActiveRecord and other object relational mappers to port their applications to CouchDB. It therefore offers a basic set of the functionality provided by most ORMs and adds functionality unique to CouchDB on top.
+The goal of Couch Potato is to create a minimal framework in order to store and retrieve Ruby objects to/from CouchDB and create and query views.
+
+It follows the document/view/querying semantics established by CouchDB and won't try to mimic ActiveRecord behavior in any way as that IS BAD.
+
+Lastly Couch Potato aims to provide a seemless integration with Ruby on Rails, e.g. routing, form helpers etc.
 
 h3. Core Features
 
-Couch Potato is a work in progress so this list will hopefully grow over time.
-
 * persisting objects by including the CouchPotato::Persistence module
-* has_many/belongs_to relationships between persistant objects
-* atomic write operations spanning multiple objects using bulk save queues
+* declarative views with either custom or generated map/reduce functions
 * extensive spec suite
-* included versioning support via the CouchPotato::Versioning module
-* included ordered lists support via the CouchPotato::Ordering module
 
 h3. Installation
 
 Couch Potato is hosted as a gem on github which you can install like this:
 
-  sudo gem source --add http://gems.github.com # if you haven't alread
+  sudo gem source --add http://gems.github.com # if you haven't already
   sudo gem install langalex-couch_potato
   
 h4. Using with your ruby application:
 
   require 'rubygems'
-  gem 'couch_potato'
+  gem 'langalex-couch_potato'
   require 'couch_potato'
   CouchPotato::Config.database_name = 'name of the db'
   
-Alternatively you can download or clone the source repository and then require lib/couhc_potato.rb. 
+Alternatively you can download or clone the source repository and then require lib/couch_potato.rb. 
 
 h4. Using with Rails
 
@@ -85,7 +84,7 @@ Properties:
   user._rev # => "2769180384"
   user.created_at # => Fri Oct 24 19:05:54 +0200 2008
   user.updated_at # => Fri Oct 24 19:05:54 +0200 2008
-  user.new_document? # => false, for compatibility new_record? will work as well
+  user.new? # => false, for compatibility new_record? will work as well
 
 You can of course also retrieve your instance:
 
@@ -106,61 +105,11 @@ Couch Potato uses the validatable library for vaidation (http://validatable.ruby
 
 h4. Finding stuff
 
-For running basic finds (e.g. creating/querying views) you can either use the CouchPotato::Persistence::Finder class:
-
-  joe = User.create! :first_name => 'joe', :position => 1
-  jane = User.create! :first_name => 'jane', :position => 2
-  Finder.new.find User, :first_name => 'joe' # => [joe]
-  Finder.new.find User, :first_name => ['joe', 'jane'] # => [joe, jane]
-  Finder.new.find User, :position => 1..2 # => [joe, jane]
-  
-You can also count:
-
-  user = User.create! :first_name => 'joe'
-  Finder.new.count User, :first_name => 'joe' # => 1
-  
-Or you can call first/all/count on a class persistent class which will call the Finder.find, e.g.:
-
-  User.first :login => 'alex'
-  User.all
-  User.count :activated => true
-
-Be warned though that executing these finder methods will generate a new view for every new combination of class and attribute names it gets called with, so you really don't want to use this in a console on a production system.
-
-Support for more sophisticated views will be added later.
+TBD
 
 h4. Associations
 
-As of now has_many and belongs_to are supported. By default the associated objects are stored in separate documents linked via foreign keys just like in relational databases.
-
-  class User
-    has_many :addresses, :dependent => :destroy
-  end
-  
-  class Address
-    belongs_to :user
-    property :street
-  end
-  
-   user = User.new
-  user.addresses.build :street => 'potato way'
-  user.addresses.first # => <#Address 0x987>
-  user.addresses.create! # raises an exception as street is blank
-  user.addresses.first.user == user # => true
-
-As CouchDB can not only store flat structures you also store associations inline:
-
-  class User
-    has_many :addresses, :stored => :inline
-  end
-
-This will store the addresses of the user as an array within your CouchDB document.
-
-You can also find stuff on associations (not the :stored => :inline):
-
-  user.addresses.all :street => 'potato way'
-  
-... returns only adresses belonging to this user instance and also matching the given conditions. You can call #count a well, #first and #last are not implemented here since those collide with the methods in Enumerable.
+Not supported. Not sure if they ever will be. (except for belongs_to)
 
 h4. callbacks
 
@@ -174,34 +123,6 @@ Couch Potato supports the usual lifecycle callbacks known from ActiveRecord:
   end
 
 This will call the method do_something_before_create before creating an object and do_something_else after updating one. Supported callbacks are: :before_validation_on_create, :before_validation_on_update, :before_validation_on_save, :before_create, :after_create, :before_update, :after_update, :before_save, :after_save, :before_destroy, :after_destroy
-
-If you want to do any CouchDB update/create/delete operation in your callback methods...
-
-  class User
-    include CouchPotato::Persistence
-    has_many :comments
-    
-    before_update :create_a_comment
-    
-    private    
-    def create_a_comment
-      comments.create :body => 'i was updated'
-    end
-  end
-
-... and you want the entire operation including its hooks to be atomic you can do this:
-
-  class User
-    include CouchPotato::Persistence
-    has_many :comments
-    
-    before_update :create_a_comment
-    
-    private    
-    def create_a_comment
-      bulk_save_queue << Comment.new(:body => 'i was updated')
-    end
-  end
   
 h4. Custom Views
 
@@ -245,87 +166,6 @@ If you have larger structures and you only want to load some attributes you can 
   
   User.everyone.first.name # => "joe"
   User.everyone.first.bio # => nil
-
-
-h4. Versioning
-
-Couch Potato supports versioning your objects, very similar to the popular acts_as_versioned plugin for ActiveRecord. To use it include the module:
-
-  class Document
-    include CouchPotato::Persistence
-    include CouchPotato::Versioning
-  end
-
-After that your object will have a version that gets incremented on each save.
-
-  doc = Document.create
-  doc.version # => 1
-  doc.save
-  doc.version # => 2
-
-You can access the older versions via the versions method.
-
-  doc.versions.first.version # => 1
-
-When passing a version number the version method will only return that version:
-
-  doc.versions(1).version # => 1
-
-You can set a condition for when to create a new version:
-
-  class Document
-    attr_accessor :update_version
-    include CouchPotato::Persistence
-    include CouchPotato::Versioning
-    
-    set_version_condition lambda {|doc| doc.update_version}
-  end
-
-  doc = Document.create
-  doc.update_version = false
-  doc.version # => 1
-  doc.save
-  doc.version # => 1
-  doc.update_version = true
-  doc.save
-  doc.version # => 2
-  
-h4. Ordered Lists
-
-Couch Potato supports ordered lists for has_many relationships (with the :stored => :separately option only), very similar to the popular acts_as_list plugin for ActiveRecord. To use it include the module:
-
-  class PersistenArray
-    include CouchPotato::Persistence
-    has_many :items
-  end
-  
-  class Item
-    include CouchPotato::Ordering
-    belongs_to :persistent_array
-    set_ordering_scope :persistent_array_id
-  end
-  
-  array = PersistenArray.new
-  item1 = array.items.create!
-  item1.position # => 1
-  item2 = array.items.create!
-  item2.position # => 2
-  
-You can move items up and down simply by changing the position:
-
-  item2.position = 1
-  item2.save!
-  item1.position # => 2
-  
-And you can insert new items at any position you want:
-
-  item3 = array.items.create! :position => 2
-  item1.position # => 3
-  
-And remove:
-
-  item3.destroy
-  item1.position # => 2
 
 h3. Helping out
 
