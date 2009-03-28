@@ -28,6 +28,7 @@ begin
     s.homepage = "http://github.com/langalex/couch_potato"
     s.description = "Ruby persistence layer for CouchDB"
     s.authors = ["Alexander Lang"]
+    s.files = FileList["[A-Z]*.*", "{lib,spec,rails}/**/*", "init.rb"]
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"

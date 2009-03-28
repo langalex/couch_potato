@@ -15,7 +15,6 @@ end
 
 require File.dirname(__FILE__) + '/core_ext/object'
 require File.dirname(__FILE__) + '/core_ext/time'
-
 require File.dirname(__FILE__) + '/couch_potato/persistence'
 require File.dirname(__FILE__) + '/couch_potato/active_record/compatibility'
 

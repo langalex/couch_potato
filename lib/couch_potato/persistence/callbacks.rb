@@ -28,7 +28,7 @@ module CouchPotato
       
       def run_callbacks(name)
         return if skip_callbacks
-        self.class.callbacks[name].each do |callback|
+        self.class.callbacks[name].uniq.each do |callback|
           self.send callback
         end
       end
