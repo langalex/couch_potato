@@ -10,15 +10,19 @@ module CouchPotato
         
         def view(name, options)
           map_function = options[:map] || map_function(options[:key], options[:properties])
-          basic_view_options = options[:properties] || options[:map] ? {} : {:include_docs => true}
+          basic_view_options = should_include_docs?(options) ? {:include_docs => true} : {}
           self.class.instance_eval do
             define_method name do |view_options = {}|
               rows = ViewQuery.new(self.name.underscore, name, map_function).query_view!(basic_view_options.merge(view_options))
-              rows['rows'].map{|row|
-                self.json_create(row['doc'] || row['value'].merge(:_id => row['id']))
-              }
+              rows['rows'].map do |row|
+                self.json_create((row['doc'] || row['value']).merge(:_id => row['id']))
+              end
             end
           end
+        end
+        
+        def should_include_docs?(options)
+          options[:include_docs] || !(options[:map] || options[:properties])
         end
         
         def map_function(key, properties)
@@ -33,7 +37,6 @@ module CouchPotato
           else
             "doc['#{key}']"
           end
-          
         end
         
         def properties_for_map(properties)

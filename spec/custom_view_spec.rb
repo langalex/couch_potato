@@ -10,6 +10,7 @@ class Build
   view :minimal_timeline, :key => :time, :properties => [:state]
   view :key_array_timeline, :key => [:time, :state]
   view :custom_timeline, :map => "function(doc) { emit(doc._id, {state: 'custom_' + doc.state}); }"
+  view :custom_timeline_returns_docs, :map => "function(doc) { emit(doc._id, null); }", :include_docs => true
   
 end
 
@@ -71,6 +72,18 @@ describe 'view' do
     it "should leave the other properties blank" do
       Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
       Build.custom_timeline.map(&:time).should == [nil]
+    end
+    
+    describe "that returns null documents" do
+      it "should return instances of the class" do
+        Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+        Build.custom_timeline_returns_docs.map(&:class).should == [Build]
+      end
+      
+      it "should assign the properties from the value" do
+        Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+        Build.custom_timeline_returns_docs.map(&:state).should == ['success']
+      end
     end
   end
   
