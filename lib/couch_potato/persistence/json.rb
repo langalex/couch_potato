@@ -35,8 +35,8 @@ module CouchPotato
       module ClassMethods
         def json_create(json)
           instance = self.new
-          instance.created_at = Time.parse(json['created_at']) 
-          instance.updated_at = Time.parse(json['updated_at'])
+          instance.created_at = Time.json_create(json['created_at']) 
+          instance.updated_at = Time.json_create(json['updated_at'])
           instance._id = json[:_id] || json['_id']
           instance._rev = json[:_rev] || json['_rev']
           properties.each do |property|

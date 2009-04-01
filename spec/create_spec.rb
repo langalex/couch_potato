@@ -24,13 +24,13 @@ describe "create" do
     end
 
     it "should set created at" do
-      DateTime.parse(CouchPotato::Persistence.Db.get(@comment.id)['created_at']).should >= 1.second.ago
-      @comment.created_at.should >= 10.seconds.ago
+      DateTime.parse(CouchPotato::Persistence.Db.get(@comment.id)['created_at']).to_time.should >= Time.now - 1
+      @comment.created_at.should >= Time.now - 10
     end
 
     it "should set updated at" do
-      DateTime.parse(CouchPotato::Persistence.Db.get(@comment.id)['updated_at']).should >= 1.second.ago
-      @comment.updated_at.should >= 10.seconds.ago
+      DateTime.parse(CouchPotato::Persistence.Db.get(@comment.id)['updated_at']).to_time.should >= Time.now - 1
+      @comment.updated_at.should >= Time.now - 10
     end
   end
   

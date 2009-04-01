@@ -1,5 +1,12 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
+class Watch
+  include CouchPotato::Persistence
+  
+  property :time, :type => Time
+end
+
+
 describe 'properties' do
   before(:all) do
     recreate_db
@@ -28,6 +35,13 @@ describe 'properties' do
     c.save!
     c = Comment.find c.id
     c.title.should == {'key' => 'value'}
+  end
+  
+  it "should persist a Time object" do
+    w = Watch.new :time => Time.now
+    w.save!
+    w = Watch.find w.id
+    w.time.year.should == Time.now.year
   end
   
   describe "predicate" do

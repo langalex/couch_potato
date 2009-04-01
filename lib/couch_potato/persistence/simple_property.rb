@@ -1,10 +1,11 @@
 module CouchPotato
   module Persistence
     class SimpleProperty
-      attr_accessor :name
+      attr_accessor :name, :type
       
       def initialize(owner_clazz, name, options = {})
         self.name = name
+        self.type = options[:type]
         owner_clazz.class_eval do
           attr_reader name, "#{name}_was"
           
@@ -13,14 +14,6 @@ module CouchPotato
             attributes.each do |name, value|
               self.instance_variable_set("@#{name}_was", value)
             end if attributes
-          end
-          
-          def self.json_create(json)
-            instance = super
-            instance.attributes.each do |name, value|
-              instance.instance_variable_set("@#{name}_was", value)
-            end
-            instance
           end
           
           define_method "#{name}=" do |value|
@@ -38,7 +31,13 @@ module CouchPotato
       end
       
       def build(object, json)
-        object.send "#{name}=", json[name.to_s] || json[name.to_sym]
+        value = json[name.to_s] || json[name.to_sym]
+        typecasted_value =  if type
+                              type.json_create value
+                            else
+                              value
+                            end
+        object.send "#{name}=", typecasted_value
       end
       
       def dirty?(object)

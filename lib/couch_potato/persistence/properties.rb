@@ -19,6 +19,14 @@ module CouchPotato
           properties.map(&:name)
         end
         
+        def json_create(json)
+          instance = super
+          instance.attributes.each do |name, value|
+            instance.instance_variable_set("@#{name}_was", value)
+          end
+          instance
+        end
+        
         def property(name, options = {})
           clazz = options.delete(:class)
           properties << (clazz || SimpleProperty).new(self, name, options)

@@ -77,8 +77,15 @@ Now you can save your objects:
 
   user = User.new :name => 'joe'
   user.save # or save!
+  
+You can of course also retrieve your instance:
 
-Properties:
+  User.get "02097f33a0046123f1ebc0ebb6937269" # => <#User 0x3075>
+
+
+h4. Properties
+
+You can access the properties you declared above through normal attribute accessors.
 
   user.name # => 'joe'
   user.name = {:first => ['joe', 'joey'], :last => 'doe', :middle => 'J'} # you can set any ruby object that responds_to :to_json (includes all core objects)
@@ -87,10 +94,24 @@ Properties:
   user.created_at # => Fri Oct 24 19:05:54 +0200 2008
   user.updated_at # => Fri Oct 24 19:05:54 +0200 2008
   user.new? # => false, for compatibility new_record? will work as well
+  
+If you want to have properties that don't map to any JSON type, i.e. other than String, Number, Boolean, Hash or Array you have to define the type like this:
 
-You can of course also retrieve your instance:
+  class User
+    property :date_of_birth, :type => Date
+  end
+  
+The date_of_birth property is now automatically serialized to JSON and back when storing/retrieving objects.
 
-  User.get "02097f33a0046123f1ebc0ebb6937269" # => <#User 0x3075>
+h5. Dirty tracking
+
+CouchPotato tracks the dirty state of attributes in the same way ActiveRecord does:
+
+  user = User.create :name => 'joe'
+  user.name # => 'joe'
+  user.name_changed? # => false
+  user.name_was # => nil
+  
 
 h4. Object validations
 
