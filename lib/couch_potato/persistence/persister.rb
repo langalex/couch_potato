@@ -21,6 +21,10 @@ class Persister
     document._rev = nil
   end
   
+  def inspect
+    "#<Persister>"
+  end
+  
   private
   
   def create_document(document)
