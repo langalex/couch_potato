@@ -67,7 +67,7 @@ module CouchPotato
     end
     
     def new?
-      _id.nil?
+      _rev.nil?
     end
     
     def to_param
