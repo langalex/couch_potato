@@ -27,7 +27,7 @@ module CouchPotato
       
       def timestamps_json
         ['created_at', 'updated_at'].inject({}) do |hash, key|
-          hash[key] = self.send(key).to_json unless self.send(key).nil?
+          hash[key] = self.send(key) unless self.send(key).nil?
           hash
         end
       end
