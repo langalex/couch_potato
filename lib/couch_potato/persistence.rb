@@ -80,11 +80,15 @@ module CouchPotato
       other.class == self.class && self.to_json == other.to_json
     end
     
-    private
-    
     def persister
       @__persister ||= Persister.new(db)
     end
+    
+    def persister=(_persister)
+      @__persister ||= _persister
+    end
+    
+    private
     
     def db(name = nil)
       self.class.db name
@@ -113,7 +117,11 @@ module CouchPotato
       end
       
       def db(name = nil)
-        ::CouchPotato::Persistence.Db(name)
+        @__database ||= ::CouchPotato::Persistence.Db(name)
+      end
+      
+      def db=(database)
+        @__database = database
       end
       
     end

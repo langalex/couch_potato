@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require File.dirname(__FILE__) + '/../spec_helper'
 
 class Plate
   include CouchPotato::Persistence
@@ -7,24 +7,30 @@ class Plate
 end
 
 describe 'dirty attribute tracking' do
-  before(:all) do
-    recreate_db
+  before(:each) do
+    @db = stub('db', :save_doc => {'rev' => '1', 'id' => '2'})
+    Plate.db = @db
+  end
+  
+  after(:each) do
+    Plate.db = nil
   end
   
   describe "save" do
     it "should not save when nothing dirty" do
-      plate = Plate.create! :food => 'sushi'
-      old_rev = plate._rev
+      plate = Plate.new :food => 'sushi'
+      plate.persister = Persister.new @db
+      plate.save!
+      plate.persister.should_not_receive(:save_document)
       plate.save
-      plate._rev.should == old_rev
     end
     
     it "should save when there are dirty attributes" do
       plate = Plate.create! :food => 'sushi'
-      old_rev = plate._rev
+      plate.persister = Persister.new @db
       plate.food = 'burger'
+      plate.persister.should_receive(:save_document)
       plate.save
-      plate._rev.should_not == old_rev
     end
   end
   
@@ -61,8 +67,8 @@ describe 'dirty attribute tracking' do
   
   describe "object loaded from database" do
     before(:each) do
-      @plate = Plate.create! :food => 'sushi'
-      @plate = Plate.get @plate._id
+      Plate.db = stub('db', :get => {'_id' => '1', '_rev' => '2', 'food' => 'sushi'})
+      @plate = Plate.get '1'
     end
     
     describe "access old values" do

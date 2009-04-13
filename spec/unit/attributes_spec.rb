@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require File.dirname(__FILE__) + '/../spec_helper'
 
 class Plant
   include CouchPotato::Persistence
@@ -6,9 +6,6 @@ class Plant
 end
 
 describe "attributes" do
-  before(:all) do
-    recreate_db
-  end
   
   describe 'attributes=' do
     it "should assign the attributes" do
@@ -34,8 +31,10 @@ describe "attributes" do
 
     it "should save the object" do
       plant = Plant.new 
+      persister = mock 'persister'
+      plant.persister = persister
+      persister.should_receive(:save_document).with(plant)
       plant.update_attributes :leaf_count => 1
-      plant.should_not be_new
     end
   end
 end

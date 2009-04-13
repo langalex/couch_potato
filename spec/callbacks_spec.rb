@@ -30,9 +30,7 @@ class CallbackRecorder
 end
 
 describe "multiple callbacks at once" do
-  before(:all) do
-    recreate_db
-  end
+
   class Monkey
     include CouchPotato::Persistence
     attr_accessor :eaten_banana, :eaten_apple
@@ -57,12 +55,10 @@ describe "multiple callbacks at once" do
 end
 
 describe 'create callbacks' do
-  before(:all) do
-    recreate_db
-  end
   
   before(:each) do
     @recorder = CallbackRecorder.new
+    @recorder.persister = Persister.new stub('database', :delete_doc => nil, :save_doc => {'rev' => '123', 'id' => '456'})
   end
   
   describe "successful create" do
@@ -140,12 +136,11 @@ describe 'create callbacks' do
 end
 
 describe "update callbacks" do
-  before(:all) do
-    recreate_db
-  end
   
   before(:each) do
-    @recorder = CallbackRecorder.create! :required_property => 1
+    @recorder = CallbackRecorder.new :required_property => 1
+    @recorder.persister = Persister.new stub('database', :delete_doc => nil, :save_doc => {'rev' => '123', 'id' => '456'})
+    @recorder.save!
     @recorder.required_property = 2
     @recorder.callbacks.clear
   end
@@ -218,12 +213,11 @@ describe "update callbacks" do
 end
 
 describe "destroy callbacks" do
-  before(:all) do
-    recreate_db
-  end
   
   before(:each) do
-    @recorder = CallbackRecorder.create! :required_property => 1
+    @recorder = CallbackRecorder.new :required_property => 1
+    @recorder.persister = Persister.new stub('database', :delete_doc => nil, :save_doc => {'rev' => '123', 'id' => '456'})
+    @recorder.save!
     @recorder.callbacks.clear
   end
   
@@ -239,12 +233,10 @@ describe "destroy callbacks" do
 end
 
 describe 'save_without_callbacks' do
-  before(:all) do
-    recreate_db
-  end
   
   it "should not run any callbacks" do
     @recorder = CallbackRecorder.new
+    @recorder.persister = Persister.new stub('database', :delete_doc => nil, :save_doc => {'rev' => '123', 'id' => '456'})
     @recorder.save_without_callbacks
     @recorder.callbacks.should be_empty
   end
