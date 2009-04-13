@@ -8,7 +8,9 @@ The goal of Couch Potato is to create a minimal framework in order to store and 
 
 It follows the document/view/querying semantics established by CouchDB and won't try to mimic ActiveRecord behavior in any way as that IS BAD.
 
-Lastly Couch Potato aims to provide a seemless integration with Ruby on Rails, e.g. routing, form helpers etc.
+Code that uses Couch Potato should be easy to test.
+
+Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e.g. routing, form helpers etc.
 
 h3. Core Features
 
@@ -72,6 +74,14 @@ If you want to store any properties you have to declare them:
     
     property :name
   end
+  
+Properties can be of any type:
+
+  class User
+    include CouchPotato::Persistence
+    
+    property :address, :type => Address
+  end
 
 Now you can save your objects:
 
@@ -112,6 +122,14 @@ CouchPotato tracks the dirty state of attributes in the same way ActiveRecord do
   user.name_changed? # => false
   user.name_was # => nil
   
+You can also force a dirty state:
+  
+  user.name = 'jane'
+  user.name_changed? # => true
+  user.name_not_changed
+  user.name_changed? # => false
+  user.save # does nothing as no attributes are dirty
+  
 
 h4. Object validations
 
@@ -128,7 +146,51 @@ Couch Potato uses the validatable library for vaidation (http://validatable.ruby
 
 h4. Finding stuff
 
-TBD
+In order to find data in your CouchDB you have to create a view first. Couch Potato offers you to create and manage those views for you. All you have to do is declare them in your classes:
+
+  class User
+    include CouchPotato::Persistence
+    property :name
+    
+    view :all, :key => :created_at
+  end
+  
+This will create a view called "all" in the "user" design document with a map function that emits "created_at" for every user document.
+  
+  User.all
+
+This will load all user documents in your database sorted by created_at.
+
+  User.all :key => (Time.now- 10)..(Time.now), :descending => true
+
+Any options you pass in will be passed onto CouchDB.
+
+Composite keys are also possible:
+
+  class User
+    property :name
+    
+    view :all, :key => [:created_at, :name]
+  end
+
+If you have larger structures and you only want to load some attributes you can customize the view:
+
+  class User
+    property :name
+    property :bio
+    
+    view :all, :key => :created_at, :properties => [:name]
+  end
+  
+  User.everyone.first.name # => "joe"
+  User.everyone.first.bio # => nil
+  
+You can also pass in custom map/reduce functions and options:
+
+  class User
+    view :all, :map => "function(doc) { emit(doc.created_at, null)}", :include_docs => true
+  end
+
 
 h4. Associations
 
@@ -146,49 +208,27 @@ Couch Potato supports the usual lifecycle callbacks known from ActiveRecord:
   end
 
 This will call the method do_something_before_create before creating an object and do_something_else after updating one. Supported callbacks are: :before_validation_on_create, :before_validation_on_update, :before_validation_on_save, :before_create, :after_create, :before_update, :after_update, :before_save, :after_save, :before_destroy, :after_destroy
-  
-h4. Custom Views
 
-*This is still in very early in development and of limited use*
+h4. Testing  
 
-This is useful if you have a set of documents that has not been created with Couch Potato, for example doesn't have a ruby_class attribute but you still want to be able to load those documents as instances of a Couch Potato class.
-
-Example: Assuming you have a document like this:
-
-{name: "joe"}
-
-And a class:
+To make testing easier and faster you can replace parts of the Couch Potato infrastructure with stubs/mocks:
 
   class User
     include CouchPotato::Persistence
-    property :name
-  end
-
-To be able to load that user all you have to do is this:
-  
-  class User
-    ...
-    
-    view :everyone
   end
   
-  User.everyone
-
-This will load all documents in your database as instances of User and assign their _id and name attributes.
-
-If you have larger structures and you only want to load some attributes you can customize the view:
-
-  {name: "joe", bio: "52 pages of text ...."}
-
-  class User
-    property :name
-    property :bio
-    
-    view :everyone, :properties => [:name]
+  # RSpec
+  describe User, 'save' do
+    it 'should save' do
+      persister = stub('persister')
+      user = User.new
+      user.persister = persister
+      persister.should_receive(:save_document)
+      user.save
+    end
   end
   
-  User.everyone.first.name # => "joe"
-  User.everyone.first.bio # => nil
+For more information look at the Persister class and the specs (namely spec/unit/create_spec.rb).
 
 h3. Helping out
 

@@ -1,8 +1,0 @@
-* generate real uuids when using couchdb < 0.9 (or just don't support < 0.9. probably the way to go)
-* solve sorting (see sorting branch)
-* #{name}= on has_many collections should do #{name}.clear
-before adding items, to be consistent with ActiveRecord
-("collection=objects: Replaces the collections content by deleting and
-adding objects as appropriate.")
-* view storage could be reduced by not emitting the doc, but using
- include_docs=true at query time
