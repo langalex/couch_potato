@@ -13,7 +13,7 @@ module CouchPotato
         (self.class.properties).inject({}) do |props, property|
           property.serialize(props, self)
           props
-        end.merge('ruby_class' => self.class.name).merge(id_and_rev_json).merge(timestamps_json)
+        end.merge('ruby_class' => self.class.name).merge(id_and_rev_json)
       end
       
       private
@@ -25,18 +25,9 @@ module CouchPotato
         end
       end
       
-      def timestamps_json
-        ['created_at', 'updated_at'].inject({}) do |hash, key|
-          hash[key] = self.send(key) unless self.send(key).nil?
-          hash
-        end
-      end
-      
       module ClassMethods
         def json_create(json)
           instance = self.new
-          instance.created_at = Time.json_create(json['created_at']) 
-          instance.updated_at = Time.json_create(json['updated_at'])
           instance._id = json[:_id] || json['_id']
           instance._rev = json[:_rev] || json['_rev']
           properties.each do |property|

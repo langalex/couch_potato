@@ -27,11 +27,21 @@ module CouchPotato
       def run_callbacks(name)
         return if skip_callbacks
         self.class.callbacks[name].uniq.each do |callback|
-          self.send callback
+          run_callback callback
         end
       end
       
       private
+      
+      def run_callback(name)
+        if name.is_a?(Symbol)
+          self.send name
+        elsif name.is_a?(Proc)
+          name.call self
+        else
+          raise "Don't know how to handle callback of type #{name.class.name}"
+        end
+      end
       
       module ClassMethods
         def before_validation_on_create(*names)

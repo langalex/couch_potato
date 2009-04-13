@@ -1,5 +1,6 @@
 require 'digest/md5'
 require File.dirname(__FILE__) + '/persistence/properties'
+require File.dirname(__FILE__) + '/persistence/magic_timestamps'
 require File.dirname(__FILE__) + '/persistence/callbacks'
 require File.dirname(__FILE__) + '/persistence/json'
 require File.dirname(__FILE__) + '/persistence/dirty_attributes'
@@ -15,9 +16,10 @@ module CouchPotato
     
     def self.included(base)
       base.send :extend, ClassMethods
-      base.send :include, Callbacks, Properties, Validatable, Json, DirtyAttributes, CustomView
+      base.send :include, Properties, Callbacks, Validatable, Json, DirtyAttributes, CustomView
+      base.send :include, MagicTimestamps
       base.class_eval do
-        attr_accessor :_id, :_rev, :_attachments, :_deleted, :created_at, :updated_at
+        attr_accessor :_id, :_rev, :_attachments, :_deleted
         alias_method :id, :_id
       end
     end

@@ -50,6 +50,12 @@ describe 'dirty attribute tracking' do
       it "should return false if attribute not changed" do
         @plate.should_not be_food_changed
       end
+      
+      it "should return false if attribute forced not changed" do
+        @plate.food = 'burger'
+        @plate.food_not_changed
+        @plate.should_not be_food_changed
+      end
     end
   end
   

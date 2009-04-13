@@ -21,7 +21,7 @@ describe "attributes" do
   describe "attributes" do
     it "should return the attributes" do
       plant = Plant.new(:leaf_count => 1)
-      plant.attributes.should == {:leaf_count => 1}
+      plant.attributes.should == {:leaf_count => 1, :created_at => nil, :updated_at => nil}
     end
   end
 

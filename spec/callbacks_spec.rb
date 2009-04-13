@@ -20,6 +20,9 @@ class CallbackRecorder
     self.send callback, callback
   end
   
+  attr_accessor :lambda_works
+  before_create lambda {|model| model.lambda_works = true}
+  
   def callbacks
     @callbacks ||= []
   end
@@ -244,5 +247,13 @@ describe 'save_without_callbacks' do
     @recorder = CallbackRecorder.new
     @recorder.save_without_callbacks
     @recorder.callbacks.should be_empty
+  end
+end
+
+describe "lambda callbacks" do
+  it "should run the lambda" do
+    recorder = CallbackRecorder.new
+    recorder.run_callbacks :before_create
+    recorder.lambda_works.should be_true
   end
 end

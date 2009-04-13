@@ -33,8 +33,6 @@ class Persister
     return unless document.valid?
     document.run_callbacks :before_save
     document.run_callbacks :before_create
-    document.created_at = Time.now
-    document.updated_at = Time.now
     res = database.save_doc document.to_hash
     document._rev = res['rev']
     document._id = res['id']
@@ -49,7 +47,6 @@ class Persister
     return unless document.valid?
     document.run_callbacks :before_save
     document.run_callbacks :before_update
-    document.updated_at = Time.now
     res = database.save_doc document.to_hash
     document._rev = res['rev']
     document.run_callbacks :after_save

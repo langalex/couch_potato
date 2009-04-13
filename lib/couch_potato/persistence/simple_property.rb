@@ -25,7 +25,11 @@ module CouchPotato
           end
           
           define_method "#{name}_changed?" do
-            self.send(name) != self.send("#{name}_was")
+            !self.instance_variable_get("@#{name}_not_changed") && self.send(name) != self.send("#{name}_was")
+          end
+          
+          define_method "#{name}_not_changed" do
+            self.instance_variable_set("@#{name}_not_changed", true)
           end
         end
       end
