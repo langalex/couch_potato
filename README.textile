@@ -83,14 +83,14 @@ Properties can be of any type:
     property :address, :type => Address
   end
 
-Now you can save your objects:
+Now you can save your objects. All database operations are encapsulated in the CouchPotato::Database class. This separates your domain logic from the database access logic which makes it easier to write tests and also keeps you models smaller and cleaner.
 
   user = User.new :name => 'joe'
-  user.save # or save!
+  CouchPotato.database.save_document user # or save_document!
   
 You can of course also retrieve your instance:
 
-  User.get "02097f33a0046123f1ebc0ebb6937269" # => <#User 0x3075>
+  CouchPotato.database.load_document "id_of_the_user_document" # => <#User 0x3075>
 
 
 h4. Properties
@@ -103,7 +103,7 @@ You can access the properties you declared above through normal attribute access
   user._rev # => "2769180384"
   user.created_at # => Fri Oct 24 19:05:54 +0200 2008
   user.updated_at # => Fri Oct 24 19:05:54 +0200 2008
-  user.new? # => false, for compatibility new_record? will work as well
+  user.new? # => false
   
 If you want to have properties that don't map to any JSON type, i.e. other than String, Number, Boolean, Hash or Array you have to define the type like this:
 
@@ -128,7 +128,7 @@ You can also force a dirty state:
   user.name_changed? # => true
   user.name_not_changed
   user.name_changed? # => false
-  user.save # does nothing as no attributes are dirty
+  CouchPotato.database.save_document user # does nothing as no attributes are dirty
   
 
 h4. Object validations
@@ -145,6 +145,8 @@ Couch Potato uses the validatable library for vaidation (http://validatable.ruby
   user.errors.on(:name) # => [:name, 'can't be blank']
 
 h4. Finding stuff
+
+*this will probably change soon in order to separate database logic from the models*
 
 In order to find data in your CouchDB you have to create a view first. Couch Potato offers you to create and manage those views for you. All you have to do is declare them in your classes:
 
@@ -194,7 +196,7 @@ You can also pass in custom map/reduce functions and options:
 
 h4. Associations
 
-Not supported. Not sure if they ever will be. (except for belongs_to)
+Not supported. Not sure if they ever will be. You can implement those yourself using views and custom methods on your models.
 
 h4. callbacks
 
@@ -207,28 +209,26 @@ Couch Potato supports the usual lifecycle callbacks known from ActiveRecord:
     after_update :do_something_else
   end
 
-This will call the method do_something_before_create before creating an object and do_something_else after updating one. Supported callbacks are: :before_validation_on_create, :before_validation_on_update, :before_validation_on_save, :before_create, :after_create, :before_update, :after_update, :before_save, :after_save, :before_destroy, :after_destroy
+This will call the method do_something_before_create before creating an object and do_something_else after updating one. Supported callbacks are: :before_validation_on_create, :before_validation_on_update, :before_validation_on_save, :before_create, :after_create, :before_update, :after_update, :before_save, :after_save, :before_destroy, :after_destroy. You can also pass a Proc instead of a method name.
 
 h4. Testing  
 
-To make testing easier and faster you can replace parts of the Couch Potato infrastructure with stubs/mocks:
+To make testing easier and faster database logic has been put into its own class, which you can replace and stub out in whatever way you want:
 
   class User
     include CouchPotato::Persistence
   end
   
   # RSpec
-  describe User, 'save' do
+  describe 'save a user' do
     it 'should save' do
-      persister = stub('persister')
+      couchrest_db = stub 'couchrest_db', 
+      database = CouchPotato::Database.new couchrest_db
       user = User.new
-      user.persister = persister
-      persister.should_receive(:save_document)
-      user.save
+      couchrest_db.should_receive(:save_doc).with(...)
+      database.save_document user
     end
   end
-  
-For more information look at the Persister class and the specs (namely spec/unit/create_spec.rb).
 
 h3. Helping out
 

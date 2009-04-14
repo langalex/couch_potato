@@ -1,14 +1,6 @@
 module CouchPotato
   module Persistence
     module DirtyAttributes
-      def save
-        if dirty?
-          super 
-        else
-          valid?
-        end
-      end
-      
       def dirty?
         new? || self.class.properties.inject(false) do |res, property|
           res || property.dirty?(self)

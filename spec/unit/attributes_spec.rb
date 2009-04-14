@@ -22,20 +22,5 @@ describe "attributes" do
     end
   end
 
-  describe 'update_attributes' do
-    it "should assign the attributes" do
-      plant = Plant.new 
-      plant.update_attributes :leaf_count => 1
-      plant.leaf_count.should == 1
-    end
-
-    it "should save the object" do
-      plant = Plant.new 
-      persister = mock 'persister'
-      plant.persister = persister
-      persister.should_receive(:save_document).with(plant)
-      plant.update_attributes :leaf_count => 1
-    end
-  end
 end
 

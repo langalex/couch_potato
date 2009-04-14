@@ -18,29 +18,29 @@ describe 'properties' do
   
   it "should persist a string" do
     c = Comment.new :title => 'my title'
-    c.save!
-    c = Comment.find c.id
+    CouchPotato.database.save_document! c
+    c = CouchPotato.database.load_document c.id
     c.title.should == 'my title'
   end
   
   it "should persist a number" do
     c = Comment.new :title => 3
-    c.save!
-    c = Comment.find c.id
+    CouchPotato.database.save_document! c
+    c = CouchPotato.database.load_document c.id
     c.title.should == 3
   end
   
   it "should persist a hash" do
     c = Comment.new :title => {'key' => 'value'}
-    c.save!
-    c = Comment.find c.id
+    CouchPotato.database.save_document! c
+    c = CouchPotato.database.load_document c.id
     c.title.should == {'key' => 'value'}
   end
   
   it "should persist a Time object" do
     w = Watch.new :time => Time.now
-    w.save!
-    w = Watch.find w.id
+    CouchPotato.database.save_document! w
+    w = CouchPotato.database.load_document w.id
     w.time.year.should == Time.now.year
   end
   

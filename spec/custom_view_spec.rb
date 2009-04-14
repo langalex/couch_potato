@@ -20,7 +20,7 @@ describe 'view' do
   end
   
   it "should return instances of the class" do
-    Build.create!(:state => 'success', :time => '2008-01-01')
+    CouchPotato.database.save_document Build.new(:state => 'success', :time => '2008-01-01')
     Build.timeline.map(&:class).should == [Build]
   end
   
@@ -33,24 +33,24 @@ describe 'view' do
   
   describe "properties defined" do
     it "should assign the configured properties" do
-      Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+      CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
       Build.minimal_timeline.first.state.should == 'success'
     end
     
     it "should not assign the properties not configured" do
-      Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+      CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
       Build.minimal_timeline.first.time.should be_nil
     end
     
     it "should assign the id even if it is not configured" do
-      id = Build.db.save_doc({:state => 'success', :time => '2008-01-01'})['id']
+      id = CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})['id']
       Build.minimal_timeline.first._id.should == id
     end
   end
   
   describe "no properties defined" do
     it "should assign all properties to the objects by default" do
-      id = Build.db.save_doc({:state => 'success', :time => '2008-01-01'})['id']
+      id = CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})['id']
       result = Build.timeline.first
       result.state.should == 'success'
       result.time.should == '2008-01-01'
@@ -60,28 +60,28 @@ describe 'view' do
   
   describe "map function given" do
     it "should still return instances of the class" do
-      Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+      CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
       Build.custom_timeline.map(&:class).should == [Build]
     end
     
     it "should assign the properties from the value" do
-      Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+      CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
       Build.custom_timeline.map(&:state).should == ['custom_success']
     end
     
     it "should leave the other properties blank" do
-      Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+      CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
       Build.custom_timeline.map(&:time).should == [nil]
     end
     
     describe "that returns null documents" do
       it "should return instances of the class" do
-        Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+        CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
         Build.custom_timeline_returns_docs.map(&:class).should == [Build]
       end
       
       it "should assign the properties from the value" do
-        Build.db.save_doc({:state => 'success', :time => '2008-01-01'})
+        CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
         Build.custom_timeline_returns_docs.map(&:state).should == ['success']
       end
     end

@@ -6,9 +6,10 @@ describe 'destroy' do
   end
   
   before(:each) do
-    @comment = Comment.create! :title => 'title'
+    @comment = Comment.new :title => 'title'
+    CouchPotato.database.save_document! @comment
     @comment_id = @comment.id
-    @comment.destroy
+    CouchPotato.database.destroy_document @comment
   end
   
   it "should unset the id" do
@@ -21,7 +22,7 @@ describe 'destroy' do
   
   it "should remove the document from the database" do
     lambda {
-      CouchPotato::Persistence.Db.get(@comment_id).should
+      CouchPotato.couchrest_database.get(@comment_id).should
     }.should raise_error(RestClient::ResourceNotFound)
   end
   

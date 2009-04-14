@@ -48,7 +48,8 @@ describe "multiple callbacks at once" do
     end
   end
   it "should run all callback methods given to the callback method call" do
-    monkey = Monkey.create!
+    monkey = Monkey.new
+    CouchPotato.database.save_document! monkey
     monkey.eaten_banana.should be_true
     monkey.eaten_apple.should be_true
   end
@@ -58,7 +59,8 @@ describe 'create callbacks' do
   
   before(:each) do
     @recorder = CallbackRecorder.new
-    @recorder.persister = Persister.new stub('database', :delete_doc => nil, :save_doc => {'rev' => '123', 'id' => '456'})
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}
+    @db = CouchPotato::Database.new(couchrest_database)
   end
   
   describe "successful create" do
@@ -67,32 +69,32 @@ describe 'create callbacks' do
     end
     
     it "should call before_validation_on_create" do
-      @recorder.save!
+      @db.save_document! @recorder
       @recorder.callbacks.should include(:before_validation_on_create)
     end
     
     it "should call before_validation_on_save" do
-      @recorder.save!
+      @db.save_document! @recorder
       @recorder.callbacks.should include(:before_validation_on_save)
     end
     
     it "should call before_save" do
-      @recorder.save!
+      @db.save_document! @recorder
       @recorder.callbacks.should include(:before_save)
     end
     
     it "should call after_save" do
-      @recorder.save!
+      @db.save_document! @recorder
       @recorder.callbacks.should include(:after_save)
     end
     
     it "should call before_create" do
-      @recorder.save!
+      @db.save_document! @recorder
       @recorder.callbacks.should include(:before_create)
     end
     
     it "should call after_create" do
-      @recorder.save!
+      @db.save_document! @recorder
       @recorder.callbacks.should include(:after_create)
     end
     
@@ -101,46 +103,46 @@ describe 'create callbacks' do
   describe "failed create" do
     
     it "should call before_validation_on_create" do
-      @recorder.save
+      @db.save_document @recorder
       @recorder.callbacks.should include(:before_validation_on_create)
     end
     
     it "should call before_validation_on_save" do
-      @recorder.save
+      @db.save_document @recorder
       @recorder.callbacks.should include(:before_validation_on_save)
     end
     
     it "should not call before_save" do
-      @recorder.save
+      @db.save_document @recorder
       @recorder.callbacks.should_not include(:before_save)
     end
     
     it "should not call after_save" do
-      @recorder.save
+      @db.save_document @recorder
       @recorder.callbacks.should_not include(:after_save)
     end
     
     it "should not call before_create" do
-      @recorder.save
+      @db.save_document @recorder
       @recorder.callbacks.should_not include(:before_create)
     end
     
     it "should not call after_create" do
-      @recorder.save
+      @db.save_document @recorder
       @recorder.callbacks.should_not include(:after_create)
     end
-    
   end
-  
-  
 end
 
 describe "update callbacks" do
   
   before(:each) do
     @recorder = CallbackRecorder.new :required_property => 1
-    @recorder.persister = Persister.new stub('database', :delete_doc => nil, :save_doc => {'rev' => '123', 'id' => '456'})
-    @recorder.save!
+    
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}
+    @db = CouchPotato::Database.new(couchrest_database)
+    @db.save_document! @recorder
+    
     @recorder.required_property = 2
     @recorder.callbacks.clear
   end
@@ -148,7 +150,7 @@ describe "update callbacks" do
   describe "successful update" do
     
     before(:each) do
-      @recorder.save!
+      @db.save_document! @recorder
     end
     
     it "should call before_validation_on_update" do
@@ -181,7 +183,7 @@ describe "update callbacks" do
     
     before(:each) do
        @recorder.required_property = nil
-       @recorder.save
+       @db.save_document @recorder
     end
     
     it "should call before_validation_on_update" do
@@ -216,29 +218,21 @@ describe "destroy callbacks" do
   
   before(:each) do
     @recorder = CallbackRecorder.new :required_property => 1
-    @recorder.persister = Persister.new stub('database', :delete_doc => nil, :save_doc => {'rev' => '123', 'id' => '456'})
-    @recorder.save!
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :delete_doc => nil
+    @db = CouchPotato::Database.new(couchrest_database)
+    @db.save_document! @recorder
+    
     @recorder.callbacks.clear
   end
   
   it "should call before_destroy" do
-    @recorder.destroy
+    @db.destroy_document @recorder
     @recorder.callbacks.should include(:before_destroy)
   end
   
   it "should call after_destroy" do
-    @recorder.destroy
+    @db.destroy_document @recorder
     @recorder.callbacks.should include(:after_destroy)
-  end
-end
-
-describe 'save_without_callbacks' do
-  
-  it "should not run any callbacks" do
-    @recorder = CallbackRecorder.new
-    @recorder.persister = Persister.new stub('database', :delete_doc => nil, :save_doc => {'rev' => '123', 'id' => '456'})
-    @recorder.save_without_callbacks
-    @recorder.callbacks.should be_empty
   end
 end
 

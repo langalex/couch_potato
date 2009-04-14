@@ -18,8 +18,8 @@ class Comment
 end
 
 def recreate_db
-  CouchPotato::Persistence.Db.delete! rescue nil
-  CouchPotato::Persistence.Server.create_db CouchPotato::Config.database_name
+  CouchPotato.couchrest_database.delete! rescue nil
+  CouchPotato.couchrest_database.server.create_db CouchPotato::Config.database_name
 end
 recreate_db
 

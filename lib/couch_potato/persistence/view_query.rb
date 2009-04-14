@@ -30,8 +30,8 @@ module CouchPotato
         db.save_doc(design_doc)
       end
       
-      def db(name = nil)
-        ::CouchPotato::Persistence.Db(name)
+      def db
+        ::CouchPotato.couchrest_database
       end
       
       def query_view(parameters)

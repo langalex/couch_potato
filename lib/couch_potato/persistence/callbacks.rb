@@ -17,13 +17,6 @@ module CouchPotato
         end
       end
       
-      def save_without_callbacks
-        self.skip_callbacks = true
-        result = save
-        self.skip_callbacks = false
-        result
-      end
-      
       def run_callbacks(name)
         return if skip_callbacks
         self.class.callbacks[name].uniq.each do |callback|

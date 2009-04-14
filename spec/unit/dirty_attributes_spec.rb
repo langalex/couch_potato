@@ -8,29 +8,24 @@ end
 
 describe 'dirty attribute tracking' do
   before(:each) do
-    @db = stub('db', :save_doc => {'rev' => '1', 'id' => '2'})
-    Plate.db = @db
-  end
-  
-  after(:each) do
-    Plate.db = nil
+    @couchrest_db = stub('database', :save_doc => {'id' => '1', 'rev' => '2'})
+    @db = CouchPotato::Database.new(@couchrest_db)
   end
   
   describe "save" do
     it "should not save when nothing dirty" do
       plate = Plate.new :food => 'sushi'
-      plate.persister = Persister.new @db
-      plate.save!
-      plate.persister.should_not_receive(:save_document)
-      plate.save
+      @db.save_document!(plate)
+      @couchrest_db.should_not_receive(:save_doc)
+      @db.save_document(plate)
     end
     
     it "should save when there are dirty attributes" do
-      plate = Plate.create! :food => 'sushi'
-      plate.persister = Persister.new @db
+      plate = Plate.new :food => 'sushi'
+      @db.save_document!(plate)
       plate.food = 'burger'
-      plate.persister.should_receive(:save_document)
-      plate.save
+      @couchrest_db.should_receive(:save_doc)
+      @db.save_document(plate)
     end
   end
   
@@ -67,8 +62,8 @@ describe 'dirty attribute tracking' do
   
   describe "object loaded from database" do
     before(:each) do
-      Plate.db = stub('db', :get => {'_id' => '1', '_rev' => '2', 'food' => 'sushi'})
-      @plate = Plate.get '1'
+      couchrest_db = stub('database', :get => {'_id' => '1', '_rev' => '2', 'food' => 'sushi', 'ruby_class' => 'Plate'})
+      @plate = CouchPotato::Database.new(couchrest_db).load_document '1'
     end
     
     describe "access old values" do
@@ -90,5 +85,11 @@ describe 'dirty attribute tracking' do
     end
   end
   
+  
+  describe "after save" do
+    it "should reset all attributes to not dirty" do
+      pending
+    end
+  end
   
 end
