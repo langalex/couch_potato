@@ -16,7 +16,7 @@ module CouchPotato
   end
   
   def self.couchrest_database
-    @@__cocuhrest_database ||= CouchRest.database(full_url_to_database)
+    @@__couchrest_database ||= CouchRest.database(full_url_to_database)
   end
   
   def self.full_url_to_database
