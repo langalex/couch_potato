@@ -1,8 +1,9 @@
 module CouchPotato
-  module Persistence
+  module View
 
     class ViewQuery
-      def initialize(design_document_name, view_name, map_function, reduce_function = nil)
+      def initialize(couchrest_database, design_document_name, view_name, map_function, reduce_function = nil)
+        @database = couchrest_database
         @design_document_name = design_document_name
         @view_name = view_name
         @map_function = map_function
@@ -21,21 +22,17 @@ module CouchPotato
       private
       
       def create_view
-        design_doc = db.get "_design/#{@design_document_name}" rescue nil
+        design_doc = @database.get "_design/#{@design_document_name}" rescue nil
         design_doc ||= {'views' => {}, "_id" => "_design/#{@design_document_name}"}
         design_doc['views'][@view_name.to_s] = {
           'map' => @map_function,
           'reduce' => @reduce_function
         }
-        db.save_doc(design_doc)
-      end
-      
-      def db
-        ::CouchPotato.couchrest_database
+        @database.save_doc(design_doc)
       end
       
       def query_view(parameters)
-        db.view view_url, parameters
+        @database.view view_url, parameters
       end
       
       def view_url

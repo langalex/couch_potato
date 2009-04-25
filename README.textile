@@ -146,8 +146,6 @@ Couch Potato uses the validatable library for vaidation (http://validatable.ruby
 
 h4. Finding stuff
 
-*this will probably change soon in order to separate database logic from the models*
-
 In order to find data in your CouchDB you have to create a view first. Couch Potato offers you to create and manage those views for you. All you have to do is declare them in your classes:
 
   class User
@@ -159,11 +157,11 @@ In order to find data in your CouchDB you have to create a view first. Couch Pot
   
 This will create a view called "all" in the "user" design document with a map function that emits "created_at" for every user document.
   
-  User.all
+  CouchPotato.database.view User.all
 
 This will load all user documents in your database sorted by created_at.
 
-  User.all :key => (Time.now- 10)..(Time.now), :descending => true
+  CouchPotato.database.view User.all(:key => (Time.now- 10)..(Time.now), :descending => true)
 
 Any options you pass in will be passed onto CouchDB.
 
@@ -174,23 +172,25 @@ Composite keys are also possible:
     
     view :all, :key => [:created_at, :name]
   end
+  
+The creation of views is based on view specification classes (see the CouchPotato::View) module. The above code used the ModelViewSpec class which is used to the simple find model by property searches. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
 
-If you have larger structures and you only want to load some attributes you can customize the view:
+If you have larger structures and you only want to load some attributes you can customize the view you can use the PropertiesViewSpec (the full class name is automatically derived):
 
   class User
     property :name
     property :bio
     
-    view :all, :key => :created_at, :properties => [:name]
+    view :all, :key => :created_at, :properties => [:name], :type => :properties
   end
   
-  User.everyone.first.name # => "joe"
-  User.everyone.first.bio # => nil
+  CouchPotato.database.view(User.everyone).first.name # => "joe"
+  CouchPotato.database.view(User.everyone).first.bio # => nil
   
-You can also pass in custom map/reduce functions and options:
+You can also pass in custom map/reduce functions with the custom view spec:
 
   class User
-    view :all, :map => "function(doc) { emit(doc.created_at, null)}", :include_docs => true
+    view :all, :map => "function(doc) { emit(doc.created_at, null)}", :include_docs => true, :type => :custom
   end
 
 

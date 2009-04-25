@@ -6,6 +6,12 @@ module CouchPotato
     def initialize(couchrest_database)
       @database = couchrest_database
     end
+    
+    def view(spec)
+      spec.process_results CouchPotato::View::ViewQuery.new(database,
+        spec.design_document, spec.view_name, spec.map_function,
+        spec.reduce_function).query_view!(spec.view_parameters)
+    end
   
     def save_document(document)
       return unless document.dirty?
@@ -15,10 +21,12 @@ module CouchPotato
         update_document document
       end
     end
+    alias_method :save, :save_document
   
     def save_document!(document)
       save_document(document) || raise(ValidationsFailedError.new(document.errors.full_messages))
     end
+    alias_method :save!, :save_document!
   
     def destroy_document(document)
       document.run_callbacks(:before_destroy)
@@ -28,6 +36,7 @@ module CouchPotato
       document._id = nil
       document._rev = nil
     end
+    alias_method :destroy, :destroy_document
   
     def load_document(id)
       begin
@@ -37,6 +46,7 @@ module CouchPotato
         nil
       end
     end
+    alias_method :load, :load_document
   
     def inspect
       "#<CouchPotato::Database>"

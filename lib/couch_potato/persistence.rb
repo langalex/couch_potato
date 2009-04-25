@@ -5,15 +5,15 @@ require File.dirname(__FILE__) + '/persistence/magic_timestamps'
 require File.dirname(__FILE__) + '/persistence/callbacks'
 require File.dirname(__FILE__) + '/persistence/json'
 require File.dirname(__FILE__) + '/persistence/dirty_attributes'
-require File.dirname(__FILE__) + '/persistence/custom_view'
-require File.dirname(__FILE__) + '/persistence/view_query'
+require File.dirname(__FILE__) + '/view/custom_views'
+require File.dirname(__FILE__) + '/view/view_query'
 
 
 module CouchPotato
   module Persistence
     
     def self.included(base)
-      base.send :include, Properties, Callbacks, Validatable, Json, DirtyAttributes, CustomView
+      base.send :include, Properties, Callbacks, Validatable, Json, DirtyAttributes, CouchPotato::View::CustomViews
       base.send :include, MagicTimestamps
       base.class_eval do
         attr_accessor :_id, :_rev, :_attachments, :_deleted
