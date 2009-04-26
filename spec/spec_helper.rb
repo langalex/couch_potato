@@ -23,7 +23,7 @@ def recreate_db
 end
 recreate_db
 
-Spec::Matchers.create :string_matching do |regex|
+Spec::Matchers.define :string_matching do |regex|
   match do |string|
     string =~ regex
   end
