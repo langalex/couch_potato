@@ -11,6 +11,8 @@ class Build
   view :key_array_timeline, :key => [:time, :state]
   view :custom_timeline, :map => "function(doc) { emit(doc._id, {state: 'custom_' + doc.state}); }", :type => :custom
   view :custom_timeline_returns_docs, :map => "function(doc) { emit(doc._id, null); }", :include_docs => true, :type => :custom
+  view :raw, :type => :raw, :map => "function(doc) {emit(doc._id, doc.state)}"
+  view :filtered_raw, :type => :raw, :map => "function(doc) {emit(doc._id, doc.state)}", :results_filter => lambda{|res| res['rows'].map{|row| row['value']}}
   
 end
 
@@ -91,6 +93,18 @@ describe 'view' do
     it "should create a map function with the composite key" do
       CouchPotato::View::ViewQuery.should_receive(:new).with(anything, anything, anything, string_matching(/emit\(\[doc\['time'\], doc\['state'\]\]/), anything).and_return(stub('view query').as_null_object)
       CouchPotato.database.view Build.key_array_timeline
+    end
+  end
+  
+  describe "raw view" do
+    it "should return the raw data" do
+      CouchPotato.database.save_document Build.new(:state => 'success', :time => '2008-01-01')
+      CouchPotato.database.view(Build.raw)['rows'][0]['value'].should == 'success'
+    end
+    
+    it "should return filtred raw data" do
+      CouchPotato.database.save_document Build.new(:state => 'success', :time => '2008-01-01')
+      CouchPotato.database.view(Build.filtered_raw).should == ['success']
     end
   end
   

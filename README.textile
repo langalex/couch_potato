@@ -192,7 +192,22 @@ You can also pass in custom map/reduce functions with the custom view spec:
   class User
     view :all, :map => "function(doc) { emit(doc.created_at, null)}", :include_docs => true, :type => :custom
   end
+  
+If you don't want the results to be converted into models the raw view is your friend:
 
+  class User
+    view :all, :map => "function(doc) { emit(doc.created_at, doc.name)}", :type => :raw
+  end
+  
+When querying this view you will get the raw data returned by CouchDB which looks something like this: {'total_entries': 2, 'rows': [{'value': 'alex', 'key': '2009-01-03 00:02:34 +000', 'id': '75976rgi7546gi02a'}]}
+
+To process this raw data you can also pass in a results filter:
+
+  class User
+    view :all, :map => "function(doc) { emit(doc.created_at, doc.name)}", :type => :raw, :results_filter => lambda {|results| results['rows'].map{|row| row['value']}}
+  end
+
+In this case querying the view would only return the emitted value for each row.
 
 h4. Associations
 

@@ -8,9 +8,10 @@ module CouchPotato
     end
     
     def view(spec)
-      spec.process_results CouchPotato::View::ViewQuery.new(database,
+      results = CouchPotato::View::ViewQuery.new(database,
         spec.design_document, spec.view_name, spec.map_function,
         spec.reduce_function).query_view!(spec.view_parameters)
+      spec.process_results results
     end
   
     def save_document(document)

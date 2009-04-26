@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/base_view_spec'
 require File.dirname(__FILE__) + '/model_view_spec'
 require File.dirname(__FILE__) + '/properties_view_spec'
 require File.dirname(__FILE__) + '/custom_view_spec'
+require File.dirname(__FILE__) + '/raw_view_spec'
 
 
 module CouchPotato
@@ -14,6 +15,7 @@ module CouchPotato
       
       module ClassMethods
         
+        # declare a couchdb view, for examples on how to use see the *ViewSpec classes in CouchPotato::View
         def view(view_name, options)
           self.class.instance_eval do
             define_method view_name do |view_parameters = {}|
@@ -22,11 +24,6 @@ module CouchPotato
             end
           end
         end
-        
-        def should_include_docs?(options)
-          options[:include_docs] || !(options[:map] || options[:properties])
-        end
-        
       end
     end
   end
