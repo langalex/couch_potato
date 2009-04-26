@@ -31,6 +31,7 @@ end
 
 require File.dirname(__FILE__) + '/core_ext/object'
 require File.dirname(__FILE__) + '/core_ext/time'
+require File.dirname(__FILE__) + '/core_ext/date'
 require File.dirname(__FILE__) + '/core_ext/string'
 require File.dirname(__FILE__) + '/couch_potato/persistence'
 
