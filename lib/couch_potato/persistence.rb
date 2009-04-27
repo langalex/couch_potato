@@ -13,7 +13,8 @@ module CouchPotato
   module Persistence
     
     def self.included(base)
-      base.send :include, Properties, Callbacks, Validatable, Json, DirtyAttributes, CouchPotato::View::CustomViews
+      base.send :include, Properties, Callbacks, Validatable, Json, CouchPotato::View::CustomViews
+      base.send :include, DirtyAttributes
       base.send :include, MagicTimestamps
       base.class_eval do
         attr_accessor :_id, :_rev, :_attachments, :_deleted
