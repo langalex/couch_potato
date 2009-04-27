@@ -9,7 +9,7 @@ module CouchPotato
         @design_document = klass.to_s.underscore
         @view_name = view_name
         @options = options
-        @view_parameters = view_parameters
+        @view_parameters = options.select{|key, value| [:group, :include_docs, :descending, :group_level, :limit].include?(key.to_sym)}.merge(view_parameters)
       end
       
       def process_results(results)

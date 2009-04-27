@@ -13,7 +13,7 @@ class Build
   view :custom_timeline_returns_docs, :map => "function(doc) { emit(doc._id, null); }", :include_docs => true, :type => :custom
   view :raw, :type => :raw, :map => "function(doc) {emit(doc._id, doc.state)}"
   view :filtered_raw, :type => :raw, :map => "function(doc) {emit(doc._id, doc.state)}", :results_filter => lambda{|res| res['rows'].map{|row| row['value']}}
-  
+  view :with_view_options, :group => true, :key => :time
 end
 
 describe 'view' do
@@ -105,6 +105,13 @@ describe 'view' do
     it "should return filtred raw data" do
       CouchPotato.database.save_document Build.new(:state => 'success', :time => '2008-01-01')
       CouchPotato.database.view(Build.filtered_raw).should == ['success']
+    end
+    
+    it "should pass view options declared in the view declaration to the query" do
+     view_query = mock 'view_query'   
+     CouchPotato::View::ViewQuery.stub!(:new).and_return(view_query)
+     view_query.should_receive(:query_view!).with(hash_including(:group => true)).and_return({'rows' => []})
+     CouchPotato.database.view(Build.with_view_options)
     end
   end
   
