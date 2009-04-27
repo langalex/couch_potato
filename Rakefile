@@ -29,6 +29,9 @@ begin
     s.description = "Ruby persistence layer for CouchDB"
     s.authors = ["Alexander Lang"]
     s.files = FileList["[A-Z]*.*", "{lib,spec,rails}/**/*", "init.rb"]
+    s.add_dependency 'json'
+    s.add_dependency 'validatable'
+    s.add_dependency 'jchris-couchrest', '0.9.12'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
