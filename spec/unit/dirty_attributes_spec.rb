@@ -20,6 +20,12 @@ describe 'dirty attribute tracking' do
       @db.save_document(plate)
     end
     
+    it "should return true when not dirty" do
+      plate = Plate.new :food => 'sushi'
+      @db.save_document!(plate)
+      @db.save_document(plate).should be_true
+    end
+    
     it "should save when there are dirty attributes" do
       plate = Plate.new :food => 'sushi'
       @db.save_document!(plate)

@@ -1,7 +1,7 @@
 module CouchPotato
   class Database
     
-    class ValidationsFailedError < ::Exception; end
+    class ValidationsFailedError < ::StandardError; end
   
     def initialize(couchrest_database)
       @database = couchrest_database
@@ -15,7 +15,7 @@ module CouchPotato
     end
   
     def save_document(document)
-      return unless document.dirty?
+      return true unless document.dirty?
       if document.new?
         create_document document
       else
