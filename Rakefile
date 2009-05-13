@@ -1,5 +1,6 @@
 require 'rake'
 require 'spec/rake/spectask'
+require 'rake/rdoctask'
 
 task :default => :spec
 
@@ -18,6 +19,17 @@ end
 desc "Run all specs"
 task :spec => [:spec_unit, :spec_functional] do
 end
+
+desc 'Generate documentation'
+Rake::RDocTask.new(:rdoc) do |rdoc|
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title    = 'Couch Potato'
+  rdoc.options << '--line-numbers' << '--inline-source'
+  rdoc.rdoc_files.include('README.md')
+  rdoc.rdoc_files.include('lib/couch_potato.rb')
+  rdoc.rdoc_files.include('lib/couch_potato/**/*.rb')
+end
+
 
 begin
   require 'jeweler'
