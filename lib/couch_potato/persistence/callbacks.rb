@@ -1,6 +1,49 @@
 module CouchPotato
   module Persistence
     module Callbacks
+      
+      class Callback #:nodoc:
+        def initialize(model, name, database)
+          @model, @name, @database = model, name, database
+        end
+        
+        def run
+          if @name.is_a?(Symbol)
+            run_method_callback @name
+          elsif @name.is_a?(Proc)
+            run_lambda_callback @name
+          else
+            raise "Don't know how to handle callback of type #{name.class.name}"
+          end
+        end
+        
+        private
+        
+        def run_method_callback(name)
+          if callback_method(name).arity == 0
+            @model.send name
+          elsif callback_method(name).arity == 1
+            @model.send name, @database
+          else
+            raise "Don't know how to handle method callback with #{callback_method(name).arity} arguments"
+          end
+        end
+        
+        def callback_method(name)
+          @model.method(name)
+        end
+
+        def run_lambda_callback(lambda)
+          if lambda.arity == 1
+            lambda.call @model
+          elsif lambda.arity == 2
+            lambda.call @model, @database
+          else raise "Don't know how to handle lambda callback with #{lambda.arity} arguments"
+          end
+        end
+        
+      end
+      
       def self.included(base)
         base.extend ClassMethods
         
@@ -17,89 +60,31 @@ module CouchPotato
         end
       end
       
-      def run_callbacks(name)
+      def run_callbacks(name, database) #:nodoc:
         return if skip_callbacks
         self.class.callbacks[name].uniq.each do |callback|
-          run_callback callback
-        end
-      end
-      
-      private
-      
-      def run_callback(name)
-        if name.is_a?(Symbol)
-          self.send name
-        elsif name.is_a?(Proc)
-          name.call self
-        else
-          raise "Don't know how to handle callback of type #{name.class.name}"
+          Callback.new(self, callback, database).run
         end
       end
       
       module ClassMethods
-        def before_validation_on_create(*names)
-          names.each do |name|
-            callbacks[:before_validation_on_create] << name
-          end
-        end
-        
-        def before_validation_on_update(*names)
-          names.each do |name|
-            callbacks[:before_validation_on_update] << name
-          end
-        end
-        
-        def before_validation_on_save(*names)
-          names.each do |name|
-            callbacks[:before_validation_on_save] << name
-          end
-        end
-        
-        def before_create(*names)
-          names.each do |name|
-            callbacks[:before_create] << name
-          end
-        end
-        
-        def before_save(*names)
-          names.each do |name|
-            callbacks[:before_save] << name
-          end
-        end
-        
-        def before_update(*names)
-          names.each do |name|
-            callbacks[:before_update] << name
-          end
-        end
-        
-        def before_destroy(*names)
-          names.each do |name|
-            callbacks[:before_destroy] << name
-          end
-        end
-
-        def after_update(*names)
-          names.each do |name|
-            callbacks[:after_update] << name
-          end
-        end
-        
-        def after_save(*names)
-          names.each do |name|
-            callbacks[:after_save] << name
-          end
-        end
-        
-        def after_create(*names)
-          names.each do |name|
-            callbacks[:after_create] << name
-          end
-        end
-
-        def after_destroy(*names)
-          names.each do |name|
-            callbacks[:after_destroy] << name
+        [
+          :before_validation_on_create,
+          :before_validation_on_update,
+          :before_validation_on_save,
+          :before_create,
+          :before_save,
+          :before_update,
+          :before_destroy,
+          :after_update,
+          :after_save,
+          :after_create,
+          :after_destroy
+        ].each do |callback|
+          define_method callback do |*names|
+            names.each do |name|
+              callbacks[callback] << name
+            end
           end
         end
       end

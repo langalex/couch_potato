@@ -20,11 +20,21 @@ class CallbackRecorder
     self.send callback, callback
   end
   
+  view :all, :key  => :required_property
+  
   attr_accessor :lambda_works
-  before_create lambda {|model| model.lambda_works = true}
+  before_create lambda {|model| model.lambda_works = true }
+  after_create lambda {|model, db| db.view CallbackRecorder.all}
+  before_update :method_callback_with_argument
   
   def callbacks
     @callbacks ||= []
+  end
+  
+  private
+  
+  def method_callback_with_argument(db)
+    db.view CallbackRecorder.all
   end
   
 end
@@ -59,7 +69,7 @@ describe 'create callbacks' do
   
   before(:each) do
     @recorder = CallbackRecorder.new
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}
     @db = CouchPotato::Database.new(couchrest_database)
   end
   
@@ -139,7 +149,7 @@ describe "update callbacks" do
   before(:each) do
     @recorder = CallbackRecorder.new :required_property => 1
     
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}
     @db = CouchPotato::Database.new(couchrest_database)
     @db.save_document! @recorder
     
@@ -218,7 +228,7 @@ describe "destroy callbacks" do
   
   before(:each) do
     @recorder = CallbackRecorder.new :required_property => 1
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :delete_doc => nil
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :delete_doc => nil, :view => {'rows' => []}
     @db = CouchPotato::Database.new(couchrest_database)
     @db.save_document! @recorder
     
@@ -236,10 +246,26 @@ describe "destroy callbacks" do
   end
 end
 
+describe "method callbacks" do
+  it "should pass the database to a method with arity 1" do
+    recorder = CallbackRecorder.new
+    db = stub 'db'
+    db.should_receive(:view)
+    recorder.run_callbacks :before_update, db
+  end
+end
+
 describe "lambda callbacks" do
   it "should run the lambda" do
     recorder = CallbackRecorder.new
-    recorder.run_callbacks :before_create
+    recorder.run_callbacks :before_create, stub('db')
     recorder.lambda_works.should be_true
+  end
+  
+  it "should pass the database to a lambda with arity 2" do
+    recorder = CallbackRecorder.new
+    db = stub 'db'
+    db.should_receive(:view)
+    recorder.run_callbacks :after_create, db
   end
 end

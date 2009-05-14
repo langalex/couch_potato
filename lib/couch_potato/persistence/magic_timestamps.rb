@@ -1,5 +1,5 @@
 module CouchPotato
-  module MagicTimestamps
+  module MagicTimestamps #:nodoc:
     def self.included(base)
       base.instance_eval do
         property :created_at, :type => Time
