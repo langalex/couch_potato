@@ -1,7 +1,9 @@
 module CouchPotato
   module View
     # a view for custom map/reduce functions that still returns model instances
-    # example: view :my_custom_view, :map => "function(doc) { emit(doc._id, null); }", :include_docs => true, :type => :custom, :reduce => nil
+    #
+    # example:
+    #   view :my_custom_view, :map => "function(doc) { emit(doc._id, null); }", :include_docs => true, :type => :custom, :reduce => nil
     class CustomViewSpec < BaseViewSpec
       def map_function
         options[:map]

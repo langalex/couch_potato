@@ -1,6 +1,6 @@
 module CouchPotato
   module Persistence
-    class BelongsToProperty
+    class BelongsToProperty #:nodoc:
       attr_accessor :name
       
       def initialize(owner_clazz, name, options = {})

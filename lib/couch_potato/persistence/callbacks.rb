@@ -60,7 +60,10 @@ module CouchPotato
         end
       end
       
-      def run_callbacks(name, database) #:nodoc:
+      # Runs all callbacks on a model with the given name, i.g. :after_create.
+      # 
+      # This method is called by the CouchPotato::Database object when saving/destroying an object 
+      def run_callbacks(name, database)
         return if skip_callbacks
         self.class.callbacks[name].uniq.each do |callback|
           Callback.new(self, callback, database).run

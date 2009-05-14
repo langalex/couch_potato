@@ -1,7 +1,9 @@
 module CouchPotato
   module View
-    # a view to return model instances by searching its properties
-    # example: view :my_view, :key => :name
+    # A view to return model instances by searching its properties
+    #
+    # example:
+    #   view :my_view, :key => :name
     class ModelViewSpec < BaseViewSpec
       
       def view_parameters

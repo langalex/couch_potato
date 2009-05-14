@@ -1,6 +1,6 @@
 module CouchPotato
   module View
-
+    # Used to query views (and create them if they don't exist). Usually you won't have to use this class directly. Instead it is used internally by the CouchPotato::Database.view method.
     class ViewQuery
       def initialize(couchrest_database, design_document_name, view_name, map_function, reduce_function = nil)
         @database = couchrest_database
@@ -38,7 +38,6 @@ module CouchPotato
       def view_url
         "#{@design_document_name}/#{@view_name}"
       end
-      
 
     end
   end

@@ -1,6 +1,6 @@
 module CouchPotato
   module Persistence
-    class SimpleProperty
+    class SimpleProperty  #:nodoc:
       attr_accessor :name, :type
       
       def initialize(owner_clazz, name, options = {})

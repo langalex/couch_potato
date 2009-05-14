@@ -1,7 +1,9 @@
 module CouchPotato
   module View
-    # a view to return model instances with only some properties poulated by searching its properties, e.g. for very large documents where you are only interested in some of their data
-    # example: view :my_view, :key => :name, :properties => [:name, :author], :type => :properties
+    # A view to return model instances with only some properties poulated by searching its properties, e.g. for very large documents where you are only interested in some of their data
+    #
+    # example:
+    #   view :my_view, :key => :name, :properties => [:name, :author], :type => :properties
     class PropertiesViewSpec < ModelViewSpec
       def map_function
         "function(doc) {

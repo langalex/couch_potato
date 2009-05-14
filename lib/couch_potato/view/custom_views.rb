@@ -14,8 +14,7 @@ module CouchPotato
       end
       
       module ClassMethods
-        
-        # declare a couchdb view, for examples on how to use see the *ViewSpec classes in CouchPotato::View
+        # Declare a CouchDB view, for examples on how to use see the *ViewSpec classes in CouchPotato::View
         def view(view_name, options)
           self.class.instance_eval do
             define_method view_name do |view_parameters = {}|

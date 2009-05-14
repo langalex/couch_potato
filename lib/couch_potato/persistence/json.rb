@@ -5,10 +5,12 @@ module CouchPotato
         base.extend ClassMethods
       end
       
+      # returns a JSON representation of a model in order to store it in CouchDB
       def to_json(*args)
         to_hash.to_json(*args)
       end
       
+      # returns all the attributes, the ruby class and the _id and _rev of a model as a Hash
       def to_hash
         (self.class.properties).inject({}) do |props, property|
           property.serialize(props, self)
@@ -26,6 +28,8 @@ module CouchPotato
       end
       
       module ClassMethods
+        
+        # creates a model instance from JSON
         def json_create(json)
           instance = self.new
           instance._id = json[:_id] || json['_id']

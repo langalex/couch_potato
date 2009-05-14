@@ -15,11 +15,19 @@ module CouchPotato
       end
       
       module ClassMethods
+        # returns all the property names of a model class that have been defined using the #property method
+        #
+        # example:
+        #  class Book
+        #    property :title
+        #    property :year
+        #  end
+        #  Book.property_names # => [:title, :year]
         def property_names
           properties.map(&:name)
         end
         
-        def json_create(json)
+        def json_create(json) #:nodoc:
           instance = super
           instance.attributes.each do |name, value|
             instance.instance_variable_set("@#{name}_was", value)
@@ -27,12 +35,20 @@ module CouchPotato
           instance
         end
         
+        # Declare a proprty on a model class. properties are not typed by default. You can use any of the basic types by JSON (String, Integer, Fixnum, Array, Hash). If you want a property to be of a custom class you have to define it using the :class option.
+        #
+        # example:
+        #  class Book
+        #    property :title
+        #    property :year
+        #    property :publisher, :class => Publisher
+        #  end
         def property(name, options = {})
           clazz = options.delete(:class)
           properties << (clazz || SimpleProperty).new(self, name, options)
         end
 
-        def belongs_to(name)
+        def belongs_to(name) #:nodoc:
           property name, :class => BelongsToProperty
         end
 
