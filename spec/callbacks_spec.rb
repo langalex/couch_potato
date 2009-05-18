@@ -69,7 +69,7 @@ describe 'create callbacks' do
   
   before(:each) do
     @recorder = CallbackRecorder.new
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}, :info => nil
     @db = CouchPotato::Database.new(couchrest_database)
   end
   
@@ -149,7 +149,7 @@ describe "update callbacks" do
   before(:each) do
     @recorder = CallbackRecorder.new :required_property => 1
     
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}, :info => nil
     @db = CouchPotato::Database.new(couchrest_database)
     @db.save_document! @recorder
     
@@ -228,7 +228,7 @@ describe "destroy callbacks" do
   
   before(:each) do
     @recorder = CallbackRecorder.new :required_property => 1
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :delete_doc => nil, :view => {'rows' => []}
+    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :delete_doc => nil, :view => {'rows' => []}, :info => nil
     @db = CouchPotato::Database.new(couchrest_database)
     @db.save_document! @recorder
     

@@ -5,6 +5,11 @@ module CouchPotato
   
     def initialize(couchrest_database)
       @database = couchrest_database
+      begin
+        couchrest_database.info 
+      rescue RestClient::ResourceNotFound
+        raise "Database '#{couchrest_database.name}' does not exist."
+      end
     end
     
     def view(spec)
@@ -40,6 +45,7 @@ module CouchPotato
     alias_method :destroy, :destroy_document
   
     def load_document(id)
+      raise "Can't load a document without an id (got nil)" if id.nil?
       begin
         json = database.get(id)
         Class.const_get(json['ruby_class']).json_create json

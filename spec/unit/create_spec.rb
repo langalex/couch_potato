@@ -5,7 +5,7 @@ describe "create" do
   describe "succeeds" do
     before(:each) do
       @comment = Comment.new :title => 'my_title'
-      CouchPotato::Database.new(stub('database', :save_doc => {'rev' => '123', 'id' => '456'})).save_document!(@comment)
+      CouchPotato::Database.new(stub('database', :save_doc => {'rev' => '123', 'id' => '456'}, :info => nil)).save_document!(@comment)
     end
 
     it "should assign the id" do
@@ -28,7 +28,7 @@ describe "create" do
   describe "fails" do
     before(:each) do
       @comment = Comment.new
-      CouchPotato::Database.new(stub('database')).save_document(@comment)
+      CouchPotato::Database.new(stub('database', :info => nil)).save_document(@comment)
     end
 
     it "should not assign an id" do

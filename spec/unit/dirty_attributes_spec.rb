@@ -8,7 +8,7 @@ end
 
 describe 'dirty attribute tracking' do
   before(:each) do
-    @couchrest_db = stub('database', :save_doc => {'id' => '1', 'rev' => '2'})
+    @couchrest_db = stub('database', :save_doc => {'id' => '1', 'rev' => '2'}, :info => nil)
     @db = CouchPotato::Database.new(@couchrest_db)
   end
   
@@ -68,7 +68,7 @@ describe 'dirty attribute tracking' do
   
   describe "object loaded from database" do
     before(:each) do
-      couchrest_db = stub('database', :get => {'_id' => '1', '_rev' => '2', 'food' => 'sushi', 'ruby_class' => 'Plate'})
+      couchrest_db = stub('database', :get => {'_id' => '1', '_rev' => '2', 'food' => 'sushi', 'ruby_class' => 'Plate'}, :info => nil)
       @plate = CouchPotato::Database.new(couchrest_db).load_document '1'
     end
     
@@ -94,7 +94,7 @@ describe 'dirty attribute tracking' do
   
   describe "after save" do
     it "should reset all attributes to not dirty" do
-      couchrest_db = stub('database', :get => {'_id' => '1', '_rev' => '2', 'food' => 'sushi', 'ruby_class' => 'Plate'}, :save_doc => {})
+      couchrest_db = stub('database', :get => {'_id' => '1', '_rev' => '2', 'food' => 'sushi', 'ruby_class' => 'Plate'}, :info => nil, :save_doc => {})
       db = CouchPotato::Database.new(couchrest_db)
       @plate = db.load_document '1'
       @plate.food = 'burger'
