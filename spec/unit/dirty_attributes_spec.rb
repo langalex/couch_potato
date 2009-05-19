@@ -84,6 +84,13 @@ describe 'dirty attribute tracking' do
         @plate.food = 'burger'
         @plate.should be_food_changed
       end
+      
+      it "should return true if array attribute changed" do
+        couchrest_db = stub('database', :get => {'_id' => '1', '_rev' => '2', 'food' => ['sushi'], 'ruby_class' => 'Plate'}, :info => nil)
+        plate = CouchPotato::Database.new(couchrest_db).load_document '1'
+        plate.food << 'burger'
+        plate.should be_food_changed
+      end
 
       it "should return false if attribute not changed" do
         @plate.should_not be_food_changed

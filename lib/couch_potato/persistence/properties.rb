@@ -29,9 +29,7 @@ module CouchPotato
         
         def json_create(json) #:nodoc:
           instance = super
-          instance.attributes.each do |name, value|
-            instance.instance_variable_set("@#{name}_was", value)
-          end
+          instance.send(:assign_attribute_copies_for_dirty_tracking)
           instance
         end
         

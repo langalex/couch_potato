@@ -11,9 +11,22 @@ module CouchPotato
           
           def initialize(attributes = {})
             super attributes
+            assign_attribute_copies_for_dirty_tracking
+          end
+          
+          def assign_attribute_copies_for_dirty_tracking
             attributes.each do |name, value|
-              self.instance_variable_set("@#{name}_was", value)
+              self.instance_variable_set("@#{name}_was", clone_attribute(value))
             end if attributes
+          end
+          private :assign_attribute_copies_for_dirty_tracking
+          
+          def clone_attribute(value)
+            if [Fixnum, Symbol, TrueClass, FalseClass, NilClass, Float].include?(value.class)
+              value
+            else
+              value.clone
+            end
           end
           
           define_method "#{name}=" do |value|
