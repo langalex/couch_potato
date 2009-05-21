@@ -32,7 +32,7 @@ module CouchPotato
       
       def process_results(results)
         if count?
-          results['rows'].first['value']
+          results['rows'].first.try(:[], 'value') || 0
         else
           results['rows'].map do |row|
             klass.json_create row['doc']

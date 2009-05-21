@@ -44,6 +44,10 @@ describe 'view' do
     CouchPotato.database.view(Build.count(:reduce => true)).should == 1
   end
   
+  it "should count zero documents" do
+    CouchPotato.database.view(Build.count(:reduce => true)).should == 0
+  end
+  
   describe "properties defined" do
     it "should assign the configured properties" do
       CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', :ruby_class => 'Build')
