@@ -7,6 +7,7 @@ class Build
   property :time
   
   view :timeline, :key => :time
+  view :count, :key => :time, :reduce => true
   view :minimal_timeline, :key => :time, :properties => [:state], :type => :properties
   view :key_array_timeline, :key => [:time, :state]
   view :custom_timeline, :map => "function(doc) { emit(doc._id, {state: 'custom_' + doc.state}); }", :type => :custom
@@ -33,26 +34,36 @@ describe 'view' do
     CouchPotato.database.view Build.timeline(:key => 1)
   end
   
+  it "should not return documents that don't have a matching ruby_class" do
+    CouchPotato.couchrest_database.save_doc({:time => 'x'})
+    CouchPotato.database.view(Build.timeline).should == []
+  end
+  
+  it "should count documents" do
+    CouchPotato.database.save_document Build.new(:state => 'success', :time => '2008-01-01')
+    CouchPotato.database.view(Build.count(:reduce => true)).should == 1
+  end
+  
   describe "properties defined" do
     it "should assign the configured properties" do
-      CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
+      CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', :ruby_class => 'Build')
       CouchPotato.database.view(Build.minimal_timeline).first.state.should == 'success'
     end
     
     it "should not assign the properties not configured" do
-      CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
+      CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', :ruby_class => 'Build')
       CouchPotato.database.view(Build.minimal_timeline).first.time.should be_nil
     end
     
     it "should assign the id even if it is not configured" do
-      id = CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})['id']
+      id = CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', :ruby_class => 'Build')['id']
       CouchPotato.database.view(Build.minimal_timeline).first._id.should == id
     end
   end
   
   describe "no properties defined" do
     it "should assign all properties to the objects by default" do
-      id = CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})['id']
+      id = CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01', :ruby_class => 'Build'})['id']
       result = CouchPotato.database.view(Build.timeline).first
       result.state.should == 'success'
       result.time.should == '2008-01-01'

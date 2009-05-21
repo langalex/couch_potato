@@ -18,9 +18,17 @@ module CouchPotato
         def view(view_name, options)
           self.class.instance_eval do
             define_method view_name do |view_parameters = {}|
-              klass = options[:type] ? options[:type].to_s.camelize : 'Model'
-              CouchPotato::View.const_get("#{klass}ViewSpec").new self, view_name, options, view_parameters
+              view_spec_class(options[:type]).new self, view_name, options, view_parameters
             end
+          end
+        end
+        
+        def view_spec_class(type)
+          if type && type.is_a?(Class)
+            type
+          else
+            name = type.nil? ? 'Model' : type.to_s.camelize
+            CouchPotato::View.const_get("#{name}ViewSpec")
           end
         end
       end

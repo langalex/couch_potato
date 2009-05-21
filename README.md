@@ -173,9 +173,9 @@ Composite keys are also possible:
       view :all, :key => [:created_at, :name]
     end
   
-The creation of views is based on view specification classes (see the CouchPotato::View) module. The above code used the ModelViewSpec class which is used to the simple find model by property searches. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
+The creation of views is based on view specification classes (see the CouchPotato::View module). The above code uses the ModelViewSpec class which is used to find models by their properties. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
 
-If you have larger structures and you only want to load some attributes you can customize the view you can use the PropertiesViewSpec (the full class name is automatically derived):
+If you have larger structures and you only want to load some attributes you can use the PropertiesViewSpec (the full class name is automatically derived):
 
     class User
       property :name
@@ -208,6 +208,8 @@ To process this raw data you can also pass in a results filter:
     end
 
 In this case querying the view would only return the emitted value for each row.
+
+You can pass in your own view specifications by passing in :type => MyViewSpecClass. Take a look at the CouchPotato::View::*ViewSpec classes to get an idea of how this works.
 
 #### Associations
 

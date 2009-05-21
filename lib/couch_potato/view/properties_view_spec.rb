@@ -7,7 +7,9 @@ module CouchPotato
     class PropertiesViewSpec < ModelViewSpec
       def map_function
         "function(doc) {
-            emit(#{formatted_key(key)}, #{properties_for_map(properties)});
+           if(doc.ruby_class && doc.ruby_class == '#{@klass.name}') {
+             emit(#{formatted_key(key)}, #{properties_for_map(properties)});
+           }
          }"
       end
       
