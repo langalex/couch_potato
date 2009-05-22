@@ -48,7 +48,9 @@ module CouchPotato
       raise "Can't load a document without an id (got nil)" if id.nil?
       begin
         json = database.get(id)
-        Class.const_get(json['ruby_class']).json_create json
+        instance = Class.const_get(json['ruby_class']).json_create json
+        instance.database = self
+        instance
       rescue(RestClient::ResourceNotFound)
         nil
       end
@@ -62,6 +64,7 @@ module CouchPotato
     private
   
     def create_document(document)
+      document.database = self
       document.run_callbacks :before_validation_on_save
       document.run_callbacks :before_validation_on_create
       return unless document.valid?
