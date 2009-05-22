@@ -35,10 +35,10 @@ module CouchPotato
     alias_method :save!, :save_document!
   
     def destroy_document(document)
-      document.run_callbacks :before_destroy, self
+      document.run_callbacks :before_destroy
       document._deleted = true
       database.delete_doc document.to_hash
-      document.run_callbacks :after_destroy, self
+      document.run_callbacks :after_destroy
       document._id = nil
       document._rev = nil
     end
@@ -62,29 +62,29 @@ module CouchPotato
     private
   
     def create_document(document)
-      document.run_callbacks :before_validation_on_save, self
-      document.run_callbacks :before_validation_on_create, self
+      document.run_callbacks :before_validation_on_save
+      document.run_callbacks :before_validation_on_create
       return unless document.valid?
-      document.run_callbacks :before_save, self
-      document.run_callbacks :before_create, self
+      document.run_callbacks :before_save
+      document.run_callbacks :before_create
       res = database.save_doc document.to_hash
       document._rev = res['rev']
       document._id = res['id']
-      document.run_callbacks :after_save, self
-      document.run_callbacks :after_create, self
+      document.run_callbacks :after_save
+      document.run_callbacks :after_create
       true
     end
   
     def update_document(document)
-      document.run_callbacks :before_validation_on_save, self
-      document.run_callbacks :before_validation_on_update, self
+      document.run_callbacks :before_validation_on_save
+      document.run_callbacks :before_validation_on_update
       return unless document.valid?
-      document.run_callbacks :before_save, self
-      document.run_callbacks :before_update, self
+      document.run_callbacks :before_save
+      document.run_callbacks :before_update
       res = database.save_doc document.to_hash
       document._rev = res['rev']
-      document.run_callbacks :after_save, self
-      document.run_callbacks :after_update, self
+      document.run_callbacks :after_save
+      document.run_callbacks :after_update
       true
     end
   
