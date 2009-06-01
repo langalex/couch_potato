@@ -7,7 +7,7 @@ class CallbackRecorder
   
   validates_presence_of :required_property
   
-  [:before_validation_on_create,
+  [:before_validation, :before_validation_on_create,
     :before_validation_on_save, :before_validation_on_update, 
     :before_save, :before_create, :before_create,
     :after_save, :after_create, :after_create,
@@ -78,6 +78,11 @@ describe 'create callbacks' do
        @recorder.required_property = 1
     end
     
+    it "should call before_validation" do
+      @db.save_document! @recorder
+      @recorder.callbacks.should include(:before_validation)
+    end
+        
     it "should call before_validation_on_create" do
       @db.save_document! @recorder
       @recorder.callbacks.should include(:before_validation_on_create)
@@ -111,6 +116,11 @@ describe 'create callbacks' do
   end
   
   describe "failed create" do
+    
+    it "should call before_validation" do
+      @db.save_document @recorder
+      @recorder.callbacks.should include(:before_validation)
+    end
     
     it "should call before_validation_on_create" do
       @db.save_document @recorder
@@ -163,6 +173,10 @@ describe "update callbacks" do
       @db.save_document! @recorder
     end
     
+    it "should call before_validation" do
+      @recorder.callbacks.should include(:before_validation)
+    end
+    
     it "should call before_validation_on_update" do
       @recorder.callbacks.should include(:before_validation_on_update)
     end
@@ -194,6 +208,10 @@ describe "update callbacks" do
     before(:each) do
        @recorder.required_property = nil
        @db.save_document @recorder
+    end
+    
+    it "should call before_validation" do
+      @recorder.callbacks.should include(:before_validation)
     end
     
     it "should call before_validation_on_update" do

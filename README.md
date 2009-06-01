@@ -226,9 +226,9 @@ Couch Potato supports the usual lifecycle callbacks known from ActiveRecord:
       before_update {|user, db| user.do_something_on_update}
     end
 
-This will call the method do_something_before_create before creating an object and run the given lambda before updating one. Lambda callbacks get passed the model as their first argument. Optionally if a lambda declares two arguments it also gets passed the database object. This is useful for creating other objects or querying views. Method callbacks don't receive any arguments by default but will get passed the database if they declare an argument.
+This will call the method do_something_before_create before creating an object and run the given lambda before updating one. Lambda callbacks get passed the model as their first argument. Optionally if a lambda declares two arguments it also gets passed the database object. This is useful for creating other objects or querying views. Method callbacks don't receive any arguments by default but will get passed the database if they declare an argument. The database argument is not available on before_validation callbacks since valid? can be called without passing the object to the database.
 
-Supported callbacks are: :before_validation_on_create, :before_validation_on_update, :before_validation_on_save, :before_create, :after_create, :before_update, :after_update, :before_save, :after_save, :before_destroy, :after_destroy.
+Supported callbacks are: :before_validation, :before_validation_on_create, :before_validation_on_update, :before_validation_on_save, :before_create, :after_create, :before_update, :after_update, :before_save, :after_save, :before_destroy, :after_destroy.
 
 #### Testing  
 

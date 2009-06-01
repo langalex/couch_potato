@@ -3,7 +3,7 @@ module CouchPotato
     module Callbacks
       
       class Callback #:nodoc:
-        def initialize(model, name, database)
+        def initialize(model, name, database=nil)
           @model, @name, @database = model, name, database
         end
         
@@ -20,7 +20,7 @@ module CouchPotato
         private
         
         def run_method_callback(name)
-          if callback_method(name).arity == 0
+          if callback_method(name).arity == 0 || @database.nil?
             @model.send name
           elsif callback_method(name).arity == 1
             @model.send name, @database
@@ -34,7 +34,7 @@ module CouchPotato
         end
 
         def run_lambda_callback(lambda)
-          if lambda.arity == 1
+          if lambda.arity == 1 || @database.nil?
             lambda.call @model
           elsif lambda.arity == 2
             lambda.call @model, @database
@@ -51,7 +51,7 @@ module CouchPotato
           attr_accessor :skip_callbacks
           def self.callbacks
             @callbacks ||= {}
-            @callbacks[self.name] ||= {:before_validation_on_create => [], 
+            @callbacks[self.name] ||= {:before_validation => [], :before_validation_on_create => [], 
               :before_validation_on_update => [], :before_validation_on_save => [], :before_create => [], 
               :after_create => [], :before_update => [], :after_update => [],
               :before_save => [], :after_save => [],
@@ -72,6 +72,7 @@ module CouchPotato
       
       module ClassMethods
         [
+          :before_validation,
           :before_validation_on_create,
           :before_validation_on_update,
           :before_validation_on_save,
