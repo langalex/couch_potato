@@ -28,6 +28,7 @@ module CouchPotato
         end
         
         def json_create(json) #:nodoc:
+          return if json.nil?
           instance = super
           instance.send(:assign_attribute_copies_for_dirty_tracking)
           instance

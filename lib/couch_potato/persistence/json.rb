@@ -31,6 +31,7 @@ module CouchPotato
         
         # creates a model instance from JSON
         def json_create(json)
+          return if json.nil?
           instance = self.new
           instance._id = json[:_id] || json['_id']
           instance._rev = json[:_rev] || json['_rev']
