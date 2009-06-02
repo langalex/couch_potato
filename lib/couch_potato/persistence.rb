@@ -78,6 +78,7 @@ module CouchPotato
     def new?
       _rev.nil?
     end
+    alias_method :new_record?, :new?
     
     # returns the document id
     # this is used by rails to construct URLs
