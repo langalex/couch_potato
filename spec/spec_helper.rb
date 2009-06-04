@@ -6,13 +6,14 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'couch_potato'
 
 CouchPotato::Config.database_name = 'couch_potato_test'
+CouchPotato::Config.database_server = 'http://192.168.1.48:5984/'
 
 
 class Comment
   include CouchPotato::Persistence
-  
+
   validates_presence_of :title
-  
+
   property :title
   belongs_to :commenter
 end
