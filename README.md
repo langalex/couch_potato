@@ -20,21 +20,26 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Installation
 
-Couch Potato requires Ruby 1.9.
-
 Couch Potato is hosted as a gem on github which you can install like this:
 
     sudo gem source --add http://gems.github.com # if you haven't already
     sudo gem install langalex-couch_potato
-  
+
 #### Using with your ruby application:
 
     require 'rubygems'
     gem 'langalex-couch_potato'
     require 'couch_potato'
+
+Alternatively you can download or clone the source repository and then require lib/couch_potato.rb.
+
+You MUST specificy the name of the database:
+
     CouchPotato::Config.database_name = 'name of the db'
-  
-Alternatively you can download or clone the source repository and then require lib/couch_potato.rb. 
+
+The server URL will default to http://localhost:5984/ unless specified with:
+
+    CouchPotato::Config.database_server = "http://example.com:5984/"
 
 #### Using with Rails
 
@@ -48,7 +53,7 @@ Then create a config/couchdb.yml:
     test: test_db_name
     production: http://db.server/production_db_name
 
-Alternatively you can also install Couch Potato directly as a plugin. 
+Alternatively you can also install Couch Potato directly as a plugin.
 
 ### Introduction
 
@@ -71,15 +76,15 @@ If you want to store any properties you have to declare them:
 
     class User
       include CouchPotato::Persistence
-    
+
       property :name
     end
-  
+
 Properties can be of any type:
 
     class User
       include CouchPotato::Persistence
-    
+
       property :address, :type => Address
     end
 
@@ -87,7 +92,7 @@ Now you can save your objects. All database operations are encapsulated in the C
 
     user = User.new :name => 'joe'
     CouchPotato.database.save_document user # or save_document!
-  
+
 You can of course also retrieve your instance:
 
     CouchPotato.database.load_document "id_of_the_user_document" # => <#User 0x3075>
@@ -104,13 +109,13 @@ You can access the properties you declared above through normal attribute access
     user.created_at # => Fri Oct 24 19:05:54 +0200 2008
     user.updated_at # => Fri Oct 24 19:05:54 +0200 2008
     user.new? # => false
-  
+
 If you want to have properties that don't map to any JSON type, i.e. other than String, Number, Boolean, Hash or Array you have to define the type like this:
 
     class User
       property :date_of_birth, :type => Date
     end
-  
+
 The date_of_birth property is now automatically serialized to JSON and back when storing/retrieving objects.
 
 #### Dirty tracking
@@ -121,15 +126,15 @@ CouchPotato tracks the dirty state of attributes in the same way ActiveRecord do
     user.name # => 'joe'
     user.name_changed? # => false
     user.name_was # => nil
-  
+
 You can also force a dirty state:
-  
+
     user.name = 'jane'
     user.name_changed? # => true
     user.name_not_changed
     user.name_changed? # => false
     CouchPotato.database.save_document user # does nothing as no attributes are dirty
-  
+
 
 #### Object validations
 
@@ -151,12 +156,12 @@ In order to find data in your CouchDB you have to create a view first. Couch Pot
     class User
       include CouchPotato::Persistence
       property :name
-    
+
       view :all, :key => :created_at
     end
-  
+
 This will create a view called "all" in the "user" design document with a map function that emits "created_at" for every user document.
-  
+
     CouchPotato.database.view User.all
 
 This will load all user documents in your database sorted by created_at.
@@ -169,10 +174,10 @@ Composite keys are also possible:
 
     class User
       property :name
-    
+
       view :all, :key => [:created_at, :name]
     end
-  
+
 The creation of views is based on view specification classes (see the CouchPotato::View module). The above code uses the ModelViewSpec class which is used to find models by their properties. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
 
 If you have larger structures and you only want to load some attributes you can use the PropertiesViewSpec (the full class name is automatically derived):
@@ -180,25 +185,25 @@ If you have larger structures and you only want to load some attributes you can 
     class User
       property :name
       property :bio
-    
+
       view :all, :key => :created_at, :properties => [:name], :type => :properties
     end
-  
+
   CouchPotato.database.view(User.everyone).first.name # => "joe"
   CouchPotato.database.view(User.everyone).first.bio # => nil
-  
+
 You can also pass in custom map/reduce functions with the custom view spec:
 
     class User
       view :all, :map => "function(doc) { emit(doc.created_at, null)}", :include_docs => true, :type => :custom
     end
-  
+
 If you don't want the results to be converted into models the raw view is your friend:
 
     class User
       view :all, :map => "function(doc) { emit(doc.created_at, doc.name)}", :type => :raw
     end
-  
+
 When querying this view you will get the raw data returned by CouchDB which looks something like this: {'total_entries': 2, 'rows': [{'value': 'alex', 'key': '2009-01-03 00:02:34 +000', 'id': '75976rgi7546gi02a'}]}
 
 To process this raw data you can also pass in a results filter:
@@ -221,34 +226,36 @@ Couch Potato supports the usual lifecycle callbacks known from ActiveRecord:
 
     class User
       include CouchPotato::Persistence
-    
+
       before_create :do_something_before_create
-      before_update {|user, db| user.do_something_on_update}
+      before_update {|user| user.do_something_on_update}
     end
 
-This will call the method do_something_before_create before creating an object and run the given lambda before updating one. Lambda callbacks get passed the model as their first argument. Optionally if a lambda declares two arguments it also gets passed the database object. This is useful for creating other objects or querying views. Method callbacks don't receive any arguments by default but will get passed the database if they declare an argument. The database argument is not available on before_validation callbacks since valid? can be called without passing the object to the database.
+This will call the method do_something_before_create before creating an object and run the given lambda before updating one. Lambda callbacks get passed the model as their first argument. Method callbacks don't receive any arguments.
 
 Supported callbacks are: :before_validation, :before_validation_on_create, :before_validation_on_update, :before_validation_on_save, :before_create, :after_create, :before_update, :after_update, :before_save, :after_save, :before_destroy, :after_destroy.
 
-#### Testing  
+If you need access to the database in a callback: Couch Potato automatically assigns a database instance to the model before saving and when loading. It is available as _database_ accessor from within your model instance.
+
+#### Testing
 
 To make testing easier and faster database logic has been put into its own class, which you can replace and stub out in whatever way you want:
 
     class User
       include CouchPotato::Persistence
     end
-  
+
     # RSpec
     describe 'save a user' do
       it 'should save' do
-        couchrest_db = stub 'couchrest_db', 
+        couchrest_db = stub 'couchrest_db',
         database = CouchPotato::Database.new couchrest_db
         user = User.new
         couchrest_db.should_receive(:save_doc).with(...)
         database.save_document user
       end
     end
-    
+
 By creating you own instances of CouchPotato::Database and passing them a fake CouchRest database instance you can completely disconnect your unit tests/spec from the database.
 
 ### Helping out

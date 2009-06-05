@@ -9,18 +9,18 @@ module CouchPotato
         @map_function = map_function
         @reduce_function = reduce_function
       end
-      
+
       def query_view!(parameters = {})
         begin
           query_view parameters
-        rescue RestClient::ResourceNotFound => e
+        rescue RestClient::ResourceNotFound# => e
           create_view
           retry
         end
       end
-      
+
       private
-      
+
       def create_view
         design_doc = @database.get "_design/#{@design_document_name}" rescue nil
         design_doc ||= {'views' => {}, "_id" => "_design/#{@design_document_name}"}
@@ -30,11 +30,11 @@ module CouchPotato
         }
         @database.save_doc(design_doc)
       end
-      
+
       def query_view(parameters)
         @database.view view_url, parameters
       end
-      
+
       def view_url
         "#{@design_document_name}/#{@view_name}"
       end

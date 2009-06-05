@@ -18,7 +18,7 @@ module CouchPotato
       base.send :include, DirtyAttributes
       base.send :include, MagicTimestamps
       base.class_eval do
-        attr_accessor :_id, :_rev, :_attachments, :_deleted
+        attr_accessor :_id, :_rev, :_attachments, :_deleted, :database
         alias_method :id, :_id
       end
     end

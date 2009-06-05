@@ -24,8 +24,6 @@ class CallbackRecorder
   
   attr_accessor :lambda_works
   before_create lambda {|model| model.lambda_works = true }
-  after_create lambda {|model, db| db.view CallbackRecorder.all}
-  before_update :method_callback_with_argument
   
   def callbacks
     @callbacks ||= []
@@ -264,26 +262,10 @@ describe "destroy callbacks" do
   end
 end
 
-describe "method callbacks" do
-  it "should pass the database to a method with arity 1" do
-    recorder = CallbackRecorder.new
-    db = stub 'db'
-    db.should_receive(:view)
-    recorder.run_callbacks :before_update, db
-  end
-end
-
 describe "lambda callbacks" do
   it "should run the lambda" do
     recorder = CallbackRecorder.new
-    recorder.run_callbacks :before_create, stub('db')
+    recorder.run_callbacks :before_create
     recorder.lambda_works.should be_true
-  end
-  
-  it "should pass the database to a lambda with arity 2" do
-    recorder = CallbackRecorder.new
-    db = stub 'db'
-    db.should_receive(:view)
-    recorder.run_callbacks :after_create, db
   end
 end
