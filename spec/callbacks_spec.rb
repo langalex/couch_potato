@@ -77,7 +77,7 @@ describe 'create callbacks' do
     end
     
     it "should call before_validation" do
-      @db.save_document! @recorder
+      @recorder.valid?
       @recorder.callbacks.should include(:before_validation)
     end
         
@@ -116,7 +116,7 @@ describe 'create callbacks' do
   describe "failed create" do
     
     it "should call before_validation" do
-      @db.save_document @recorder
+      @recorder.valid?
       @recorder.callbacks.should include(:before_validation)
     end
     
