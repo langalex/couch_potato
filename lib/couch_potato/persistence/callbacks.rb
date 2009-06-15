@@ -8,8 +8,8 @@ module CouchPotato
           attr_accessor :skip_callbacks
           def self.callbacks
             @callbacks ||= {}
-            @callbacks[self.name] ||= {:before_validation_on_create => [],
-              :before_validation_on_update => [], :before_validation_on_save => [], :before_create => [],
+            @callbacks[self.name] ||= {:before_validation => [], :before_validation_on_create => [], 
+              :before_validation_on_update => [], :before_validation_on_save => [], :before_create => [], 
               :after_create => [], :before_update => [], :after_update => [],
               :before_save => [], :after_save => [],
               :before_destroy => [], :after_destroy => []}
@@ -35,6 +35,7 @@ module CouchPotato
 
       module ClassMethods
         [
+          :before_validation,
           :before_validation_on_create,
           :before_validation_on_update,
           :before_validation_on_save,

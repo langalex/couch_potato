@@ -5,8 +5,6 @@ require 'json/add/rails'
 
 require 'ostruct'
 
-require 'validatable'
-
 
 module CouchPotato
   Config = OpenStruct.new

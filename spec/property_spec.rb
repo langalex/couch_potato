@@ -1,4 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
+require File.join(File.dirname(__FILE__), 'fixtures', 'address')
+require File.join(File.dirname(__FILE__), 'fixtures', 'person')
 
 class Watch
   include CouchPotato::Persistence
@@ -42,6 +44,23 @@ describe 'properties' do
     CouchPotato.database.save_document! w
     w = CouchPotato.database.load_document w.id
     w.time.year.should == Time.now.year
+  end
+  
+  it "should persist an object" do
+    p = Person.new :name => 'Bob'
+    a = Address.new :city => 'Denver'
+    p.ship_address = a
+    CouchPotato.database.save_document! p
+    p = CouchPotato.database.load_document p.id
+    p.ship_address.should === a
+  end
+  
+  it "should persist null for a null " do
+    p = Person.new :name => 'Bob'
+    p.ship_address = nil
+    CouchPotato.database.save_document! p
+    p = CouchPotato.database.load_document p.id
+    p.ship_address.should be_nil
   end
   
   describe "predicate" do
