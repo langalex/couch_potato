@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
      "lib/core_ext/date.rb",
      "lib/core_ext/object.rb",
      "lib/core_ext/string.rb",
+     "lib/core_ext/symbol.rb",
      "lib/core_ext/time.rb",
      "lib/couch_potato.rb",
      "lib/couch_potato/database.rb",
