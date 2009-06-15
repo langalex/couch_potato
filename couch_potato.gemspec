@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Lang"]
-  s.date = %q{2009-05-21}
+  s.date = %q{2009-06-15}
   s.description = %q{Ruby persistence layer for CouchDB}
   s.email = %q{alex@upstream-berlin.com}
   s.extra_rdoc_files = [
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
      "lib/couch_potato/persistence/magic_timestamps.rb",
      "lib/couch_potato/persistence/properties.rb",
      "lib/couch_potato/persistence/simple_property.rb",
+     "lib/couch_potato/persistence/validation.rb",
      "lib/couch_potato/view/base_view_spec.rb",
      "lib/couch_potato/view/custom_view_spec.rb",
      "lib/couch_potato/view/custom_views.rb",
@@ -44,10 +45,13 @@ Gem::Specification.new do |s|
      "spec/create_spec.rb",
      "spec/custom_view_spec.rb",
      "spec/destroy_spec.rb",
+     "spec/fixtures/address.rb",
+     "spec/fixtures/person.rb",
      "spec/property_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/unit/attributes_spec.rb",
+     "spec/unit/callbacks_spec.rb",
      "spec/unit/create_spec.rb",
      "spec/unit/customs_views_spec.rb",
      "spec/unit/database_spec.rb",
@@ -67,9 +71,12 @@ Gem::Specification.new do |s|
      "spec/create_spec.rb",
      "spec/custom_view_spec.rb",
      "spec/destroy_spec.rb",
+     "spec/fixtures/address.rb",
+     "spec/fixtures/person.rb",
      "spec/property_spec.rb",
      "spec/spec_helper.rb",
      "spec/unit/attributes_spec.rb",
+     "spec/unit/callbacks_spec.rb",
      "spec/unit/create_spec.rb",
      "spec/unit/customs_views_spec.rb",
      "spec/unit/database_spec.rb",
