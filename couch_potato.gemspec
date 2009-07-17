@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{couch_potato}
-  s.version = "0.2.7"
+  s.version = "0.2.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Lang"]
-  s.date = %q{2009-06-15}
+  s.date = %q{2009-07-01}
   s.description = %q{Ruby persistence layer for CouchDB}
   s.email = %q{alex@upstream-berlin.com}
   s.extra_rdoc_files = [
