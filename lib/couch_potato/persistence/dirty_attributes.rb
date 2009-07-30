@@ -19,7 +19,18 @@ module CouchPotato
       
       def reset_dirty_attributes
         self.class.properties.each do |property|
-          instance_variable_set("@#{property.name}_was", send(property.name))
+          instance_variable_set("@#{property.name}_was", clone_attribute(send(property.name)))
+        end
+      end
+      
+      def clone_attribute(value)
+        if [Fixnum, Symbol, TrueClass, FalseClass, NilClass, Float].include?(value.class)
+          value
+        elsif [Hash, Array].include?(value.class)
+          #Deep clone
+          Marshal::load(Marshal::dump(value))
+        else
+          value.clone
         end
       end
     end

@@ -20,14 +20,6 @@ module CouchPotato
             end if attributes
           end
           private :assign_attribute_copies_for_dirty_tracking
-          
-          def clone_attribute(value)
-            if [Fixnum, Symbol, TrueClass, FalseClass, NilClass, Float].include?(value.class)
-              value
-            else
-              value.clone
-            end
-          end
 
           define_method "#{name}" do
             value = self.instance_variable_get("@#{name}")

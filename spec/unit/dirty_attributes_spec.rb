@@ -33,6 +33,24 @@ describe 'dirty attribute tracking' do
       @couchrest_db.should_receive(:save_doc)
       @db.save_document(plate)
     end
+
+    it "should correctly track dirty hashes (deep clone)" do
+      plate = Plate.new :food => {:veggies => ['carrots', 'peas']}
+      @db.save_document(plate)
+      plate.food[:veggies] << 'beans'
+      @couchrest_db.should_receive(:save_doc)
+      @db.save_document(plate)
+    end
+
+    it "should correctly track dirty hashes (deep clone) after a save" do
+      plate = Plate.new :food => {:veggies => ['carrots', 'peas']}
+      @db.save_document(plate)
+      plate.food[:veggies] << 'beans'
+      @db.save_document(plate)
+      plate.food[:veggies] << 'cauliflower'
+      @couchrest_db.should_receive(:save_doc)
+      @db.save_document(plate)
+    end
   end
   
   describe "newly created object" do
