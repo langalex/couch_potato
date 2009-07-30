@@ -7,7 +7,7 @@ module CouchPotato
         self.name = name
         self.type = options[:type]
         owner_clazz.class_eval do
-          attr_reader name, "#{name}_was"
+          attr_reader "#{name}_was"
           
           def initialize(attributes = {})
             super attributes
@@ -27,6 +27,12 @@ module CouchPotato
             else
               value.clone
             end
+          end
+
+          define_method "#{name}" do
+            value = self.instance_variable_get("@#{name}")
+            default = options[:default]
+            value.blank? ? default : value
           end
           
           define_method "#{name}=" do |value|

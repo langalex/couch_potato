@@ -88,6 +88,14 @@ Properties can be of any type:
       property :address, :type => Address
     end
 
+Properties can have a default value
+
+    class User
+      include CouchPotato::Persistence
+
+      property :active, :default => true
+    end
+
 Now you can save your objects. All database operations are encapsulated in the CouchPotato::Database class. This separates your domain logic from the database access logic which makes it easier to write tests and also keeps you models smaller and cleaner.
 
     user = User.new :name => 'joe'
