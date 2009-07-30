@@ -62,6 +62,12 @@ module CouchPotato
     end
   
     private
+
+    def clean_hash(hash)
+      hash.each do |k,v|
+        hash.delete k unless v
+      end
+    end
   
     def create_document(document)
       document.database = self
@@ -70,7 +76,7 @@ module CouchPotato
       return unless document.valid?
       document.run_callbacks :before_save
       document.run_callbacks :before_create
-      res = database.save_doc document.to_hash
+      res = database.save_doc clean_hash(document.to_hash)
       document._rev = res['rev']
       document._id = res['id']
       document.run_callbacks :after_save
@@ -84,7 +90,7 @@ module CouchPotato
       return unless document.valid?
       document.run_callbacks :before_save
       document.run_callbacks :before_update
-      res = database.save_doc document.to_hash
+      res = database.save_doc clean_hash(document.to_hash)
       document._rev = res['rev']
       document.run_callbacks :after_save
       document.run_callbacks :after_update
