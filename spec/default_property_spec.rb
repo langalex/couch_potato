@@ -4,6 +4,7 @@ class Test
   include CouchPotato::Persistence
 
   property :test, :default => 'Test value'
+  property :complex, :default => []
 end
 
 describe 'default properties' do
@@ -23,5 +24,11 @@ describe 'default properties' do
 
     t = CouchPotato.database.load_document t.id
     t.test.should == 'Test value'
+  end
+
+  it "should not have the same default for two instances of the object" do
+    t = Test.new
+    t2 = Test.new
+    t.complex.object_id.should_not == t2.complex.object_id
   end
 end

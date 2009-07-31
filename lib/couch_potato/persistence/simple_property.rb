@@ -23,8 +23,13 @@ module CouchPotato
 
           define_method "#{name}" do
             value = self.instance_variable_get("@#{name}")
-            default = options[:default]
-            value.blank? ? default : value
+            if value.blank? && options[:default]
+              default = clone_attribute(options[:default])
+              self.instance_variable_set("@#{name}", default)
+              default
+            else
+              value
+            end
           end
           
           define_method "#{name}=" do |value|
