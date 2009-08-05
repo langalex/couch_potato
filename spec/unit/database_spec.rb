@@ -3,6 +3,13 @@ require File.dirname(__FILE__) + '/../spec_helper'
 class DbTestUser
 end
 
+# namespaced model
+module Parent
+  class Child
+    include CouchPotato::Persistence
+  end
+end
+
 describe CouchPotato::Database, 'new' do
   it "should raise an exception if the database doesn't exist" do
     lambda {
@@ -18,13 +25,18 @@ describe CouchPotato::Database, 'load' do
       db.load nil
     }.should raise_error("Can't load a document without an id (got nil)")
   end
-  
+
   it "should set itself on the model" do
     user = mock 'user'
     DbTestUser.stub!(:new).and_return(user)
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => {'ruby_class' => 'DbTestUser'}))
     user.should_receive(:database=).with(db)
     db.load '1'
+  end
+
+  it "should load namespaced models" do
+    db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => {'ruby_class' => 'Parent::Child'}))
+    db.load('1').class.should == Parent::Child
   end
 end
 
