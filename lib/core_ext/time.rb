@@ -1,6 +1,6 @@
 class Time
   def to_json(*a)
-    %("#{strftime("%Y/%m/%d %H:%M:%S +0000")}")
+    %("#{strftime("%Y/%m/%d %H:%M:%S %z")}")
   end
   
   def self.json_create string
