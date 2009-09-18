@@ -12,12 +12,12 @@ module CouchPotato
       
       def build(object, json)
         value = json[name.to_s] || json[name.to_sym]
-        typecasted_value =  if type
+        typecast_value =  if type
                               type.json_create value
                             else
                               value
                             end
-        object.send "#{name}=", typecasted_value
+        object.send "#{name}=", typecast_value
       end
       
       def dirty?(object)
