@@ -6,7 +6,6 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'couch_potato'
 
 CouchPotato::Config.database_name = 'couch_potato_test'
-CouchPotato::Config.database_server = 'http://127.0.0.1:5984/'
 
 
 class Comment

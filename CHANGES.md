@@ -8,3 +8,4 @@
 * support attachments via the _attachments property
 * support for namespaces models
 * removed belongs_to macro for now
+* removed CouchPotato::Config.database_server, just set CouchPotato::Config.database_name to the full url if you are not using localhost:5984

@@ -35,11 +35,11 @@ Alternatively you can download or clone the source repository and then require l
 
 You MUST specificy the name of the database:
 
-    CouchPotato::Config.database_name = 'name of the db'
+    CouchPotato::Config.database_name = 'name_of_the_db'
 
-The server URL will default to http://localhost:5984/ unless specified with:
+The server URL will default to http://localhost:5984/ unless specified:
 
-    CouchPotato::Config.database_server = "http://example.com:5984/"
+    CouchPotato::Config.database_name = "http://example.com:5984/name_of_the_db"
 
 #### Using with Rails
 
