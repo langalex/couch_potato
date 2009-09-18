@@ -23,8 +23,8 @@ describe "attributes" do
   end
   
   # useful when loading models from custom views
-  describe "accessing non-property attributes" do
-    it "should allow me to access attributes that are in the couchdb document " do
+  describe "accessing ghost attributes" do
+    it "should allow me to access attributes that are in the couchdb document but not defined as a property" do
       plant = Plant.json_create({"ruby_class" => "Plant", "color" => "red", "leaf_count" => 1})
       plant.color.should == 'red'
     end
@@ -34,6 +34,13 @@ describe "attributes" do
       lambda do
         plant.length
       end.should raise_error(NoMethodError)
+    end
+    
+    it "should raise a no method error if the document hasn't been loaded from the database" do
+      plant = Plant.new
+      lambda do
+        plant.length
+      end.should raise_error(NoMethodError, /undefined method `length'/)
     end
   end
 
