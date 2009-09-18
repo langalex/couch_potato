@@ -245,6 +245,22 @@ Supported callbacks are: :before_validation, :before_validation_on_create, :befo
 
 If you need access to the database in a callback: Couch Potato automatically assigns a database instance to the model before saving and when loading. It is available as _database_ accessor from within your model instance.
 
+#### Attachments
+
+There is basic attachment support: if you want to store any attachments set that _attachments attribute of a model before saving like this:
+
+    class User
+      include CouchPotato::Persistence
+    end
+    
+    user = User.new
+    user._attachments = {'photo' => {'data' => '[image byte data]', 'content_type' => 'image/png'}}
+    
+When saving this object an attachment with the name _photo_ will be uploaded into CouchDB. It will be available under the url of the user object + _/photo_. When loading the user at a later time you still have access to the _content_type_ and additionally to the _length_ of the attachment:
+
+    user_reloaded = CouchPotato.database.load user.id
+    user_reloaded._attachments['photo'] # => {'content_type' => 'image/png', 'length' => 37861}
+
 #### Testing
 
 To make testing easier and faster database logic has been put into its own class, which you can replace and stub out in whatever way you want:
