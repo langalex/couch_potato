@@ -14,7 +14,6 @@ class Comment
   validates_presence_of :title
 
   property :title
-  belongs_to :commenter
 end
 
 def recreate_db

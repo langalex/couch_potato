@@ -33,7 +33,7 @@ describe 'properties' do
   end
   
   it "should return the property names" do
-    Comment.property_names.should == [:created_at, :updated_at, :title, :commenter]
+    Comment.property_names.should == [:created_at, :updated_at, :title]
   end
   
   it "should persist a string" do
