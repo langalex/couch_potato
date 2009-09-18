@@ -1,5 +1,8 @@
 ## Changes
 
+### 0.2.10
+* fixed bug with hardcoded timezone
+
 ### 0.2.9
 
 * allow to overwrite attribute accessor of properties and use super to call the original accessors
