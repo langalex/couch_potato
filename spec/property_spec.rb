@@ -6,12 +6,30 @@ class Watch
   include CouchPotato::Persistence
   
   property :time, :type => Time
+  property :overwritten_read
+  property :overwritten_write
+  
+  def overwritten_read
+    super.to_s
+  end
+  
+  def overwritten_write=(value)
+    super value.to_s
+  end
 end
 
 
 describe 'properties' do
   before(:all) do
     recreate_db
+  end
+  
+  it "should allow me to overwrite read accessor and call super" do
+    Watch.new(:overwritten_read => 1).overwritten_read.should == '1'
+  end
+  
+  it "should allow me to overwrite write accessor and call super" do
+    Watch.new(:overwritten_write => 1).overwritten_write.should == '1'
   end
   
   it "should return the property names" do
