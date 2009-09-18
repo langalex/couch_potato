@@ -5,6 +5,11 @@ module CouchPotato
       def self.included(base)
         base.class_eval do
           after_save :reset_dirty_attributes
+          
+          def initialize(attributes = {})
+            super
+            assign_attribute_copies_for_dirty_tracking
+          end
         end
       end
       
@@ -16,6 +21,12 @@ module CouchPotato
       end
       
       private
+      
+      def assign_attribute_copies_for_dirty_tracking
+        attributes.each do |name, value|
+          self.instance_variable_set("@#{name}_was", clone_attribute(value))
+        end if attributes
+      end
       
       def reset_dirty_attributes
         self.class.properties.each do |property|

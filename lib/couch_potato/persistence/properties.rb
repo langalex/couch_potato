@@ -12,7 +12,7 @@ module CouchPotato
           end
         end
       end
-
+      
       module ClassMethods
         # returns all the property names of a model class that have been defined using the #property method
         #

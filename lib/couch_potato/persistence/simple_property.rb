@@ -49,18 +49,6 @@ module CouchPotato
       def define_accessors(base, name, options)
         base.class_eval do
           attr_reader "#{name}_was"
-          
-          def initialize(attributes = {})
-            super attributes
-            assign_attribute_copies_for_dirty_tracking
-          end
-          
-          def assign_attribute_copies_for_dirty_tracking
-            attributes.each do |name, value|
-              self.instance_variable_set("@#{name}_was", clone_attribute(value))
-            end if attributes
-          end
-          private :assign_attribute_copies_for_dirty_tracking
 
           define_method "#{name}" do
             value = self.instance_variable_get("@#{name}")

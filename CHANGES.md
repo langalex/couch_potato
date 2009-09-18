@@ -9,3 +9,4 @@
 * support for namespaces models
 * removed belongs_to macro for now
 * removed CouchPotato::Config.database_server, just set CouchPotato::Config.database_name to the full url if you are not using localhost:5984
+* Ruby 1.9 was broken and is now working again
