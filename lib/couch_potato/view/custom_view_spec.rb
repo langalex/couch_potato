@@ -19,7 +19,7 @@ module CouchPotato
       
       def process_results(results)
         results['rows'].map do |row|
-          klass.json_create row['doc'] || row['value'].merge(:_id => row['id'])
+          klass.json_create row['doc'] || row['value'].merge(:_id => row['id'] || row['key'])
         end
       end
     end

@@ -12,6 +12,7 @@ class Build
   view :key_array_timeline, :key => [:time, :state]
   view :custom_timeline, :map => "function(doc) { emit(doc._id, {state: 'custom_' + doc.state}); }", :type => :custom
   view :custom_timeline_returns_docs, :map => "function(doc) { emit(doc._id, null); }", :include_docs => true, :type => :custom
+  view :custom_with_reduce, :map => "function(doc) {if(doc.foreign_key) {emit(doc.foreign_key, 1);} else {emit(doc.id, 1)}}", :reduce => "function(key, values) {return({\"count\": sum(values)});}", :group => true, :type => :custom
   view :raw, :type => :raw, :map => "function(doc) {emit(doc._id, doc.state)}"
   view :filtered_raw, :type => :raw, :map => "function(doc) {emit(doc._id, doc.state)}", :results_filter => lambda{|res| res['rows'].map{|row| row['value']}}
   view :with_view_options, :group => true, :key => :time
@@ -87,11 +88,16 @@ describe 'view' do
       CouchPotato.database.view(Build.custom_timeline).map(&:state).should == ['custom_success']
     end
 
+    it "should assign the id" do
+      doc = CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
+      CouchPotato.database.view(Build.custom_timeline).map(&:_id).should == [doc['id']]
+    end
+
     it "should leave the other properties blank" do
       CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
       CouchPotato.database.view(Build.custom_timeline).map(&:time).should == [nil]
     end
-
+    
     describe "that returns null documents" do
       it "should return instances of the class" do
         CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
@@ -101,6 +107,15 @@ describe 'view' do
       it "should assign the properties from the value" do
         CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
         CouchPotato.database.view(Build.custom_timeline_returns_docs).map(&:state).should == ['success']
+      end
+    end
+    
+    describe "additional reduce function given" do
+      it "should still assign the id" do
+        doc = CouchPotato.couchrest_database.save_doc({})
+        CouchPotato.couchrest_database.save_doc({:foreign_key => doc['id']})
+        CouchPotato.database.view(Build.custom_with_reduce).map(&:_id).should == [doc['id']]
+        
       end
     end
   end
