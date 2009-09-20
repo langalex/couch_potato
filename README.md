@@ -57,7 +57,7 @@ Alternatively you can also install Couch Potato directly as a plugin.
 
 ### Introduction
 
-This is a basic tutorial on how to use Couch Potato. If you want to know all the details feel free to read the specs.
+This is a basic tutorial on how to use Couch Potato. If you want to know all the details feel free to read the specs and the [rdocs](http://rdoc.info/projects/langalex/couch_potato).
 
 #### Save, load objects
 
@@ -186,7 +186,7 @@ Composite keys are also possible:
       view :all, :key => [:created_at, :name]
     end
 
-The creation of views is based on view specification classes (see the CouchPotato::View module). The above code uses the ModelViewSpec class which is used to find models by their properties. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
+The creation of views is based on view specification classes (see [CouchPotato::View::BaseViewSpec](http://rdoc.info/rdoc/langalex/couch_potato/blob/e8f0069e5529ad08a1bd1f02637ea8f1d6d0ab5b/CouchPotato/View/BaseViewSpec.html) and its descendants for more detailed documentation). The above code uses the ModelViewSpec class which is used to find models by their properties. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
 
 If you have larger structures and you only want to load some attributes you can use the PropertiesViewSpec (the full class name is automatically derived):
 
