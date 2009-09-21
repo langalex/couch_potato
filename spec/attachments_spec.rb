@@ -13,7 +13,7 @@ describe CouchPotato, 'attachments' do
     comment._attachments = {'body' => {'data' => 'a useful comment', 'content_type' => 'text/plain'}}
     CouchPotato.database.save! comment
     comment_reloaded = CouchPotato.database.load comment.id
-    comment_reloaded._attachments.should == {"body" => {"content_type" => "text/plain", "stub" => true, "length" => 16}}
+    comment_reloaded._attachments["body"].should include({"content_type" => "text/plain", "stub" => true, "length" => 16})
   end
   
 end
