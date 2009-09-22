@@ -8,6 +8,7 @@ module CouchPotato
         base.class_eval do
           # Override the validate method to first run before_validation callback
           def valid?
+            errors.clear
             run_callbacks :before_validation
             before_validation_errors = errors.errors.dup
             super

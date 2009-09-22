@@ -294,4 +294,12 @@ describe "validation callbacks" do
     user.valid?.should == false
     user.errors.on(:name).should == ["can't be empty", "should be Paul"]
   end
+  
+  it "should clear the errors on subsequent calls to valid?" do
+    user = ValidatedUser.new(:name => nil)
+    user.valid?.should == false
+    user.name = 'Paul'
+    user.valid?.should == true
+    user.errors.on(:name).should == nil
+  end
 end
