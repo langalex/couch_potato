@@ -269,3 +269,29 @@ describe "lambda callbacks" do
     recorder.lambda_works.should be_true
   end
 end
+
+describe "validation callbacks" do
+  class ValidatedUser
+    include CouchPotato::Persistence
+    
+    property :name
+    before_validation :check_name
+    validates_presence_of :name
+    
+    def check_name
+      errors.add(:name, 'should be Paul') unless name == "Paul"
+    end
+  end
+  
+  it "should keep error messages set in custom before_validation filters" do
+    user = ValidatedUser.new(:name => "john")
+    user.valid?.should == false
+    user.errors.on(:name).should == "should be Paul"
+  end
+  
+  it "should combine the errors from validations and callbacks" do
+    user = ValidatedUser.new(:name => nil)
+    user.valid?.should == false
+    user.errors.on(:name).should == ["can't be empty", "should be Paul"]
+  end
+end
