@@ -47,4 +47,60 @@ describe CouchPotato::Database, 'save_document' do
     user.should_receive(:database=).with(db)
     db.save_document user
   end
+  
+  class Category
+    include CouchPotato::Persistence
+    property :name
+    validates_presence_of :name
+  end
+  
+  describe "when creating with validate options" do
+    it "should not run the validations when saved with false" do
+      category = Category.new
+      CouchPotato.database.save_document(category, false)
+      category.new?.should == false
+    end
+
+    it "should not run the validations when saved with true" do
+      category = Category.new
+      CouchPotato.database.save_document(category, true)
+      category.new?.should == true
+    end
+
+    it "should run the validations when saved with default" do
+      category = Category.new
+      CouchPotato.database.save_document(category)
+      category.new?.should == true
+    end
+  end
+
+  describe "when updating with validate options" do
+    it "should not run the validations when saved with false" do
+      category = Category.new(:name => 'food')
+      CouchPotato.database.save_document(category)
+      category.new?.should == false
+      category.name = nil
+      CouchPotato.database.save_document(category, false)
+      category.dirty?.should == false
+    end
+
+    it "should run the validations when saved with true" do
+      category = Category.new(:name => "food")
+      CouchPotato.database.save_document(category)
+      category.new?.should == false
+      category.name = nil
+      CouchPotato.database.save_document(category, true)
+      category.dirty?.should == true
+      category.valid?.should == false
+    end
+
+    it "should run the validations when saved with default" do
+      category = Category.new(:name => "food")
+      CouchPotato.database.save_document(category)
+      category.new?.should == false
+      category.name = nil
+      CouchPotato.database.save_document(category)
+      category.dirty?.should == true
+    end
+  end
 end
