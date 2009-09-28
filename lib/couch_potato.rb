@@ -23,7 +23,7 @@ module CouchPotato
 
   def self.full_url_to_database
     raise('No Database configured. Set CouchPotato::Config.database_name') unless CouchPotato::Config.database_name
-    if CouchPotato::Config.database_name[0,7] == 'http://'
+    if CouchPotato::Config.database_name.match(%r{https?://})
       CouchPotato::Config.database_name
     else
       "http://127.0.0.1:5984/#{CouchPotato::Config.database_name}"

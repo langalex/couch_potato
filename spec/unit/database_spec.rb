@@ -18,6 +18,32 @@ describe CouchPotato::Database, 'new' do
   end
 end
 
+describe CouchPotato::Database, 'full_url_to_database' do
+  before(:all) do
+    @database_url = CouchPotato::Config.database_name
+  end
+
+  after(:all) do
+    CouchPotato::Config.database_name = @database_url
+  end
+  
+  it "should return the full URL when it starts with https" do
+    CouchPotato::Config.database_name = "https://example.com/database"
+    CouchPotato.full_url_to_database.should == 'https://example.com/database'
+  end
+  
+  it "should return the full URL when it starts with http" do
+    CouchPotato::Config.database_name = "http://example.com/database"
+    CouchPotato.full_url_to_database.should == 'http://example.com/database'
+  end
+  
+  it "should use localhost when no protocol was specified" do
+    CouchPotato::Config.database_name = "database"
+    CouchPotato.full_url_to_database.should == 'http://127.0.0.1:5984/database'
+  end
+end
+
+
 describe CouchPotato::Database, 'load' do
   it "should raise an exception if nil given" do
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil))
