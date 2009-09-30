@@ -2,7 +2,12 @@ module CouchPotato
   module Attachments
     def self.included(base)
       base.class_eval do
-        attr_accessor :_attachments
+        attr_writer :_attachments
+        
+        def _attachments
+          @_attachments || {}
+        end
+        
         base.extend ClassMethods
       end
     end

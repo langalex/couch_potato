@@ -16,4 +16,8 @@ describe CouchPotato, 'attachments' do
     comment_reloaded._attachments.should == {"body" => {"content_type" => "text/plain", "stub" => true, "length" => 16}}
   end
   
+  it "should have an empty array for a new object" do
+    Comment.new._attachments.should == {}
+  end
+  
 end
