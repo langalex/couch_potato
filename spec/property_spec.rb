@@ -18,6 +18,9 @@ class Watch
   end
 end
 
+class CuckooClock < Watch
+  property :cuckoo
+end
 
 describe 'properties' do
   before(:all) do
@@ -96,6 +99,13 @@ describe 'properties' do
     
     it "should return false if property blank" do
       Comment.new(:title => '').title?.should be_false
+    end
+  end
+  
+  describe "with subclasses" do
+    it "should persist properties of superclasses" do
+      CuckooClock.properties.map(&:name).should include(:time)
+      CuckooClock.properties.map(&:name).should include(:cuckoo)
     end
   end
 end
