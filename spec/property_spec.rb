@@ -103,9 +103,15 @@ describe 'properties' do
   end
   
   describe "with subclasses" do
-    it "should persist properties of superclasses" do
+    it "should include properties of superclasses" do
       CuckooClock.properties.map(&:name).should include(:time)
       CuckooClock.properties.map(&:name).should include(:cuckoo)
+    end
+    
+    it "should return attributes of superclasses" do
+      clock = CuckooClock.new(:time => Time.now, :cuckoo => 'bavarian')
+      clock.attributes[:time].should_not == nil
+      clock.attributes[:cuckoo].should == 'bavarian'
     end
   end
 end
