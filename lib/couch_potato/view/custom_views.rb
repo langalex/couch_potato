@@ -15,12 +15,16 @@ module CouchPotato
 
       module ClassMethods
         # Declare a CouchDB view, for examples on how to use see the *ViewSpec classes in CouchPotato::View
-        def views
-          @views ||= {}
+        def views(view_name = nil)
+          if view_name
+            _find_view(view_name)
+          else
+            @views ||= {}
+          end
         end
 
         def execute_view(view_name, view_parameters)
-          view_spec_class(views[view_name][:type]).new(self, view_name, views[view_name], view_parameters)
+          view_spec_class(views(view_name)[:type]).new(self, view_name, views(view_name), view_parameters)
         end
 
         def view(view_name, options)
@@ -37,6 +41,11 @@ module CouchPotato
             name = type.nil? ? 'Model' : type.to_s.camelize
             CouchPotato::View.const_get("#{name}ViewSpec")
           end
+        end
+        
+        def _find_view(view)
+          return @views[view] if @views && @views[view]
+          superclass._find_view(view) if superclass && superclass.respond_to?(:_find_view)
         end
       end
     end
