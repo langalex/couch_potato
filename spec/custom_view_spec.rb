@@ -18,6 +18,9 @@ class Build
   view :with_view_options, :group => true, :key => :time
 end
 
+class CustomBuild < Build
+end
+
 describe 'view' do
   before(:each) do
     recreate_db
@@ -146,4 +149,11 @@ describe 'view' do
     end
   end
 
+  describe "inherited views" do
+    it "should support parent views for objects of the subclass" do
+      CouchPotato.database.save_document CustomBuild.new(:state => 'success', :time => '2008-01-01')
+      CouchPotato.database.view(CustomBuild.timeline).should have(1).item
+      CouchPotato.database.view(CustomBuild.timeline).first.should be_kind_of(CustomBuild)
+    end
+  end
 end

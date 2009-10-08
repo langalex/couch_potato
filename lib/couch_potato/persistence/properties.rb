@@ -3,12 +3,41 @@ require File.dirname(__FILE__) + '/simple_property'
 module CouchPotato
   module Persistence
     module Properties
+      class PropertyList
+        include Enumerable
+        
+        attr_accessor :list
+        
+        def initialize(clazz)
+          @clazz = clazz
+          @list = []
+        end
+        
+        def each
+          (list + inherited_properties).each {|property| yield property}
+        end
+        
+        def <<(property)
+          @list << property
+        end
+        
+        def inherited_properties
+          superclazz = @clazz.superclass
+          properties = []
+          while superclazz && superclazz.respond_to?(:properties)
+            properties << superclazz.properties.list
+            superclazz = superclazz.superclass
+          end
+          properties.flatten
+        end
+      end
+      
       def self.included(base)
         base.extend ClassMethods
         base.class_eval do
           def self.properties
             @properties ||= {}
-            @properties[self.name] ||= []
+            @properties[name] ||= PropertyList.new(self)
           end
         end
       end

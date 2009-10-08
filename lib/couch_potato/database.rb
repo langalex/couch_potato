@@ -19,12 +19,13 @@ module CouchPotato
       spec.process_results results
     end
 
-    def save_document(document)
+
+    def save_document(document, validate = true)
       return true unless document.dirty?
       if document.new?
-        create_document document
+        create_document(document, validate)
       else
-        update_document document
+        update_document(document, validate)
       end
     end
     alias_method :save, :save_document
@@ -70,11 +71,15 @@ module CouchPotato
       end
     end
 
-    def create_document(document)
+    def create_document(document, validate)
       document.database = self
-      document.run_callbacks :before_validation_on_save
-      document.run_callbacks :before_validation_on_create
-      return unless document.valid?
+      
+      if validate
+        document.run_callbacks :before_validation_on_save
+        document.run_callbacks :before_validation_on_create
+        return unless document.valid?
+      end
+      
       document.run_callbacks :before_save
       document.run_callbacks :before_create
       res = database.save_doc clean_hash(document.to_hash)
@@ -85,10 +90,13 @@ module CouchPotato
       true
     end
 
-    def update_document(document)
-      document.run_callbacks :before_validation_on_save
-      document.run_callbacks :before_validation_on_update
-      return unless document.valid?
+    def update_document(document, validate)
+      if validate
+        document.run_callbacks :before_validation_on_save
+        document.run_callbacks :before_validation_on_update
+        return unless document.valid?
+      end
+      
       document.run_callbacks :before_save
       document.run_callbacks :before_update
       res = database.save_doc clean_hash(document.to_hash)
