@@ -14,7 +14,7 @@ module CouchPotato
         end
         
         def each
-          list.concat(inherited_properties).each {|property| yield property}
+          (list + inherited_properties).each {|property| yield property}
         end
         
         def <<(property)
