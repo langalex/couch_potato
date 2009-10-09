@@ -87,7 +87,7 @@ describe CouchPotato::Database, 'save_document' do
       category.new?.should == false
     end
 
-    it "should not run the validations when saved with true" do
+    it "should run the validations when saved with true" do
       category = Category.new
       CouchPotato.database.save_document(category, true)
       category.new?.should == true
