@@ -48,9 +48,7 @@ module CouchPotato
     def load_document(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
       begin
-        json = database.get(id)
-        klass = json['ruby_class'].split('::').inject(Class){|scope, const| scope.const_get(const)}
-        instance = klass.json_create json
+        instance = database.get(id)
         instance.database = self
         instance
       rescue(RestClient::ResourceNotFound)

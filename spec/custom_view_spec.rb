@@ -111,6 +111,13 @@ describe 'view' do
         CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
         CouchPotato.database.view(Build.custom_timeline_returns_docs).map(&:state).should == ['success']
       end
+      
+      it "should still return instance of class if document included 'ruby_class'" do
+        CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01', :ruby_class => "Build"})
+        view_data = CouchPotato.database.view(Build.custom_timeline_returns_docs)
+        view_data.map(&:class).should == [Build]
+        view_data.map(&:state).should == ['success']
+      end
     end
     
     describe "additional reduce function given" do

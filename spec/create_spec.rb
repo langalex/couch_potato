@@ -8,7 +8,7 @@ describe "create" do
     it "should store the class" do
       @comment = Comment.new :title => 'my_title'
       CouchPotato.database.save_document! @comment
-      CouchPotato.couchrest_database.get(@comment.id)['ruby_class'].should == 'Comment'
+      CouchPotato.couchrest_database.get(@comment.id).ruby_class.should == 'Comment'
     end
   end
   describe "fails" do

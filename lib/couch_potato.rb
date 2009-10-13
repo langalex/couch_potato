@@ -5,6 +5,7 @@ require 'json/add/rails'
 
 require 'ostruct'
 
+JSON.create_id = 'ruby_class'
 
 module CouchPotato
   Config = Struct.new(:database_name).new

@@ -15,7 +15,7 @@ module CouchPotato
         (self.class.properties).inject({}) do |props, property|
           property.serialize(props, self)
           props
-        end.merge('ruby_class' => self.class.name).merge(id_and_rev_json)
+        end.merge(JSON.create_id => self.class.name).merge(id_and_rev_json)
       end
       
       private

@@ -12,11 +12,11 @@ module CouchPotato
       
       def build(object, json)
         value = json[name.to_s] || json[name.to_sym]
-        typecast_value =  if type
-                              type.json_create value
-                            else
-                              value
-                            end
+        typecast_value =  if type && !value.instance_of?(type)
+                            type.json_create value
+                          else
+                            value
+                          end
         object.send "#{name}=", typecast_value
       end
       

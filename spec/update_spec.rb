@@ -35,6 +35,6 @@ describe "create" do
   it "should update the attributes" do
     @comment.title = 'new title'
     CouchPotato.database.save_document! @comment
-    CouchPotato.couchrest_database.get("#{@comment.id}")['title'].should == 'new title'
+    CouchPotato.couchrest_database.get("#{@comment.id}").title.should == 'new title'
   end
 end

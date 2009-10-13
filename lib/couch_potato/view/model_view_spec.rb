@@ -34,9 +34,7 @@ module CouchPotato
         if count?
           results['rows'].first.try(:[], 'value') || 0
         else
-          results['rows'].map do |row|
-            klass.json_create row['doc']
-          end
+          results['rows'].map { |row| row['doc'] }
         end
       end
       

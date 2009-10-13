@@ -1,6 +1,6 @@
 class Person
   include CouchPotato::Persistence
   
-  property :name
-  property :ship_address, :type => Address
+  property :name, :type => Address
+  property :ship_address
 end
