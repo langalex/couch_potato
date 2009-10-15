@@ -69,7 +69,8 @@ end
 describe CouchPotato::Database, 'save_document' do
   it "should set itself on the model for a new object before doing anything else" do
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil))
-    user = stub('user', :new? => true, :valid? => false).as_null_object
+    db.stub(:valid_document?).and_return false
+    user = stub('user', :new? => true).as_null_object
     user.should_receive(:database=).with(db)
     db.save_document user
   end
@@ -127,6 +128,43 @@ describe CouchPotato::Database, 'save_document' do
       category.name = nil
       CouchPotato.database.save_document(category)
       category.dirty?.should == true
+    end
+  end
+  
+  describe "when saving documents with errors set in filters" do
+    class Vulcan
+      include CouchPotato::Persistence
+      before_validation_on_create :set_errors
+      before_validation_on_update :set_errors
+      
+      property :name
+      validates_presence_of :name
+      
+      def set_errors
+        errors.add(:validation, "failed")
+      end
+    end
+    
+    it "should keep errors added in before_validation_on_* filters when creating a new object" do
+      spock = Vulcan.new(:name => 'spock')
+      CouchPotato.database.save_document(spock)
+      spock.errors.on(:validation).should == 'failed'
+    end
+    
+    it "should keep errors added in before_validation_on_* filters when creating a new object" do
+      spock = Vulcan.new(:name => 'spock')
+      CouchPotato.database.save_document(spock, false)
+      spock.new_record?.should == false
+      spock.name = "spock's father"
+      CouchPotato.database.save_document(spock)
+      spock.errors.on(:validation).should == 'failed'
+    end
+    
+    it "should keep errors generated from normal validations together with errors set in normal validations" do
+      spock = Vulcan.new
+      CouchPotato.database.save_document(spock)
+      spock.errors.on(:validation).should == 'failed'
+      spock.errors.on(:name).should == "can't be empty"
     end
   end
 end
