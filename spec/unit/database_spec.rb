@@ -169,5 +169,28 @@ describe CouchPotato::Database, 'save_document' do
       spock.errors.on(:validation).should == 'failed'
       spock.errors.on(:name).should == "can't be empty"
     end
+    
+    it "should clear errors on subsequent, valid saves when creating" do
+      spock = Vulcan.new
+      @db.save_document(spock)
+      
+      spock.name = 'Spock'
+      @db.save_document(spock)
+      spock.errors.on(:name).should == nil
+    end
+    
+    it "should clear errors on subsequent, valid saves when updating" do
+      spock = Vulcan.new(:name => 'spock')
+      @db.save_document(spock, false)
+      
+      spock.name = nil
+      @db.save_document(spock)
+      spock.errors.on(:name).should == "can't be empty"
+      
+      spock.name = 'Spock'
+      @db.save_document(spock)
+      spock.errors.on(:name).should == nil
+    end
+    
   end
 end

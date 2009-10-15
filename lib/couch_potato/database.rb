@@ -75,6 +75,7 @@ module CouchPotato
       document.database = self
       
       if validate
+        document.errors.clear
         document.run_callbacks :before_validation_on_save
         document.run_callbacks :before_validation_on_create
         return unless valid_document?(document)
@@ -92,6 +93,7 @@ module CouchPotato
 
     def update_document(document, validate)
       if validate
+        document.errors.clear
         document.run_callbacks :before_validation_on_save
         document.run_callbacks :before_validation_on_update
         return unless valid_document?(document)
