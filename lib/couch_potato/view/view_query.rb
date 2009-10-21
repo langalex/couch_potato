@@ -23,7 +23,7 @@ module CouchPotato
 
       def create_view
         design_doc = @database.get "_design/#{@design_document_name}" rescue nil
-        design_doc ||= {'views' => {}, "_id" => "_design/#{@design_document_name}"}
+        design_doc ||= {'views' => {}, "_id" => "_design/#{@design_document_name}", "language" => "javascript"}
         design_doc['views'][@view_name.to_s] = {
           'map' => @map_function,
           'reduce' => @reduce_function
