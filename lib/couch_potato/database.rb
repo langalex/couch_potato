@@ -78,7 +78,7 @@ module CouchPotato
         document.errors.clear
         document.run_callbacks :before_validation_on_save
         document.run_callbacks :before_validation_on_create
-        return unless valid_document?(document)
+        return false unless valid_document?(document)
       end
       
       document.run_callbacks :before_save
@@ -96,7 +96,7 @@ module CouchPotato
         document.errors.clear
         document.run_callbacks :before_validation_on_save
         document.run_callbacks :before_validation_on_update
-        return unless valid_document?(document)
+        return false unless valid_document?(document)
       end
       
       document.run_callbacks :before_save

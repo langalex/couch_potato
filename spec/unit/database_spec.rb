@@ -77,11 +77,22 @@ describe CouchPotato::Database, 'save_document' do
     user.should_receive(:database=).with(@db)
     @db.save_document user
   end
-  
+
   class Category
     include CouchPotato::Persistence
     property :name
     validates_presence_of :name
+  end
+  
+  it "should return false when creating a new document and the validations failed" do
+    CouchPotato.database.save_document(Category.new).should == false
+  end
+  
+  it "should return false when saving an existing document and the validations failed" do
+    category = Category.new(:name => "pizza")
+    CouchPotato.database.save_document(category).should == true
+    category.name = nil
+    CouchPotato.database.save_document(category).should == false
   end
   
   describe "when creating with validate options" do
