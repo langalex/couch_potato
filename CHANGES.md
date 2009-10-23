@@ -1,5 +1,12 @@
 ## Changes
 
+### 0.2.13
+
+* support adding errors in before_validation callbacks (mattmatt)
+* support for inheritance (mattmatt)
+* support for save without validations (mattmatt)
+* improved (de)serialization now supports deserializing nested objects (railsbros, specs by hagenburger)
+
 ### 0.2.10
 * fixed bug with hardcoded timezone
 

@@ -7,6 +7,13 @@ require 'couch_potato'
 
 CouchPotato::Config.database_name = 'couch_potato_test'
 
+class Child
+  include CouchPotato::Persistence
+
+  property :text
+end
+
+
 
 class Comment
   include CouchPotato::Persistence

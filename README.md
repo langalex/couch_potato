@@ -46,6 +46,7 @@ The server URL will default to http://localhost:5984/ unless specified:
 Add to your config/environment.rb:
 
     config.gem 'langalex-couch_potato', :lib => 'couch_potato', :source => 'http://gems.github.com'
+    config.frameworks -= [:active_record] # if you switch completely
 
 Then create a config/couchdb.yml:
 

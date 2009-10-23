@@ -60,6 +60,45 @@ describe 'properties' do
     c.title.should == {'key' => 'value'}
   end
   
+  def it_should_persist value
+    c = Comment.new :title => value
+    CouchPotato.database.save_document! c
+    c = CouchPotato.database.load_document c.id
+    c.title.should == value
+  end
+
+  it "should persist a child class" do
+    it_should_persist Child.new('text' => 'some text')
+  end
+
+  it "should persist a hash with a child class" do
+    it_should_persist 'child' => Child.new('text' => 'some text')
+  end
+
+  it "should persist an array with a child class" do
+    it_should_persist [Child.new('text' => 'some text')]
+  end
+
+  it "should persist something very complex" do
+    something_very_complex = [
+      [
+        [
+          {
+            'what' => [
+              {
+                'ever' => Child.new('text' => 'some text')
+              }
+            ],
+            'number' => 3
+          },
+          "string"
+        ],
+        Child.new('text' => 'nothing')
+      ]
+    ]
+    it_should_persist something_very_complex
+  end
+
   it "should persist a Time object" do
     w = Watch.new :time => Time.now
     CouchPotato.database.save_document! w
