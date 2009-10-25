@@ -22,13 +22,11 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 Couch Potato is hosted as a gem on github which you can install like this:
 
-    sudo gem source --add http://gems.github.com # if you haven't already
-    sudo gem install langalex-couch_potato
+    sudo gem install couch_potato --source http://gemcutter.org
 
 #### Using with your ruby application:
 
     require 'rubygems'
-    gem 'langalex-couch_potato'
     require 'couch_potato'
 
 Alternatively you can download or clone the source repository and then require lib/couch_potato.rb.
@@ -45,7 +43,7 @@ The server URL will default to http://localhost:5984/ unless specified:
 
 Add to your config/environment.rb:
 
-    config.gem 'langalex-couch_potato', :lib => 'couch_potato', :source => 'http://gems.github.com'
+    config.gem 'couch_potato', :source => 'http://gemcutter.org'
     config.frameworks -= [:active_record] # if you switch completely
 
 Then create a config/couchdb.yml:
