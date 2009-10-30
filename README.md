@@ -297,7 +297,7 @@ Couch Potato provides custom RSpec matchers for testing the map and reduce funct
     
     describe User, 'by_name' do
       it "should map users to their name" do
-        User.by_name.should map({:name => 'bill', :age => 23}).to([['bill', null]])
+        User.by_name.should map({:name => 'bill', :age => 23}).to(['bill', null])
       end
       
       it "should reduce the users to the sum of their age" do
@@ -309,7 +309,7 @@ Couch Potato provides custom RSpec matchers for testing the map and reduce funct
       end
     end
     
-This will actually run your map/reduce functions in a JavaScript interpreter, passing the arguments as JSON and converting the results back to Ruby.
+This will actually run your map/reduce functions in a JavaScript interpreter, passing the arguments as JSON and converting the results back to Ruby. For more examples see the [spec](http://github.com/langalex/couch_potato/blob/master/spec/unit/rspec_matchers_spec.rb).
 
 In order for this to work you must have the `js` executable in your PATH. This is usually part of the _spidermonkey_ package/port. (On MacPorts that's _spidemonkey_, on Linux it could be one of _libjs_, _libmozjs_ or _libspidermonkey_). When you installed CouchDB via your packet manager Spidermonkey should already be there.
 

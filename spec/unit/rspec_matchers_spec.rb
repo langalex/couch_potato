@@ -10,11 +10,11 @@ describe CouchPotato::RSpec::MapToMatcher do
     end
 
     it "should pass if the given function emits the expected javascript" do
-      @view_spec.should map({:name => 'horst', :tags => ['person', 'male']}).to([['horst', 2]])
+      @view_spec.should map({:name => 'horst', :tags => ['person', 'male']}).to(['horst', 2])
     end
 
     it "should not pass if the given function emits different javascript" do
-      @view_spec.should_not map({:name => 'horst', :tags => ['person', 'male']}).to([['horst', 3]])
+      @view_spec.should_not map({:name => 'horst', :tags => ['person', 'male']}).to(['horst', 3])
     end
   end
   
@@ -24,11 +24,11 @@ describe CouchPotato::RSpec::MapToMatcher do
     end
     
     it "should pass if the given function emits the expected javascript" do
-      @view_spec.should map({:name => 'horst', :tags => ['person', 'male']}).to([['horst', 2], ['person', 'male']])
+      @view_spec.should map({:name => 'horst', :tags => ['person', 'male']}).to(['horst', 2], ['person', 'male'])
     end
   
     it "should return false if the given function emits different javascript" do
-      @view_spec.should_not map({:name => 'horst', :tags => ['person', 'male']}).to([['horst', 2], ['male', 'person']])
+      @view_spec.should_not map({:name => 'horst', :tags => ['person', 'male']}).to(['horst', 2], ['male', 'person'])
     end
   end
   
@@ -39,13 +39,13 @@ describe CouchPotato::RSpec::MapToMatcher do
     
     it "should have a nice error message for failing should" do
       lambda {
-        @view_spec.should map({:name => 'bill'}).to([['linus', nil]])
+        @view_spec.should map({:name => 'bill'}).to(['linus', nil])
       }.should raise_error('Expected to map to [["linus", nil]] but got [["bill", nil]].')
     end
     
     it "should have a nice error message for failing should not" do
       lambda {
-        @view_spec.should_not map({:name => 'bill'}).to([['bill', nil]])
+        @view_spec.should_not map({:name => 'bill'}).to(['bill', nil])
       }.should raise_error('Expected not to map to [["bill", nil]] but did.')
     end
   end
