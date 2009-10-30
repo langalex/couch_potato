@@ -293,6 +293,8 @@ Couch Potato provides custom RSpec matchers for testing the map and reduce funct
     end
     
     #RSpec
+    require 'couch_potato/rspec/matchers'
+    
     describe User, 'by_name' do
       it "should map users to their name" do
         User.by_name.should map({:name => 'bill', :age => 23}).to([['bill', null]])
