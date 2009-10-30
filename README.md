@@ -281,6 +281,36 @@ To make testing easier and faster database logic has been put into its own class
 
 By creating you own instances of CouchPotato::Database and passing them a fake CouchRest database instance you can completely disconnect your unit tests/spec from the database.
 
+##### Testing map/reduce functions
+
+Couch Potato provides custom RSpec matchers for testing the map and reduce functions of your views. For example you can do this:
+
+    Class User
+      include CouchPotato::Persistence
+      
+      view :by_name, :key => :name
+      view :by_age, :key => :age
+    end
+    
+    #RSpec
+    describe User, 'by_name' do
+      it "should map users to their name" do
+        User.by_name.should map({:name => 'bill', :age => 23}).to([['bill', null]])
+      end
+      
+      it "should reduce the users to the sum of their age" do
+        User.by_age.should reduce([], [[23], [22]]).to(45)
+      end
+      
+      it "should rereduce" do
+        User.by_age.should rereduce([], [[23], [22]]).to(45)
+      end
+    end
+    
+This will actually run your map/reduce functions in a JavaScript interpreter, passing the arguments as JSON and converting the results back to Ruby.
+
+In order for this to work you must have the `js` executable in your PATH. This is usually part of the _spidermonkey_ package/port. (On MacPorts that's _spidemonkey_, on Linux it could be one of _libjs_, _libmozjs_ or _libspidermonkey_). When you installed CouchDB via your packet manager Spidermonkey should already be there.
+
 ### Helping out
 
 Please fix bugs, add more specs, implement new features by forking the github repo at http://github.com/langalex/couch_potato.

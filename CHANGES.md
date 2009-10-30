@@ -6,6 +6,7 @@
 * support for inheritance (mattmatt)
 * support for save without validations (mattmatt)
 * improved (de)serialization now supports deserializing nested objects (railsbros, specs by hagenburger)
+* RSpec matchers for testing map/reduce functions (langalex)
 
 ### 0.2.10
 * fixed bug with hardcoded timezone
