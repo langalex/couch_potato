@@ -18,7 +18,7 @@ module CouchPotato
       
       def map_function
         "function(doc) {
-           if(doc.ruby_class && doc.ruby_class == '#{@klass.name}') {
+           if(doc.#{JSON.create_id} && doc.#{JSON.create_id} == '#{@klass.name}') {
              emit(#{formatted_key(key)}, null);
            }
          }"

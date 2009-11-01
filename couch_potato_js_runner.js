@@ -59,7 +59,7 @@ function print_r(x, max, sep, l) {
 };
 
 
-          var doc = {"tags":["person","male"],"name":"horst"};
+          var doc = {"name":"horst","tags":["person","male"]};
           var map = function(doc) {emit(doc.name, doc.tags.length);};
           var result = [];
           var emit = function(key, value) {

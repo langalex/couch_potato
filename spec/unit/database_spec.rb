@@ -55,13 +55,13 @@ describe CouchPotato::Database, 'load' do
   it "should set itself on the model" do
     user = mock 'user'
     DbTestUser.stub!(:new).and_return(user)
-    db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => DbTestUser.json_create({'ruby_class' => 'DbTestUser'})))
+    db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => DbTestUser.json_create({JSON.create_id => 'DbTestUser'})))
     user.should_receive(:database=).with(db)
     db.load '1'
   end
 
   it "should load namespaced models" do
-    db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => Parent::Child.json_create({'ruby_class' => 'Parent::Child'})))
+    db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => Parent::Child.json_create({JSON.create_id => 'Parent::Child'})))
     db.load('1').class.should == Parent::Child
   end
 end

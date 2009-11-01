@@ -24,8 +24,7 @@ class Comment
 end
 
 def recreate_db
-  CouchPotato.couchrest_database.delete! rescue nil
-  CouchPotato.couchrest_database.server.create_db CouchPotato::Config.database_name
+  CouchPotato.couchrest_database.recreate!
 end
 recreate_db
 

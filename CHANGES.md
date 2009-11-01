@@ -1,5 +1,8 @@
 ## Changes
 
+### 0.2.15
+* ability to change the name of the attribute that stores the ruby class in the documents by setting JSON.create_id (lennart)
+
 ### 0.2.13
 
 * support adding errors in before_validation callbacks (mattmatt)

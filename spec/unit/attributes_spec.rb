@@ -25,12 +25,12 @@ describe "attributes" do
   # useful when loading models from custom views
   describe "accessing ghost attributes" do
     it "should allow me to access attributes that are in the couchdb document but not defined as a property" do
-      plant = Plant.json_create({"ruby_class" => "Plant", "color" => "red", "leaf_count" => 1})
+      plant = Plant.json_create({JSON.create_id => "Plant", "color" => "red", "leaf_count" => 1})
       plant.color.should == 'red'
     end
     
     it "should raise a no method error when trying to read attributes that are not in the document" do
-      plant = Plant.json_create({"ruby_class" => "Plant", "leaf_count" => 1})
+      plant = Plant.json_create({JSON.create_id => "Plant", "leaf_count" => 1})
       lambda do
         plant.length
       end.should raise_error(NoMethodError)

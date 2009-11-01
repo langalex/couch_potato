@@ -39,7 +39,7 @@ describe 'view' do
     CouchPotato.database.view Build.timeline(:key => 1)
   end
 
-  it "should not return documents that don't have a matching ruby_class" do
+  it "should not return documents that don't have a matching JSON.create_id" do
     CouchPotato.couchrest_database.save_doc({:time => 'x'})
     CouchPotato.database.view(Build.timeline).should == []
   end
@@ -55,24 +55,24 @@ describe 'view' do
 
   describe "properties defined" do
     it "should assign the configured properties" do
-      CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', :ruby_class => 'Build')
+      CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => 'Build')
       CouchPotato.database.view(Build.minimal_timeline).first.state.should == 'success'
     end
 
     it "should not assign the properties not configured" do
-      CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', :ruby_class => 'Build')
+      CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => 'Build')
       CouchPotato.database.view(Build.minimal_timeline).first.time.should be_nil
     end
 
     it "should assign the id even if it is not configured" do
-      id = CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', :ruby_class => 'Build')['id']
+      id = CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => 'Build')['id']
       CouchPotato.database.view(Build.minimal_timeline).first._id.should == id
     end
   end
 
   describe "no properties defined" do
     it "should assign all properties to the objects by default" do
-      id = CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01', :ruby_class => 'Build'})['id']
+      id = CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => 'Build'})['id']
       result = CouchPotato.database.view(Build.timeline).first
       result.state.should == 'success'
       result.time.should == '2008-01-01'
@@ -112,8 +112,8 @@ describe 'view' do
         CouchPotato.database.view(Build.custom_timeline_returns_docs).map(&:state).should == ['success']
       end
       
-      it "should still return instance of class if document included 'ruby_class'" do
-        CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01', :ruby_class => "Build"})
+      it "should still return instance of class if document included JSON.create_id" do
+        CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => "Build"})
         view_data = CouchPotato.database.view(Build.custom_timeline_returns_docs)
         view_data.map(&:class).should == [Build]
         view_data.map(&:state).should == ['success']
