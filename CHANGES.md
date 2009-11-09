@@ -2,6 +2,8 @@
 
 ### 0.2.15
 * ability to change the name of the attribute that stores the ruby class in the documents by setting JSON.create_id (lennart)
+* fixed double loading issue with bundler (jweiss)
+* fixed an issue with setting attachments (endor)
 
 ### 0.2.13
 
