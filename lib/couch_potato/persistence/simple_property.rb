@@ -11,7 +11,7 @@ module CouchPotato
       end
       
       def build(object, json)
-        value = json[name.to_s] || json[name.to_sym]
+        value = json[name.to_s].nil? ? json[name.to_sym] : json[name.to_s]
         typecast_value =  if type && !value.instance_of?(type)
                             type.json_create value
                           else
