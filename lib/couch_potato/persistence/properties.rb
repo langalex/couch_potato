@@ -62,7 +62,7 @@ module CouchPotato
           instance
         end
 
-        # Declare a proprty on a model class. properties are not typed by default. You can use any of the basic types by JSON (String, Integer, Fixnum, Array, Hash). If you want a property to be of a custom class you have to define it using the :class option.
+        # Declare a property on a model class. properties are not typed by default. You can use any of the basic types by JSON (String, Integer, Fixnum, Array, Hash). If you want a property to be of a custom class you have to define it using the :class option.
         #
         # example:
         #  class Book

@@ -65,7 +65,7 @@ module CouchPotato
 
     def clean_hash(hash)
       hash.each do |k,v|
-        hash.delete k unless v
+        hash.delete k if v.nil?
       end
     end
 

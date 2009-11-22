@@ -122,7 +122,15 @@ describe 'properties' do
     p = CouchPotato.database.load_document p.id
     p.ship_address.should be_nil
   end
-  
+
+  it "should persist false for a false" do
+    p = Person.new :name => 'Bob'
+    p.ship_address = false
+    CouchPotato.database.save_document! p
+    p = CouchPotato.database.load_document p.id
+    p.ship_address.should be_false
+  end
+
   describe "predicate" do
     it "should return true if property set" do
       Comment.new(:title => 'title').title?.should be_true
