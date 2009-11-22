@@ -1,12 +1,14 @@
 require File.dirname(__FILE__) + '/spec_helper'
 require File.dirname(__FILE__) + '/../rails/reload_classes'
 
-describe CouchPotato::Database, 'rails specific behavior' do
-  class Autoloader
-    def self.const_missing(name)
-      eval("#{name} = Class.new; #{name}.send(:include, CouchPotato::Persistence)")
-    end
+class Autoloader
+  def self.const_missing(name)
+    eval("#{name} = Class.new; #{name}.send(:include, CouchPotato::Persistence)")
   end
+end
+
+
+describe CouchPotato::Database, 'rails specific behavior' do
   
   it "should load load models whose constants are currently uninitialized (like with rails in development mode)" do
     Autoloader::Uninitialized
