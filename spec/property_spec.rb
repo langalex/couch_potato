@@ -122,6 +122,19 @@ describe 'properties' do
     p = CouchPotato.database.load_document p.id
     p.ship_address.should be_nil
   end
+  
+  it "should actually pass the null value down in the JSON document " do
+    p = Person.new
+    p.ship_address = nil
+    
+    database = Object.new
+    def database.save_doc(attributes)
+      attributes.has_key?(:ship_address).should == true
+      {}
+    end
+    CouchPotato.database.should_receive(:database).and_return(database)
+    CouchPotato.database.save_document! p
+  end
 
   it "should persist false for a false" do
     p = Person.new
