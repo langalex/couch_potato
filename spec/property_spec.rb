@@ -107,7 +107,7 @@ describe 'properties' do
   end
   
   it "should persist an object" do
-    p = Person.new :name => 'Bob'
+    p = Person.new
     a = Address.new :city => 'Denver'
     p.ship_address = a
     CouchPotato.database.save_document! p
@@ -116,13 +116,21 @@ describe 'properties' do
   end
   
   it "should persist null for a null " do
-    p = Person.new :name => 'Bob'
+    p = Person.new
     p.ship_address = nil
     CouchPotato.database.save_document! p
     p = CouchPotato.database.load_document p.id
     p.ship_address.should be_nil
   end
-  
+
+  it "should persist false for a false" do
+    p = Person.new
+    p.ship_address = false
+    CouchPotato.database.save_document! p
+    p = CouchPotato.database.load_document p.id
+    p.ship_address.should be_false
+  end
+
   describe "predicate" do
     it "should return true if property set" do
       Comment.new(:title => 'title').title?.should be_true

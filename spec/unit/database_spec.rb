@@ -43,7 +43,6 @@ describe CouchPotato::Database, 'full_url_to_database' do
   end
 end
 
-
 describe CouchPotato::Database, 'load' do
   it "should raise an exception if nil given" do
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil))
@@ -64,6 +63,7 @@ describe CouchPotato::Database, 'load' do
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => Parent::Child.json_create({JSON.create_id => 'Parent::Child'})))
     db.load('1').class.should == Parent::Child
   end
+  
 end
 
 describe CouchPotato::Database, 'save_document' do

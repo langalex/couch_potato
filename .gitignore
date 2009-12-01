@@ -1,4 +1,1 @@
-tmp/**/*
-log/*.log
-db/*.sqlite3
-nbproject
+couch_potato_js_runner.js
