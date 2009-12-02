@@ -79,15 +79,27 @@ If you want to store any properties you have to declare them:
       property :name
     end
 
-Properties can be of any type:
+Properties can be typed:
 
     class User
       include CouchPotato::Persistence
 
       property :address, :type => Address
     end
+    
+In this case Address also implements CouchPotato::Persistence which means its JSON representation will be added to the user document.  
+Couch Potato also has support for the basic types (right now only Fixnum is supported):
 
-Properties can have a default value
+    class User
+      include CouchPotato::Persistence
+
+      property :age, :type => Fixnum
+    end
+
+With this in place when you set the user's age as a String (e.g. using an hTML form) it will be converted into a Fixnum automatically.
+    
+
+Properties can have a default value:
 
     class User
       include CouchPotato::Persistence
