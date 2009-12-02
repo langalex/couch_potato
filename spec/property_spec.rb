@@ -126,13 +126,11 @@ describe 'properties' do
   it "should actually pass the null value down in the JSON document " do
     p = Person.new
     p.ship_address = nil
-    
-    database = Object.new
-    def database.save_doc(attributes)
+    db = mock(:database)
+    db.should_receive(:save_doc).with do |attributes|
       attributes.has_key?(:ship_address).should == true
-      {}
-    end
-    CouchPotato.database.should_receive(:database).and_return(database)
+    end.and_return({})
+    CouchPotato.database.stub(:database).and_return(db)
     CouchPotato.database.save_document! p
   end
 
