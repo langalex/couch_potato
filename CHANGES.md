@@ -1,5 +1,8 @@
 ## Changes
 
+### 0.2.18
+* set Fixnum property to nil when given a blank string (langalex)
+
 ### 0.2.17
 * fixed nil attributes were omitted in json (jweiss, mattmatt)
 * support for properties of type Fixnum (langalex)

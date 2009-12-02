@@ -76,6 +76,10 @@ describe "attributes" do
         @plant.typed_leaf_count.should == 123
       end
       
+      it "should set the attributes to nil if given a blank string" do
+        @plant.typed_leaf_count = ''
+        @plant.typed_leaf_count.should be_nil
+      end
     end
   end
 end
