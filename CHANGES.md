@@ -1,5 +1,8 @@
 ## Changes
 
+### 0.2.19
+* added conditions to views (langalex)
+
 ### 0.2.18
 * set Fixnum property to nil when given a blank string (langalex)
 

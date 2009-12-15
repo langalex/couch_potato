@@ -6,11 +6,9 @@ module CouchPotato
     #   view :my_view, :key => :name, :properties => [:name, :author], :type => :properties
     class PropertiesViewSpec < ModelViewSpec
       def map_function
-        "function(doc) {
-           if(doc.#{JSON.create_id} && doc.#{JSON.create_id} == '#{@klass.name}') {
-             emit(#{formatted_key(key)}, #{properties_for_map(properties)});
-           }
-         }"
+        map_body do
+          "emit(#{formatted_key(key)}, #{properties_for_map(properties)});"
+        end
       end
       
       def process_results(results)
@@ -32,8 +30,6 @@ module CouchPotato
       def properties_for_map(properties)
         '{' + properties.map{|p| "#{p}: doc.#{p}"}.join(', ') + '}'
       end
-      
-      
     end
   end
 end

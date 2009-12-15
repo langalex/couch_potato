@@ -197,6 +197,14 @@ Composite keys are also possible:
       view :all, :key => [:created_at, :name]
     end
 
+You can also pass conditions as a JavaScript string:
+
+    class User
+      property :name
+
+      view :completed, :key => :name, :conditions => 'doc.completed = true'
+    end
+
 The creation of views is based on view specification classes (see [CouchPotato::View::BaseViewSpec](http://rdoc.info/rdoc/langalex/couch_potato/blob/e8f0069e5529ad08a1bd1f02637ea8f1d6d0ab5b/CouchPotato/View/BaseViewSpec.html) and its descendants for more detailed documentation). The above code uses the ModelViewSpec class which is used to find models by their properties. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
 
 If you have larger structures and you only want to load some attributes you can use the PropertiesViewSpec (the full class name is automatically derived):
