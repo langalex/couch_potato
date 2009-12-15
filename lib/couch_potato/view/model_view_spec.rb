@@ -5,6 +5,9 @@ module CouchPotato
     #
     # example:
     #   view :my_view, :key => :name
+    # 
+    # in addition you can pass in conditions as a javascript string
+    #   view :my_view_only_completed, :key => :name, :conditions => 'doc.completed = true'
     class ModelViewSpec < BaseViewSpec
       
       def view_parameters
@@ -17,11 +20,9 @@ module CouchPotato
       end
       
       def map_function
-        "function(doc) {
-           if(doc.#{JSON.create_id} && doc.#{JSON.create_id} == '#{@klass.name}') {
-             emit(#{formatted_key(key)}, null);
-           }
-         }"
+        map_body do
+          "emit(#{formatted_key(key)}, null);"
+        end
       end
       
       def reduce_function
@@ -39,6 +40,19 @@ module CouchPotato
       end
       
       private
+      
+      def map_body(&block)
+        "function(doc) {
+           if(doc.#{JSON.create_id} && doc.#{JSON.create_id} == '#{@klass.name}'#{conditions_js}) {
+             " + yield + "
+           }
+         }"
+        
+      end
+      
+      def conditions_js
+        " && (#{options[:conditions]})" if options[:conditions]
+      end
       
       def count?
         view_parameters[:reduce]
