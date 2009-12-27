@@ -42,6 +42,10 @@ module CouchPotato
         end
       end
       
+      def type_caster
+        @type_caster ||= TypeCaster.new
+      end
+      
       module ClassMethods
         # returns all the property names of a model class that have been defined using the #property method
         #

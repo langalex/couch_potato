@@ -8,6 +8,7 @@ require File.dirname(__FILE__) + '/persistence/dirty_attributes'
 require File.dirname(__FILE__) + '/persistence/ghost_attributes'
 require File.dirname(__FILE__) + '/persistence/attachments'
 require File.dirname(__FILE__) + '/persistence/validation'
+require File.dirname(__FILE__) + '/persistence/type_caster'
 require File.dirname(__FILE__) + '/view/custom_views'
 require File.dirname(__FILE__) + '/view/view_query'
 

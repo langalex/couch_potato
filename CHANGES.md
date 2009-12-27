@@ -1,5 +1,15 @@
 ## Changes
 
+### 0.2.19
+* added conditions to views (langalex)
+
+### 0.2.18
+* set Fixnum property to nil when given a blank string (langalex)
+
+### 0.2.17
+* fixed nil attributes were omitted in json (jweiss, mattmatt)
+* support for properties of type Fixnum (langalex)
+
 ### 0.2.16
 * fixed problem with classes being not loaded in rails development mode (langalex)
 * fixed persist boolean false value (bernd)
