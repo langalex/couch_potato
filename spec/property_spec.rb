@@ -141,6 +141,48 @@ describe 'properties' do
     p = CouchPotato.database.load_document p.id
     p.ship_address.should be_false
   end
+  
+  describe "boolean properties" do
+    it "should persist '0' for false" do
+      a = Address.new
+      a.verified = '0'
+      CouchPotato.database.save_document! a
+      a = CouchPotato.database.load_document a.id
+      a.verified.should be_false
+    end
+    
+    it "should persist 0 for false" do
+      a = Address.new
+      a.verified = 0
+      CouchPotato.database.save_document! a
+      a = CouchPotato.database.load_document a.id
+      a.verified.should be_false
+    end
+    
+    it "should persist '1' for true" do
+      a = Address.new
+      a.verified = '1'
+      CouchPotato.database.save_document! a
+      a = CouchPotato.database.load_document a.id
+      a.verified.should be_true
+    end
+    
+    it "should persist 1 for true" do
+      a = Address.new
+      a.verified = 1
+      CouchPotato.database.save_document! a
+      a = CouchPotato.database.load_document a.id
+      a.verified.should be_true
+    end
+    
+    it "should leave nil as nil" do
+      a = Address.new
+      a.verified = nil
+      CouchPotato.database.save_document! a
+      a = CouchPotato.database.load_document a.id
+      a.verified.should be_nil
+    end
+  end
 
   describe "predicate" do
     it "should return true if property set" do
