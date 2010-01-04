@@ -202,7 +202,7 @@ You can also pass conditions as a JavaScript string:
     class User
       property :name
 
-      view :completed, :key => :name, :conditions => 'doc.completed = true'
+      view :completed, :key => :name, :conditions => 'doc.completed === true'
     end
 
 The creation of views is based on view specification classes (see [CouchPotato::View::BaseViewSpec](http://rdoc.info/rdoc/langalex/couch_potato/blob/e8f0069e5529ad08a1bd1f02637ea8f1d6d0ab5b/CouchPotato/View/BaseViewSpec.html) and its descendants for more detailed documentation). The above code uses the ModelViewSpec class which is used to find models by their properties. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
