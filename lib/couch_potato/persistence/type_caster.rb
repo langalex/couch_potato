@@ -9,17 +9,15 @@ module CouchPotato
         end
       end
       
+      private
+      
       def cast_boolen(value)
-        if !(value.instance_of?(FalseClass) || value.instance_of?(TrueClass))
-          if value == 0 || value == '0'
-            false
-          elsif value.nil?
-            nil
-          else
-            true
-          end
-        else
+        if [FalseClass, TrueClass].include?(value.class) || value.nil?
           value
+        elsif [0, '0'].include?(value)
+          false
+        else
+          true
         end
       end
       
