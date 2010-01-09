@@ -1,5 +1,8 @@
 ## Changes
 
+### master
+* support for :boolean properties (jweiss)
+
 ### 0.2.19
 * added conditions to views (langalex)
 

@@ -88,12 +88,13 @@ Properties can be typed:
     end
     
 In this case Address also implements CouchPotato::Persistence which means its JSON representation will be added to the user document.  
-Couch Potato also has support for the basic types (right now only Fixnum is supported):
+Couch Potato also has support for the basic types (right now Fixnum and :boolean are supported):
 
     class User
       include CouchPotato::Persistence
 
       property :age, :type => Fixnum
+      property :receive_newsletter, :type => :boolean
     end
 
 With this in place when you set the user's age as a String (e.g. using an hTML form) it will be converted into a Fixnum automatically.
