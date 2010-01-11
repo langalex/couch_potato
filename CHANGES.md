@@ -1,6 +1,6 @@
 ## Changes
 
-### master
+### 0.2.20
 * support for :boolean properties (jweiss)
 * return the total_rows when querying a view (langalex)
 
