@@ -2,6 +2,7 @@
 
 ### master
 * support for :boolean properties (jweiss)
+* return the total_rows when querying a view (langalex)
 
 ### 0.2.19
 * added conditions to views (langalex)

@@ -12,14 +12,30 @@ module CouchPotato
       end
     end
 
+    # executes a view and return the results. you pass in a view spec
+    # which is usually a result of a SomePersistentClass.view call.
+    # also return the total_rows returned by CouchDB as an accessor on the results.
+    #
+    # Example:
+    #
+    #   class User
+    #     include CouchPotato::Persistence
+    #     view :all, key: :created_at
+    #   end
+    #
+    #   CouchPotato.database.view(User.all) # => [user1, user2]
+    #   CouchPotato.database.view(User.all).total_rows # => 2
+    #
     def view(spec)
       results = CouchPotato::View::ViewQuery.new(database,
         spec.design_document, spec.view_name, spec.map_function,
         spec.reduce_function).query_view!(spec.view_parameters)
-      spec.process_results results
+      processed_results = spec.process_results results
+      processed_results.instance_eval "def total_rows; #{results['total_rows']}; end" if results['total_rows']
+      processed_results
     end
 
-
+    # saves a document. returns true on success, false on failure
     def save_document(document, validate = true)
       return true unless document.dirty?
       if document.new?
@@ -29,7 +45,8 @@ module CouchPotato
       end
     end
     alias_method :save, :save_document
-
+    
+    # saves a document, raises a CouchPotato::Database::ValidationsFailedError on failure
     def save_document!(document)
       save_document(document) || raise(ValidationsFailedError.new(document.errors.full_messages))
     end
@@ -45,6 +62,7 @@ module CouchPotato
     end
     alias_method :destroy, :destroy_document
 
+    # loads a document by its id
     def load_document(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
       begin
@@ -57,7 +75,7 @@ module CouchPotato
     end
     alias_method :load, :load_document
 
-    def inspect
+    def inspect #:nodoc:
       "#<CouchPotato::Database>"
     end
 
