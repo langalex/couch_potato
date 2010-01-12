@@ -9,13 +9,12 @@ module CouchPotato
   module View
     module CustomViews
 
-      def self.included(base)
+      def self.included(base) #:nodoc:
         base.extend ClassMethods
       end
 
       module ClassMethods
-        # Declare a CouchDB view, for examples on how to use see the *ViewSpec classes in CouchPotato::View
-        def views(view_name = nil)
+        def views(view_name = nil) #:nodoc:
           if view_name
             _find_view(view_name)
           else
@@ -23,10 +22,11 @@ module CouchPotato
           end
         end
 
-        def execute_view(view_name, view_parameters)
+        def execute_view(view_name, view_parameters) #:nodoc:
           view_spec_class(views(view_name)[:type]).new(self, view_name, views(view_name), view_parameters)
         end
-
+        
+        # Declare a CouchDB view, for examples on how to use see the *ViewSpec classes in CouchPotato::View
         def view(view_name, options)
           view_name = view_name.to_s
           views[view_name] = options
@@ -34,7 +34,7 @@ module CouchPotato
           self.instance_eval(method_str)
         end
 
-        def view_spec_class(type)
+        def view_spec_class(type) #:nodoc:
           if type && type.is_a?(Class)
             type
           else
@@ -43,7 +43,7 @@ module CouchPotato
           end
         end
         
-        def _find_view(view)
+        def _find_view(view) #:nodoc:
           return @views[view] if @views && @views[view]
           superclass._find_view(view) if superclass && superclass.respond_to?(:_find_view)
         end

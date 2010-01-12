@@ -3,7 +3,7 @@ require 'validatable'
 module CouchPotato
   module Persistence
     module Validation
-      def self.included(base)
+      def self.included(base) #:nodoc:
         base.send :include, Validatable
         base.class_eval do
           # Override the validate method to first run before_validation callback

@@ -4,6 +4,7 @@
 * automatically set a database instance on results of CouchPotato::Database#view (langalex)
 * improved auto loading of unloaded constants - can now load constants that have never been loaded before (langalex)
 * raise exception on invalid parameters passed to a couchdb view query (langalex)
+* when querying a view: pass in ranges as key instead of startkey/endkey, pass in plain value instead of hash with key (langalex) 
 
 ### 0.2.20
 * support for :boolean properties (jweiss)

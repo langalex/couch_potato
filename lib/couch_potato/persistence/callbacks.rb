@@ -1,7 +1,7 @@
 module CouchPotato
   module Persistence
     module Callbacks
-      def self.included(base)
+      def self.included(base) #:nodoc:
         base.extend ClassMethods
 
         base.class_eval do

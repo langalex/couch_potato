@@ -1,6 +1,6 @@
 module CouchPotato
   module Persistence
-    class TypeCaster
+    class TypeCaster #:nodoc:
       def cast(value, type)
         if type == :boolean
           cast_boolen(value)

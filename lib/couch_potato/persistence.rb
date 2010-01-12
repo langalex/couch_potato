@@ -16,7 +16,7 @@ require File.dirname(__FILE__) + '/view/view_query'
 module CouchPotato
   module Persistence
     
-    def self.included(base)
+    def self.included(base) #:nodoc:
       base.send :include, Properties, Callbacks, Validation, Json, CouchPotato::View::CustomViews
       base.send :include, DirtyAttributes, GhostAttributes, Attachments
       base.send :include, MagicTimestamps

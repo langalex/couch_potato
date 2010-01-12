@@ -2,7 +2,7 @@ module CouchPotato
   module Persistence
     module DirtyAttributes
       
-      def self.included(base)
+      def self.included(base) #:nodoc:
         base.class_eval do
           after_save :reset_dirty_attributes
           

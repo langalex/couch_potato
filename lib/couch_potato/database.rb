@@ -13,19 +13,33 @@ module CouchPotato
     end
 
     # executes a view and return the results. you pass in a view spec
-    # which is usually a result of a SomePersistentClass.view call.
+    # which is usually a result of a SomePersistentClass.some_view call.
     # also return the total_rows returned by CouchDB as an accessor on the results.
     #
     # Example:
     #
     #   class User
     #     include CouchPotato::Persistence
-    #     view :all, key: :created_at
+    #     property :age
+    #     view :all, key: :age
     #   end
+    #   db = CouchPotato.database
     #
-    #   CouchPotato.database.view(User.all) # => [user1, user2]
-    #   CouchPotato.database.view(User.all).total_rows # => 2
+    #   db.view(User.all) # => [user1, user2]
+    #   db.view(User.all).total_rows # => 2
     #
+    # You can pass the usual parameters you can pass to a couchdb view to the view:
+    #
+    #   db.view(User.all(limit: 5, startkey: 2, reduce: false))
+    #
+    # For your convenience when passing a has with only a key parameter you can just pass in the value
+    #
+    #   db.view(User.all(key: 1)) == db.view(User.all(1))
+    # 
+    # Instead of passing a startkey and endkey you can pass in a key with a range:
+    #
+    #   db.view(User.all(key: 1..20)) == db.view(startkey: 1, endkey: 20) == db.view(User.all(1..20))
+    #   
     def view(spec)
       results = CouchPotato::View::ViewQuery.new(database,
         spec.design_document, spec.view_name, spec.map_function,
