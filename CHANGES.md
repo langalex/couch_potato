@@ -1,5 +1,8 @@
 ## Changes
 
+### master
+* automatically set a database instance on results of CouchPotato::Database#view (langalex)
+
 ### 0.2.20
 * support for :boolean properties (jweiss)
 * return the total_rows when querying a view (langalex)
