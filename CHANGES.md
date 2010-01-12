@@ -2,6 +2,7 @@
 
 ### master
 * automatically set a database instance on results of CouchPotato::Database#view (langalex)
+* improved auto loading of unloaded constants - can now load constants that have never been loaded before (langalex)
 
 ### 0.2.20
 * support for :boolean properties (jweiss)
