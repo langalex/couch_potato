@@ -1,6 +1,6 @@
 ## Changes
 
-### master
+### 0.2.21
 * automatically set a database instance on results of CouchPotato::Database#view (langalex)
 * improved auto loading of unloaded constants - can now load constants that have never been loaded before (langalex)
 * raise exception on invalid parameters passed to a couchdb view query (langalex)
