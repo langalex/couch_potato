@@ -1,5 +1,8 @@
 ## Changes
 
+### 0.2.22
+* fixed properties with default values returned default when a blank value like '' or [] was set (langalex)
+
 ### 0.2.21
 * automatically set a database instance on results of CouchPotato::Database#view (langalex)
 * improved auto loading of unloaded constants - can now load constants that have never been loaded before (langalex)

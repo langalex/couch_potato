@@ -4,7 +4,7 @@ class Test
   include CouchPotato::Persistence
 
   property :test, :default => 'Test value'
-  property :complex, :default => []
+  property :complex, :default => [1, 2, 3]
 end
 
 describe 'default properties' do
@@ -30,5 +30,9 @@ describe 'default properties' do
     t = Test.new
     t2 = Test.new
     t.complex.object_id.should_not == t2.complex.object_id
+  end
+  
+  it "should not return the default value when the actual value is empty" do
+    t = Test.new(:complex => []).complex.should == []
   end
 end

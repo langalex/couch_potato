@@ -48,7 +48,7 @@ module CouchPotato
 
           define_method "#{name}" do
             value = self.instance_variable_get("@#{name}")
-            if value.blank? && options[:default]
+            if value.nil? && options[:default]
               default = clone_attribute(options[:default])
               self.instance_variable_set("@#{name}", default)
               default
