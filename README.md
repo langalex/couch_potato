@@ -340,7 +340,7 @@ Please fix bugs, add more specs, implement new features by forking the github re
 
 Issues are tracked at github: http://github.com/langalex/couch_potato/issues
 
-There is a mailing list, just write to: couchpotato@librelis.com
+There is a mailing list, just write to: couchpotato@librelist.com
 
 You can run all the specs by calling 'rake spec_unit' and 'rake spec_functional' in the root folder of Couch Potato. The specs require a running CouchDB instance at http://localhost:5984
 
