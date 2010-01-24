@@ -1,5 +1,6 @@
 require 'digest/md5'
 require File.dirname(__FILE__) + '/database'
+require File.dirname(__FILE__) + '/active_model'
 require File.dirname(__FILE__) + '/persistence/properties'
 require File.dirname(__FILE__) + '/persistence/magic_timestamps'
 require File.dirname(__FILE__) + '/persistence/callbacks'
@@ -19,7 +20,7 @@ module CouchPotato
     def self.included(base) #:nodoc:
       base.send :include, Properties, Callbacks, Validation, Json, CouchPotato::View::CustomViews
       base.send :include, DirtyAttributes, GhostAttributes, Attachments
-      base.send :include, MagicTimestamps
+      base.send :include, MagicTimestamps, CouchPotato::ActiveModel
       base.class_eval do
         attr_accessor :_id, :_rev, :_deleted, :database
         alias_method :id, :_id
@@ -82,7 +83,6 @@ module CouchPotato
     def new?
       _rev.nil?
     end
-    alias_method :new_record?, :new?
     
     # returns the document id
     # this is used by rails to construct URLs

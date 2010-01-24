@@ -1,5 +1,8 @@
 ## Changes
 
+### master
+* Couch Potato models now conform to the ActiveModel interface when ActiveModel is installed, see http://yehudakatz.com/2010/01/10/activemodel-make-any-ruby-object-feel-like-activerecord/ (langalex)
+
 ### 0.2.22
 * fixed properties with default values returned default when a blank value like '' or [] was set (langalex)
 

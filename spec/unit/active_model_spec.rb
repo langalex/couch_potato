@@ -1,0 +1,69 @@
+require File.dirname(__FILE__) + '/../spec_helper'
+
+begin
+  require 'active_model'
+  
+  describe 'ActiveModel conformance of couch potato objects' do
+    include ActiveModel::Lint::Tests
+
+    instance_methods.sort.select{|method| method.to_s.scan(/^test_/).first}.each do |method|
+      it "should #{method.to_s.sub(/^test_/, '').gsub('_', ' ')}" do
+        send method
+      end
+    end
+
+    class ActiveComment
+      include CouchPotato::Persistence
+      property :name
+      property :email
+      validates_presence_of :name, :email
+      validates_format_of :email, :with => /.+@.+/
+    end
+
+    before(:each) do
+      @model = ActiveComment.new
+    end
+    
+    describe "#errors" do
+      it "should return a single error as array" do
+        @model.valid?
+        @model.errors[:name].should be_kind_of(Array)
+      end
+      
+      it "should return multiple errors as array" do
+        @model.valid?
+        @model.errors[:email].size.should == 2
+      end
+      
+      it "should return no error as an empty array" do
+        @model.errors[:name].should == []
+      end
+    end
+
+    describe "#destroyed" do
+      it "should return destroyed if the object is deleted" do
+        @model._deleted = true
+        @model.should be_destroyed
+      end
+
+      it "should not return destroyed if it's not deleted" do
+        @model.should_not be_destroyed
+      end
+    end
+
+    def assert(boolean, message)
+      boolean || raise(message)
+    end
+
+    def assert_kind_of(klass, object)
+      object.should be_a(klass)
+    end
+  end
+  
+rescue LoadError
+  STDERR.puts "WARNING: active_model gem not installed. Not running ActiveModel specs."
+end
+
+
+
+
