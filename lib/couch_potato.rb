@@ -9,6 +9,7 @@ JSON.create_id = 'ruby_class'
 
 module CouchPotato
   Config = Struct.new(:database_name, :validation_framework).new
+  Config.validation_framework = :validatable # default to the validatable gem for validations
 
   # Returns a database instance which you can then use to create objects and query views. You have to set the CouchPotato::Config.database_name before this works.
   def self.database

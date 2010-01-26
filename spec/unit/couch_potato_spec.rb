@@ -20,6 +20,13 @@ describe CouchPotato, 'full_url_to_database' do
 end
 
 describe CouchPotato, 'validation_framework' do
+  before(:each) do
+    @original_validation_framework = CouchPotato::Config.validation_framework
+  end
+  after(:each) do
+    CouchPotato::Config.validation_framework = @original_validation_framework
+  end
+
   it "should allow setting the validation_framework to :active_model" do
     CouchPotato::Config.validation_framework = :active_model
     CouchPotato::Config.validation_framework.should == :active_model
@@ -27,6 +34,10 @@ describe CouchPotato, 'validation_framework' do
 
   it "should allow setting the validation_framework to :validatable" do
     CouchPotato::Config.validation_framework = :validatable
+    CouchPotato::Config.validation_framework.should == :validatable
+  end
+  
+  it "should default to :validatable" do
     CouchPotato::Config.validation_framework.should == :validatable
   end
 end
