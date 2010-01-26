@@ -18,3 +18,15 @@ describe CouchPotato, 'full_url_to_database' do
     CouchPotato.full_url_to_database.should == 'http://db.local/test'
   end
 end
+
+describe CouchPotato, 'validation_framework' do
+  it "should allow setting the validation_framework to :active_model" do
+    CouchPotato::Config.validation_framework = :active_model
+    CouchPotato::Config.validation_framework.should == :active_model
+  end
+
+  it "should allow setting the validation_framework to :validatable" do
+    CouchPotato::Config.validation_framework = :validatable
+    CouchPotato::Config.validation_framework.should == :validatable
+  end
+end
