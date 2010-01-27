@@ -38,6 +38,10 @@ begin
       it "should return no error as an empty array" do
         @model.errors[:name].should == []
       end
+      
+      it "should be able to be Marshal.dump'ed" do
+        lambda { Marshal.dump(@model.errors) }.should_not raise_error
+      end
     end
 
     describe "#destroyed" do

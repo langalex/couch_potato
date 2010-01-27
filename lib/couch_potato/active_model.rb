@@ -4,6 +4,15 @@ rescue LoadError
   # if it's not installed you probably don't want to use it anyway
 end
 
+# add [] method to Validatable's implementation of the Errors class
+module Validatable
+  class Errors
+    def [](attribute)
+      [on(attribute)].flatten.compact
+    end
+  end
+end
+
 module CouchPotato::ActiveModel
   class ModelName < String
     attr_reader :name, :human, :partial_path, :singular, :plural
@@ -28,11 +37,7 @@ module CouchPotato::ActiveModel
   end
   
   def errors
-    _errors = super || []
-    def _errors.[](attribute)
-      [on(attribute)].flatten.compact
-    end
-    _errors
+    super || []
   end
 
   def destroyed?
