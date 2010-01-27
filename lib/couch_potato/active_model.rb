@@ -4,11 +4,13 @@ rescue LoadError
   # if it's not installed you probably don't want to use it anyway
 end
 
-# add [] method to Validatable's implementation of the Errors class
-module Validatable
-  class Errors
-    def [](attribute)
-      [on(attribute)].flatten.compact
+if CouchPotato::Config.validation_framework == :validatable
+  # add [] method to Validatable's implementation of the Errors class
+  module Validatable
+    class Errors
+      def [](attribute)
+        [on(attribute)].flatten.compact
+      end
     end
   end
 end

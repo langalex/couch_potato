@@ -1,12 +1,11 @@
-require 'validatable'
-
 module CouchPotato
   module Persistence
     module Validation
       def self.included(base) #:nodoc:
 
-        case ::CouchPotato::Config.validation_framework
+        case CouchPotato::Config.validation_framework
         when :validatable
+          require 'validatable'
           base.send :include, Validatable
           base.class_eval do
             # Override the validate method to first run before_validation callback
