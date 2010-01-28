@@ -139,14 +139,14 @@ module CouchPotato
       case CouchPotato::Config.validation_framework
       when :validatable
         errors = document.errors.errors.dup
-        document.valid?
-        errors.each do |k, v|
-          v.each {|message| document.errors.add(k, message)}
-        end
-        document.errors.empty?
       when :active_model
-        document.valid?
+        errors = document.errors.dup
       end
+      document.valid?
+      errors.each do |k, v|
+        v.each {|message| document.errors.add(k, message)}
+      end
+      document.errors.empty?
     end
     
     def database
