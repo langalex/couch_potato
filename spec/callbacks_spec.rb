@@ -271,37 +271,56 @@ describe "lambda callbacks" do
 end
 
 describe "validation callbacks" do
-  class ValidatedUser
-    include CouchPotato::Persistence
-    
-    property :name
-    before_validation :check_name
-    validates_presence_of :name
-    
-    def check_name
-      errors.add(:name, 'should be Paul') unless name == "Paul"
+  before(:each) do
+    @original_validation_framework = CouchPotato::Config.validation_framework
+  end
+  after(:each) do
+    CouchPotato::Config.validation_framework = @original_validation_framework
+  end
+  [:validatable, :active_model].each do |validation_framework|
+    describe "with #{validation_framework}" do
+      before(:each) do
+        CouchPotato::Config.validation_framework = validation_framework
+      end
+
+      begin
+        Object.send(:remove_const, :ValidatedUser) if Object.const_defined?(:ValidatedUser)
+        class ValidatedUser
+          include CouchPotato::Persistence
+
+          property :name
+          before_validation :check_name
+          validates_presence_of :name
+
+          def check_name
+            errors.add(:name, 'should be Paul') unless name == "Paul"
+          end
+        end
+
+        it "should keep error messages set in custom before_validation filters" do
+          user = ValidatedUser.new(:name => "john")
+          user.valid?.should == false
+          user.errors.on(:name).should == "should be Paul"
+        end
+
+        it "should combine the errors from validations and callbacks" do
+          user = ValidatedUser.new(:name => nil)
+          user.valid?.should == false
+          user.errors.on(:name).any? {|msg| msg =~ /can't be (empty|blank)/ }.should == true
+          user.errors.on(:name).any? {|msg| msg == "should be Paul" }.should == true
+          user.errors.on(:name).size.should == 2
+        end
+
+        it "should clear the errors on subsequent calls to valid?" do
+          user = ValidatedUser.new(:name => nil)
+          user.valid?.should == false
+          user.name = 'Paul'
+          user.valid?.should == true
+          user.errors.on(:name).should == nil
+        end
+      rescue LoadError
+        STDERR.puts "WARNING: Skipping Callback functional tests with #{validation_framework} as it is not installed."
+      end
     end
-  end
-  
-  it "should keep error messages set in custom before_validation filters" do
-    user = ValidatedUser.new(:name => "john")
-    user.valid?.should == false
-    user.errors.on(:name).should == "should be Paul"
-  end
-  
-  it "should combine the errors from validations and callbacks" do
-    user = ValidatedUser.new(:name => nil)
-    user.valid?.should == false
-    user.errors.on(:name).any? {|msg| msg =~ /can't be (empty|blank)/ }.should == true
-    user.errors.on(:name).any? {|msg| msg == "should be Paul" }.should == true
-    user.errors.on(:name).size.should == 2
-  end
-  
-  it "should clear the errors on subsequent calls to valid?" do
-    user = ValidatedUser.new(:name => nil)
-    user.valid?.should == false
-    user.name = 'Paul'
-    user.valid?.should == true
-    user.errors.on(:name).should == nil
   end
 end
