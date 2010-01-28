@@ -1,3 +1,4 @@
+require 'bigdecimal'
 module CouchPotato
   module Persistence
     module DirtyAttributes
@@ -35,7 +36,7 @@ module CouchPotato
       end
       
       def clone_attribute(value)
-        if [Fixnum, Symbol, TrueClass, FalseClass, NilClass, Float].include?(value.class)
+        if [Fixnum, Symbol, TrueClass, FalseClass, NilClass, Float, BigDecimal].include?(value.class)
           value
         elsif [Hash, Array].include?(value.class)
           #Deep clone
