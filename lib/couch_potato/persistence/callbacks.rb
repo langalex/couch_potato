@@ -50,7 +50,11 @@ module CouchPotato
         ].each do |callback|
           define_method callback do |*names|
             names.each do |name|
-              callbacks[callback] << name
+              if CouchPotato::Config.validation_framework == :active_model && callback == :before_validation
+                validate name
+              else
+                callbacks[callback] << name
+              end
             end
           end
         end
