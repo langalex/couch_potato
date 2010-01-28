@@ -2,8 +2,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 class Tree
   include CouchPotato::Persistence
-  before_validation :water!
-  before_validation lambda {|tree| tree.root_count += 1 }
+
+  before_validation :water!, lambda {|tree| tree.root_count += 1 }
   
   property :leaf_count
   property :root_count
@@ -12,7 +12,6 @@ class Tree
     self.leaf_count += 1
   end
 end
-
 
 describe 'before_validation callback' do
   before :each do
