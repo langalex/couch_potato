@@ -64,6 +64,27 @@ describe 'dirty attribute tracking' do
         @plate.food = 'burger'
         @plate.food_was.should == 'sushi'
       end
+      
+      describe "with type BigDecimal" do
+        before(:each) do
+          class ::Plate
+            property :price
+          end
+        end
+        it "should not dup BigDecimal" do
+
+          lambda {
+            Plate.new :price => BigDecimal.new("5.23") 
+          }.should_not raise_error(TypeError)
+        end
+        
+        it "should return the old value" do
+          plate = Plate.new :price => BigDecimal.new("5.23") 
+          plate.price = BigDecimal.new("2.23")
+          plate.price_was.should == 5.23
+        end
+        
+      end
     end
 
     describe "check for dirty" do
