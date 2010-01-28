@@ -292,7 +292,9 @@ describe "validation callbacks" do
   it "should combine the errors from validations and callbacks" do
     user = ValidatedUser.new(:name => nil)
     user.valid?.should == false
-    user.errors.on(:name).should == ["can't be empty", "should be Paul"]
+    user.errors.on(:name).first.should =~ /can't be (empty|blank)/
+    user.errors.on(:name).second.should == "should be Paul"
+    user.errors.on(:name).should have(2).messages
   end
   
   it "should clear the errors on subsequent calls to valid?" do
