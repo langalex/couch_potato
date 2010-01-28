@@ -136,12 +136,17 @@ module CouchPotato
     end
 
     def valid_document?(document)
-      errors = document.errors.errors.dup
-      document.valid?
-      errors.each do |k, v|
-        v.each {|message| document.errors.add(k, message)}
+      case CouchPotato::Config.validation_framework
+      when :validatable
+        errors = document.errors.errors.dup
+        document.valid?
+        errors.each do |k, v|
+          v.each {|message| document.errors.add(k, message)}
+        end
+        document.errors.empty?
+      when :active_model
+        document.valid?
       end
-      document.errors.empty?
     end
     
     def database
