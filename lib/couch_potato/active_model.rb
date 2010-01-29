@@ -1,17 +1,17 @@
+if CouchPotato::Config.validation_framework == :validatable
+  # add [] method to Validatable's implementation of the Errors class
+  module Validatable
+    class Errors
+      def [](attribute)
+        [on(attribute)].flatten.compact
+      end
+    end
+  end
+end
+
 module CouchPotato::ActiveModel
   begin
     require 'active_model'
-
-    if CouchPotato::Config.validation_framework == :validatable
-      # add [] method to Validatable's implementation of the Errors class
-      module Validatable
-        class Errors
-          def [](attribute)
-            [on(attribute)].flatten.compact
-          end
-        end
-      end
-    end
 
     class ModelName < String
       attr_reader :name, :human, :partial_path, :singular, :plural
