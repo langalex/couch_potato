@@ -1,6 +1,7 @@
 require 'digest/md5'
 require File.dirname(__FILE__) + '/database'
 require File.dirname(__FILE__) + '/active_model'
+require File.dirname(__FILE__) + '/validatable'
 require File.dirname(__FILE__) + '/persistence/properties'
 require File.dirname(__FILE__) + '/persistence/magic_timestamps'
 require File.dirname(__FILE__) + '/persistence/callbacks'
