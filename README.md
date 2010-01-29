@@ -20,24 +20,26 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Installation
 
-Couch Potato is hosted as a gem on gemcutter.org which you can install like this:
+Couch Potato is hosted as a gem which you can install like this:
 
-    sudo gem install couch_potato --source http://gemcutter.org
+    (sudo) gem install couch_potato
 
 #### Using with your ruby application:
 
     require 'rubygems'
     require 'couch_potato'
 
-Alternatively you can download or clone the source repository and then require lib/couch_potato.rb.
-
-You MUST specify the name of the database:
+After that you configure the name of the database:
 
     CouchPotato::Config.database_name = 'name_of_the_db'
 
 The server URL will default to http://localhost:5984/ unless specified:
 
     CouchPotato::Config.database_name = "http://example.com:5984/name_of_the_db"
+  
+Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel)
+
+    CouchPotato::Config.validation_framework = :validatable | :active_model
 
 #### Using with Rails
 
