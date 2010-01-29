@@ -168,7 +168,7 @@ describe CouchPotato::Database, 'save_document' do
     it "should keep errors added in before_validation_on_* callbacks when creating a new object" do
       spock = Vulcan.new(:name => 'spock')
       @db.save_document(spock, false)
-      spock.new_record?.should == false
+      spock.new?.should == false
       spock.name = "spock's father"
       @db.save_document(spock)
       spock.errors.on(:validation).should == 'failed'
