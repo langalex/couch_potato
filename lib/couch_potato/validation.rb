@@ -3,7 +3,8 @@ module CouchPotato
     def self.included(base) #:nodoc:
       case CouchPotato::Config.validation_framework
       when :validatable
-        base.send :include, Validatable
+        require File.dirname(__FILE__) + '/validation/validatable'
+        base.send :include, CouchPotato::Validation::Validatable
       when :active_model
         base.send :include, ::ActiveModel::Validations
       else
