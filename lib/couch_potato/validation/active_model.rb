@@ -8,3 +8,12 @@ module CouchPotato
     end
   end
 end
+
+# provide same interface to errors object as in Validatable
+module ::ActiveModel
+  class Errors
+    def errors
+      self
+    end
+  end
+end

@@ -7,6 +7,14 @@ describe 'CouchPotato::Config.validation_framework' do
   after(:each) do
     CouchPotato::Config.validation_framework = @original_validation_framework
   end
+  
+  describe "access to errors object" do
+    it "should description" do
+      model_class = Class.new
+      model_class.send(:include, CouchPotato::Persistence)
+      model_class.new.errors.should respond_to(:errors)
+    end
+  end
 
   begin
     require 'active_model'
