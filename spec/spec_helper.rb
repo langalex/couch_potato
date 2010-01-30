@@ -6,14 +6,13 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'couch_potato'
 
 CouchPotato::Config.database_name = 'couch_potato_test'
+CouchPotato::Config.validation_framework = ENV['VALIDATION_FRAMEWORK'].to_sym unless ENV['VALIDATION_FRAMEWORK'].blank?
 
 class Child
   include CouchPotato::Persistence
 
   property :text
 end
-
-
 
 class Comment
   include CouchPotato::Persistence

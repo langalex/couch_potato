@@ -36,8 +36,4 @@ describe CouchPotato, 'validation_framework' do
     CouchPotato::Config.validation_framework = :validatable
     CouchPotato::Config.validation_framework.should == :validatable
   end
-  
-  it "should default to :validatable" do
-    CouchPotato::Config.validation_framework.should == :validatable
-  end
 end

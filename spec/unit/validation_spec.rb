@@ -1,10 +1,10 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe 'CouchPotato::Config.validation_framework' do
-  before(:all) do
+  before(:each) do
     @original_validation_framework = CouchPotato::Config.validation_framework
   end
-  after(:all) do
+  after(:each) do
     CouchPotato::Config.validation_framework = @original_validation_framework
   end
 
