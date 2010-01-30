@@ -49,13 +49,7 @@ module CouchPotato
           :after_destroy
         ].each do |callback|
           define_method callback do |*names|
-            names.each do |name|
-              if CouchPotato::Config.validation_framework == :active_model && callback == :before_validation
-                validate name
-              else
-                callbacks[callback] << name
-              end
-            end
+            callbacks[callback].push *names
           end
         end
       end

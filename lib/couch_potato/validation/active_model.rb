@@ -4,6 +4,13 @@ module CouchPotato
       def self.included(base)
         require 'active_model'
         base.send :include, ::ActiveModel::Validations
+        base.instance_eval do
+          def before_validation(*names)
+            names.each do |name|
+              validate name
+            end
+          end
+        end
       end
     end
   end
