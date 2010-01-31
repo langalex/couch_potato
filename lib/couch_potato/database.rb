@@ -138,7 +138,7 @@ module CouchPotato
     def valid_document?(document)
       errors = document.errors.errors.dup
       document.valid?
-      errors.each do |k, v|
+      errors.each_pair do |k, v|
         v.each {|message| document.errors.add(k, message)}
       end
       document.errors.empty?
