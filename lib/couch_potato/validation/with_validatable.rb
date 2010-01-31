@@ -1,6 +1,6 @@
 module CouchPotato
   module Validation
-    module Validatable
+    module WithValidatable
       def self.included(base)
         require 'validatable'
         base.send :include, ::Validatable

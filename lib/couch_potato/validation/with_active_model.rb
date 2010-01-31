@@ -1,8 +1,9 @@
 module CouchPotato
   module Validation
-    module ActiveModel
+    module WithActiveModel
       def self.included(base)
         require 'active_model'
+        require 'active_model/translation'
         base.send :include, ::ActiveModel::Validations
         base.instance_eval do
           def before_validation(*names)

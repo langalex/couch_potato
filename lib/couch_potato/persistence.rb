@@ -1,6 +1,6 @@
 require 'digest/md5'
 require File.dirname(__FILE__) + '/database'
-require File.dirname(__FILE__) + '/persistence/active_model'
+require File.dirname(__FILE__) + '/persistence/active_model_compliance'
 require File.dirname(__FILE__) + '/persistence/properties'
 require File.dirname(__FILE__) + '/persistence/magic_timestamps'
 require File.dirname(__FILE__) + '/persistence/callbacks'
@@ -19,7 +19,7 @@ module CouchPotato
     def self.included(base) #:nodoc:
       base.send :include, Properties, Callbacks, Validation, Json, CouchPotato::View::CustomViews
       base.send :include, DirtyAttributes, GhostAttributes, Attachments
-      base.send :include, MagicTimestamps, ActiveModel
+      base.send :include, MagicTimestamps, ActiveModelCompliance
       base.class_eval do
         attr_accessor :_id, :_rev, :_deleted, :database
         alias_method :id, :_id

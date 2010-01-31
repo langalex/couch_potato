@@ -1,6 +1,6 @@
 module CouchPotato
   module Persistence
-    module ActiveModel
+    module ActiveModelCompliance
       begin
         require 'active_model'
 
