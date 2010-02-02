@@ -6,9 +6,6 @@ module CouchPotato
 
         def self.included(base)
           base.extend ClassMethods
-          base.class_eval do
-            alias_method :new_record?, :new?
-          end
         end
 
         def to_model
