@@ -4,17 +4,6 @@ module CouchPotato
       begin
         require 'active_model'
 
-        class ModelName < String
-          attr_reader :name, :human, :partial_path, :singular, :plural
-          def initialize(class_name)
-            @name = class_name
-            @human = class_name.gsub(/[A-Z]/) {|match| " #{match}"}.strip
-            @partial_path
-            @singular
-            @plural
-          end
-        end
-
         def self.included(base)
           base.extend ClassMethods
           base.class_eval do
