@@ -26,7 +26,7 @@ module CouchPotato
           end
         end
 
-      rescue LoadError
+      rescue LoadError, NameError
         # if it's not installed you probably don't want to use it anyway
       end
     end
