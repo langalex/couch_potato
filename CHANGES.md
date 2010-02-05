@@ -1,6 +1,6 @@
 ## Changes
 
-### master
+### 0.2.24
 * persistent instances can now be marked as dirty with #is_dirty (langalex)
 
 ### 0.2.23
