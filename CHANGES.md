@@ -1,5 +1,8 @@
 ## Changes
 
+### master
+* persistent instances can now be marked as dirty with #is_dirty (langalex)
+
 ### 0.2.23
 * Couch Potato models now conform to the ActiveModel interface when ActiveModel is installed, see http://yehudakatz.com/2010/01/10/activemodel-make-any-ruby-object-feel-like-activerecord/ (langalex)
 * fixed error with dirty tracking and BigDecimals (thilo)

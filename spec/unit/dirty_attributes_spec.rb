@@ -102,6 +102,11 @@ describe 'dirty attribute tracking' do
         @plate.food_not_changed
         @plate.should_not be_food_changed
       end
+      
+      it "should return true if forced dirty" do
+        @plate.is_dirty
+        @plate.should be_dirty
+      end
     end
   end
   
@@ -146,6 +151,15 @@ describe 'dirty attribute tracking' do
       @plate.food = 'burger'
       db.save! @plate
       @plate.should_not be_food_changed
+    end
+    
+    it "should reset a forced dirty state" do
+      couchrest_db = stub('database', :get => Plate.json_create({'_id' => '1', '_rev' => '2', 'food' => 'sushi', JSON.create_id => 'Plate'}), :info => nil, :save_doc => {'rev' =>  '3'})
+      db = CouchPotato::Database.new(couchrest_db)
+      @plate = db.load_document '1'
+      @plate.is_dirty
+      db.save! @plate
+      @plate.should_not be_dirty
     end
   end
   
