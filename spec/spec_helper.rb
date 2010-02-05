@@ -5,7 +5,13 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 
 require 'couch_potato'
 
-CouchPotato::Config.database_name = 'couch_potato_test'
+if ENV["RUN_CODE_RUN"]
+  CouchPotato::Config.database_name = 'http://langalex.couch.io/couch_potato_test'
+else
+  CouchPotato::Config.database_name = 'couch_potato_test'
+end
+
+
 CouchPotato::Config.validation_framework = ENV['VALIDATION_FRAMEWORK'].to_sym unless ENV['VALIDATION_FRAMEWORK'].blank?
 
 # silence deprecation warnings from ActiveModel as the Spec uses Errors#on

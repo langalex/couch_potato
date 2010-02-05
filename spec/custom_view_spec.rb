@@ -130,7 +130,6 @@ describe 'view' do
         doc = CouchPotato.couchrest_database.save_doc({})
         CouchPotato.couchrest_database.save_doc({:foreign_key => doc['id']})
         CouchPotato.database.view(Build.custom_with_reduce).map(&:_id).should == [doc['id']]
-        
       end
     end
   end
