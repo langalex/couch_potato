@@ -40,4 +40,4 @@ require File.dirname(__FILE__) + '/core_ext/string'
 require File.dirname(__FILE__) + '/core_ext/symbol'
 require File.dirname(__FILE__) + '/couch_potato/validation'
 require File.dirname(__FILE__) + '/couch_potato/persistence'
-
+require File.dirname(__FILE__) + '/couch_potato/railtie' if defined?(Rails)
