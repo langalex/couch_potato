@@ -6,7 +6,7 @@ module CouchPotato
       railtie_name :couch_potato
 
       config.after_initialize do |app|
-        CouchPotato::Config.database_name = YAML::load(File.read(Rails.root.join 'config/couchdb.yml'))[Rails.env]
+        CouchPotato::Config.database_name = YAML::load(File.read(Rails.root.join('config/couchdb.yml')))[Rails.env]
         Rails.logger.info "** couch_potato: initialized from #{__FILE__}"
       end
     end
