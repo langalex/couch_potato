@@ -8,7 +8,8 @@ require 'ostruct'
 JSON.create_id = 'ruby_class'
 
 module CouchPotato
-  Config = Struct.new(:database_name).new
+  Config = Struct.new(:database_name, :validation_framework).new
+  Config.validation_framework = :validatable # default to the validatable gem for validations
 
   # Returns a database instance which you can then use to create objects and query views. You have to set the CouchPotato::Config.database_name before this works.
   def self.database
@@ -37,5 +38,6 @@ require File.dirname(__FILE__) + '/core_ext/time'
 require File.dirname(__FILE__) + '/core_ext/date'
 require File.dirname(__FILE__) + '/core_ext/string'
 require File.dirname(__FILE__) + '/core_ext/symbol'
+require File.dirname(__FILE__) + '/couch_potato/validation'
 require File.dirname(__FILE__) + '/couch_potato/persistence'
-
+require File.dirname(__FILE__) + '/couch_potato/railtie' if defined?(Rails)

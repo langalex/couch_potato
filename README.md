@@ -20,24 +20,26 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Installation
 
-Couch Potato is hosted as a gem on gemcutter.org which you can install like this:
+Couch Potato is hosted as a gem which you can install like this:
 
-    sudo gem install couch_potato --source http://gemcutter.org
+    (sudo) gem install couch_potato
 
 #### Using with your ruby application:
 
     require 'rubygems'
     require 'couch_potato'
 
-Alternatively you can download or clone the source repository and then require lib/couch_potato.rb.
-
-You MUST specify the name of the database:
+After that you configure the name of the database:
 
     CouchPotato::Config.database_name = 'name_of_the_db'
 
 The server URL will default to http://localhost:5984/ unless specified:
 
     CouchPotato::Config.database_name = "http://example.com:5984/name_of_the_db"
+  
+Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel)
+
+    CouchPotato::Config.validation_framework = :validatable | :active_model
 
 #### Using with Rails
 
@@ -88,12 +90,13 @@ Properties can be typed:
     end
     
 In this case Address also implements CouchPotato::Persistence which means its JSON representation will be added to the user document.  
-Couch Potato also has support for the basic types (right now only Fixnum is supported):
+Couch Potato also has support for the basic types (right now Fixnum and :boolean are supported):
 
     class User
       include CouchPotato::Persistence
 
       property :age, :type => Fixnum
+      property :receive_newsletter, :type => :boolean
     end
 
 With this in place when you set the user's age as a String (e.g. using an hTML form) it will be converted into a Fixnum automatically.
@@ -202,7 +205,7 @@ You can also pass conditions as a JavaScript string:
     class User
       property :name
 
-      view :completed, :key => :name, :conditions => 'doc.completed = true'
+      view :completed, :key => :name, :conditions => 'doc.completed === true'
     end
 
 The creation of views is based on view specification classes (see [CouchPotato::View::BaseViewSpec](http://rdoc.info/rdoc/langalex/couch_potato/blob/e8f0069e5529ad08a1bd1f02637ea8f1d6d0ab5b/CouchPotato/View/BaseViewSpec.html) and its descendants for more detailed documentation). The above code uses the ModelViewSpec class which is used to find models by their properties. For more sophisticated searches you can use other view specifications (either use the built-in or provide your own) by passing a type parameter:
@@ -336,6 +339,10 @@ In order for this to work you must have the `js` executable in your PATH. This i
 ### Helping out
 
 Please fix bugs, add more specs, implement new features by forking the github repo at http://github.com/langalex/couch_potato.
+
+Issues are tracked at github: http://github.com/langalex/couch_potato/issues
+
+There is a mailing list, just write to: couchpotato@librelist.com
 
 You can run all the specs by calling 'rake spec_unit' and 'rake spec_functional' in the root folder of Couch Potato. The specs require a running CouchDB instance at http://localhost:5984
 

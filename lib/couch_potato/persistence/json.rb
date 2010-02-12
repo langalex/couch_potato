@@ -1,7 +1,7 @@
 module CouchPotato
   module Persistence
     module Json
-      def self.included(base)
+      def self.included(base) #:nodoc:
         base.extend ClassMethods
       end
       

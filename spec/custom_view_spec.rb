@@ -52,6 +52,11 @@ describe 'view' do
   it "should count zero documents" do
     CouchPotato.database.view(Build.count(:reduce => true)).should == 0
   end
+  
+  it "should return the total_rows" do
+    CouchPotato.database.save_document Build.new(:state => 'success', :time => '2008-01-01')
+    CouchPotato.database.view(Build.count(:reduce => false)).total_rows.should == 1
+  end
 
   describe "properties defined" do
     it "should assign the configured properties" do
@@ -125,14 +130,13 @@ describe 'view' do
         doc = CouchPotato.couchrest_database.save_doc({})
         CouchPotato.couchrest_database.save_doc({:foreign_key => doc['id']})
         CouchPotato.database.view(Build.custom_with_reduce).map(&:_id).should == [doc['id']]
-        
       end
     end
   end
 
   describe "with array as key" do
     it "should create a map function with the composite key" do
-      CouchPotato::View::ViewQuery.should_receive(:new).with(anything, anything, anything, string_matching(/emit\(\[doc\['time'\], doc\['state'\]\]/), anything).and_return(stub('view query').as_null_object)
+      CouchPotato::View::ViewQuery.should_receive(:new).with(anything, anything, anything, string_matching(/emit\(\[doc\['time'\], doc\['state'\]\]/), anything).and_return(stub('view query', :query_view! => {'rows' => []}))
       CouchPotato.database.view Build.key_array_timeline
     end
   end
@@ -159,7 +163,7 @@ describe 'view' do
   describe "inherited views" do
     it "should support parent views for objects of the subclass" do
       CouchPotato.database.save_document CustomBuild.new(:state => 'success', :time => '2008-01-01')
-      CouchPotato.database.view(CustomBuild.timeline).should have(1).item
+      CouchPotato.database.view(CustomBuild.timeline).size.should == 1
       CouchPotato.database.view(CustomBuild.timeline).first.should be_kind_of(CustomBuild)
     end
   end

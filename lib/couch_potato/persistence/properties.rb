@@ -32,7 +32,7 @@ module CouchPotato
         end
       end
       
-      def self.included(base)
+      def self.included(base) #:nodoc:
         base.extend ClassMethods
         base.class_eval do
           def self.properties
@@ -42,7 +42,7 @@ module CouchPotato
         end
       end
       
-      def type_caster
+      def type_caster #:nodoc:
         @type_caster ||= TypeCaster.new
       end
       

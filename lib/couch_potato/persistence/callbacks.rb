@@ -1,7 +1,7 @@
 module CouchPotato
   module Persistence
     module Callbacks
-      def self.included(base)
+      def self.included(base) #:nodoc:
         base.extend ClassMethods
 
         base.class_eval do
@@ -49,9 +49,7 @@ module CouchPotato
           :after_destroy
         ].each do |callback|
           define_method callback do |*names|
-            names.each do |name|
-              callbacks[callback] << name
-            end
+            callbacks[callback].push *names
           end
         end
       end

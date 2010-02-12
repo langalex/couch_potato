@@ -1,10 +1,9 @@
-require 'validatable'
-
 module CouchPotato
-  module Persistence
-    module Validation
+  module Validation
+    module WithValidatable
       def self.included(base)
-        base.send :include, Validatable
+        require 'validatable'
+        base.send :include, ::Validatable
         base.class_eval do
           # Override the validate method to first run before_validation callback
           def valid?
@@ -19,6 +18,15 @@ module CouchPotato
           end
         end
       end
+    end
+  end
+end
+
+# add [] method to Validatable's implementation of the Errors class
+module Validatable
+  class Errors
+    def [](attribute)
+      [on(attribute)].flatten.compact
     end
   end
 end

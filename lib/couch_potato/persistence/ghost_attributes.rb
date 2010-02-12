@@ -1,5 +1,5 @@
 module CouchPotato
-  module GhostAttributes
+  module GhostAttributes #:nodoc:
     def self.included(base)
       base.class_eval do
         attr_accessor :_document

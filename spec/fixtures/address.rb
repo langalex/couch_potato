@@ -6,4 +6,5 @@ class Address
   property :state
   property :zip
   property :country
+  property :verified, :type => :boolean
 end

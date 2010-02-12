@@ -21,13 +21,13 @@ module CouchPotato
       
       def map_function
         map_body do
-          "emit(#{formatted_key(key)}, null);"
+          "emit(#{formatted_key(key)}, 1);"
         end
       end
       
       def reduce_function
         "function(key, values) {
-          return values.length;
+          return sum(values);
         }"
       end
       

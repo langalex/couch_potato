@@ -10,9 +10,7 @@ end
 
 describe CouchPotato::Database, 'rails specific behavior' do
   
-  it "should load load models whose constants are currently uninitialized (like with rails in development mode)" do
-    Autoloader::Uninitialized
-    Autoloader.send :remove_const, 'Uninitialized'
+  it "should load models whose constants are currently uninitialized (like with rails in development mode)" do
     recreate_db
     CouchPotato.couchrest_database.save_doc(JSON.create_id => 'Autoloader::Uninitialized', '_id' => '1')
     CouchPotato.database.load('1').class.name.should == 'Autoloader::Uninitialized'

@@ -1,5 +1,26 @@
 ## Changes
 
+### 0.2.24
+* persistent instances can now be marked as dirty with #is_dirty (langalex)
+
+### 0.2.23
+* Couch Potato models now conform to the ActiveModel interface when ActiveModel is installed, see http://yehudakatz.com/2010/01/10/activemodel-make-any-ruby-object-feel-like-activerecord/ (langalex)
+* fixed error with dirty tracking and BigDecimals (thilo)
+* added the ability to use ActiveModel validations instead of validatable (martinrehfeld)
+
+### 0.2.22
+* fixed properties with default values returned default when a blank value like '' or [] was set (langalex)
+
+### 0.2.21
+* automatically set a database instance on results of CouchPotato::Database#view (langalex)
+* improved auto loading of unloaded constants - can now load constants that have never been loaded before (langalex)
+* raise exception on invalid parameters passed to a couchdb view query (langalex)
+* when querying a view: pass in ranges as key instead of startkey/endkey, pass in plain value instead of hash with key (langalex) 
+
+### 0.2.20
+* support for :boolean properties (jweiss)
+* return the total_rows when querying a view (langalex)
+
 ### 0.2.19
 * added conditions to views (langalex)
 

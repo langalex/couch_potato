@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{couch_potato}
-  s.version = "0.2.19"
+  s.version = "0.2.24"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Lang"]
-  s.date = %q{2009-12-15}
+  s.date = %q{2010-02-05}
   s.description = %q{Ruby persistence layer for CouchDB}
   s.email = %q{alex@upstream-berlin.com}
   s.extra_rdoc_files = [
@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "lib/couch_potato.rb",
      "lib/couch_potato/database.rb",
      "lib/couch_potato/persistence.rb",
+     "lib/couch_potato/persistence/active_model_compliance.rb",
      "lib/couch_potato/persistence/attachments.rb",
      "lib/couch_potato/persistence/callbacks.rb",
      "lib/couch_potato/persistence/dirty_attributes.rb",
@@ -38,11 +39,13 @@ Gem::Specification.new do |s|
      "lib/couch_potato/persistence/properties.rb",
      "lib/couch_potato/persistence/simple_property.rb",
      "lib/couch_potato/persistence/type_caster.rb",
-     "lib/couch_potato/persistence/validation.rb",
      "lib/couch_potato/rspec/matchers.rb",
      "lib/couch_potato/rspec/matchers/map_to_matcher.rb",
      "lib/couch_potato/rspec/matchers/print_r.js",
      "lib/couch_potato/rspec/matchers/reduce_to_matcher.rb",
+     "lib/couch_potato/validation.rb",
+     "lib/couch_potato/validation/with_active_model.rb",
+     "lib/couch_potato/validation/with_validatable.rb",
      "lib/couch_potato/view/base_view_spec.rb",
      "lib/couch_potato/view/custom_view_spec.rb",
      "lib/couch_potato/view/custom_views.rb",
@@ -64,7 +67,9 @@ Gem::Specification.new do |s|
      "spec/rails_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
+     "spec/unit/active_model_compliance_spec.rb",
      "spec/unit/attributes_spec.rb",
+     "spec/unit/base_view_spec_spec.rb",
      "spec/unit/callbacks_spec.rb",
      "spec/unit/couch_potato_spec.rb",
      "spec/unit/create_spec.rb",
@@ -75,6 +80,7 @@ Gem::Specification.new do |s|
      "spec/unit/model_view_spec_spec.rb",
      "spec/unit/rspec_matchers_spec.rb",
      "spec/unit/string_spec.rb",
+     "spec/unit/validation_spec.rb",
      "spec/unit/view_query_spec.rb",
      "spec/update_spec.rb"
   ]
@@ -95,7 +101,9 @@ Gem::Specification.new do |s|
      "spec/property_spec.rb",
      "spec/rails_spec.rb",
      "spec/spec_helper.rb",
+     "spec/unit/active_model_compliance_spec.rb",
      "spec/unit/attributes_spec.rb",
+     "spec/unit/base_view_spec_spec.rb",
      "spec/unit/callbacks_spec.rb",
      "spec/unit/couch_potato_spec.rb",
      "spec/unit/create_spec.rb",
@@ -106,6 +114,7 @@ Gem::Specification.new do |s|
      "spec/unit/model_view_spec_spec.rb",
      "spec/unit/rspec_matchers_spec.rb",
      "spec/unit/string_spec.rb",
+     "spec/unit/validation_spec.rb",
      "spec/unit/view_query_spec.rb",
      "spec/update_spec.rb"
   ]

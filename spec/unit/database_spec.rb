@@ -168,7 +168,7 @@ describe CouchPotato::Database, 'save_document' do
     it "should keep errors added in before_validation_on_* callbacks when creating a new object" do
       spock = Vulcan.new(:name => 'spock')
       @db.save_document(spock, false)
-      spock.new_record?.should == false
+      spock.new?.should == false
       spock.name = "spock's father"
       @db.save_document(spock)
       spock.errors.on(:validation).should == 'failed'
@@ -178,7 +178,7 @@ describe CouchPotato::Database, 'save_document' do
       spock = Vulcan.new
       @db.save_document(spock)
       spock.errors.on(:validation).should == 'failed'
-      spock.errors.on(:name).should == "can't be empty"
+      spock.errors.on(:name).should =~ /can't be (empty|blank)/
     end
     
     it "should clear errors on subsequent, valid saves when creating" do
@@ -196,12 +196,41 @@ describe CouchPotato::Database, 'save_document' do
       
       spock.name = nil
       @db.save_document(spock)
-      spock.errors.on(:name).should == "can't be empty"
+      spock.errors.on(:name).should =~ /can't be (empty|blank)/
       
       spock.name = 'Spock'
       @db.save_document(spock)
       spock.errors.on(:name).should == nil
     end
     
+  end
+end
+
+describe CouchPotato::Database, 'view' do
+  before(:each) do
+    @db = CouchPotato::Database.new(stub('couchrest db').as_null_object)
+    @result = stub('result')
+    @spec = stub('view spec', :process_results => [@result]).as_null_object
+    CouchPotato::View::ViewQuery.stub(:new => stub('view query', :query_view! => {'rows' => [@result]}))
+  end
+  
+  it "should set itself on returned results that have an accessor" do
+    @result.stub(:respond_to?).with(:database=).and_return(true)
+    @result.should_receive(:database=).with(@db)
+    @db.view(@spec)
+  end
+  
+  it "should not set itself on returned results that don't have an accessor" do
+    @result.stub(:respond_to?).with(:database=).and_return(false)
+    @result.should_not_receive(:database=).with(@db)
+    @db.view(@spec)
+  end
+  
+  it "should not try to set itself on result sets that are not collections" do
+    lambda {
+      @spec.stub(:process_results => 1)
+    }.should_not raise_error
+    
+    @db.view(@spec)
   end
 end

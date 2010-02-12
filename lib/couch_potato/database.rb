@@ -12,14 +12,47 @@ module CouchPotato
       end
     end
 
+    # executes a view and return the results. you pass in a view spec
+    # which is usually a result of a SomePersistentClass.some_view call.
+    # also return the total_rows returned by CouchDB as an accessor on the results.
+    #
+    # Example:
+    #
+    #   class User
+    #     include CouchPotato::Persistence
+    #     property :age
+    #     view :all, key: :age
+    #   end
+    #   db = CouchPotato.database
+    #
+    #   db.view(User.all) # => [user1, user2]
+    #   db.view(User.all).total_rows # => 2
+    #
+    # You can pass the usual parameters you can pass to a couchdb view to the view:
+    #
+    #   db.view(User.all(limit: 5, startkey: 2, reduce: false))
+    #
+    # For your convenience when passing a has with only a key parameter you can just pass in the value
+    #
+    #   db.view(User.all(key: 1)) == db.view(User.all(1))
+    # 
+    # Instead of passing a startkey and endkey you can pass in a key with a range:
+    #
+    #   db.view(User.all(key: 1..20)) == db.view(startkey: 1, endkey: 20) == db.view(User.all(1..20))
+    #   
     def view(spec)
       results = CouchPotato::View::ViewQuery.new(database,
         spec.design_document, spec.view_name, spec.map_function,
         spec.reduce_function).query_view!(spec.view_parameters)
-      spec.process_results results
+      processed_results = spec.process_results results
+      processed_results.instance_eval "def total_rows; #{results['total_rows']}; end" if results['total_rows']
+      processed_results.each do |document|
+        document.database = self if document.respond_to?(:database=)
+      end if processed_results.respond_to?(:each)
+      processed_results
     end
 
-
+    # saves a document. returns true on success, false on failure
     def save_document(document, validate = true)
       return true unless document.dirty?
       if document.new?
@@ -29,7 +62,8 @@ module CouchPotato
       end
     end
     alias_method :save, :save_document
-
+    
+    # saves a document, raises a CouchPotato::Database::ValidationsFailedError on failure
     def save_document!(document)
       save_document(document) || raise(ValidationsFailedError.new(document.errors.full_messages))
     end
@@ -45,6 +79,7 @@ module CouchPotato
     end
     alias_method :destroy, :destroy_document
 
+    # loads a document by its id
     def load_document(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
       begin
@@ -57,7 +92,7 @@ module CouchPotato
     end
     alias_method :load, :load_document
 
-    def inspect
+    def inspect #:nodoc:
       "#<CouchPotato::Database>"
     end
 
@@ -103,7 +138,7 @@ module CouchPotato
     def valid_document?(document)
       errors = document.errors.errors.dup
       document.valid?
-      errors.each do |k, v|
+      errors.each_pair do |k, v|
         v.each {|message| document.errors.add(k, message)}
       end
       document.errors.empty?

@@ -1,6 +1,6 @@
 module CouchPotato
   module Attachments
-    def self.included(base)
+    def self.included(base) #:nodoc:
       base.class_eval do
         attr_writer :_attachments
         
