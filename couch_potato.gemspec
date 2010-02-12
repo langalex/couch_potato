@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Lang"]
-  s.date = %q{2010-02-05}
+  s.date = %q{2010-02-12}
   s.description = %q{Ruby persistence layer for CouchDB}
   s.email = %q{alex@upstream-berlin.com}
   s.extra_rdoc_files = [
@@ -39,6 +39,7 @@ Gem::Specification.new do |s|
      "lib/couch_potato/persistence/properties.rb",
      "lib/couch_potato/persistence/simple_property.rb",
      "lib/couch_potato/persistence/type_caster.rb",
+     "lib/couch_potato/railtie.rb",
      "lib/couch_potato/rspec/matchers.rb",
      "lib/couch_potato/rspec/matchers/map_to_matcher.rb",
      "lib/couch_potato/rspec/matchers/print_r.js",

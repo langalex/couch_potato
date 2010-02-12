@@ -18,14 +18,25 @@ module CouchPotato
       end
       
       def process_results(results)
-        results['rows'].map do |row|
-          if row['doc'].instance_of?(klass)
-            row['doc']
-          else
-            klass.json_create row['doc'] || row['value'].merge(:_id => row['id'] || row['key'])
+        if count?
+          results['rows'].first.try(:[], 'value') || 0
+        else  
+          results['rows'].map do |row|
+            if row['doc'].instance_of?(klass)
+              row['doc']
+            else
+              klass.json_create row['doc'] || row['value'].merge(:_id => row['id'] || row['key'])
+            end
           end
         end
       end
+      
+      private 
+      
+      def count?
+        view_parameters[:reduce]
+      end
+      
     end
   end
 end
