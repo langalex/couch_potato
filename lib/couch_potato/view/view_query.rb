@@ -11,24 +11,45 @@ module CouchPotato
       end
 
       def query_view!(parameters = {})
+        update_view unless view_has_been_updated?
         begin
           query_view parameters
         rescue RestClient::ResourceNotFound# => e
-          create_view
+          update_view
           retry
         end
       end
 
       private
 
-      def create_view
+      def update_view
         design_doc = @database.get "_design/#{@design_document_name}" rescue nil
-        design_doc ||= {'views' => {}, "_id" => "_design/#{@design_document_name}", "language" => "javascript"}
-        design_doc['views'][@view_name.to_s] = {
-          'map' => @map_function,
-          'reduce' => @reduce_function
-        }
-        @database.save_doc(design_doc)
+        original_views = design_doc && design_doc['views'].dup
+        view_updated unless design_doc.nil?
+        design_doc ||= empty_design_document
+        design_doc['views'][@view_name.to_s] = view_functions
+        @database.save_doc(design_doc) unless original_views == design_doc['views']
+      end
+      
+      def view_functions
+        {'map' => @map_function, 'reduce' => @reduce_function}
+      end
+      
+      def empty_design_document
+        {'views' => {}, "_id" => "_design/#{@design_document_name}", "language" => "javascript"}
+      end
+      
+      def view_has_been_updated?
+        updated_views[[@design_document_name, @view_name]]
+      end
+      
+      def view_updated
+        updated_views[[@design_document_name, @view_name]] = true
+      end
+      
+      def updated_views
+        @@updated_views ||= {}
+        @@updated_views
       end
 
       def query_view(parameters)
