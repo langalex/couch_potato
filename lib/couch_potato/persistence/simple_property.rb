@@ -20,14 +20,6 @@ module CouchPotato
         object.send("#{name}_changed?")
       end
       
-      def save(object)
-        
-      end
-      
-      def destroy(object)
-        
-      end
-      
       def serialize(json, object)
         json[name] = object.send name
       end
