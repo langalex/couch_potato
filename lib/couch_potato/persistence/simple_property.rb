@@ -13,7 +13,7 @@ module CouchPotato
       
       def build(object, json)
         value = json[name.to_s].nil? ? json[name.to_sym] : json[name.to_s]
-        object.send "#{name}=", @type_caster.cast(value, type)
+        object.send "#{name}=", value
       end
       
       def dirty?(object)

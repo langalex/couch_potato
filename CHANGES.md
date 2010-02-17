@@ -1,5 +1,10 @@
 ## Changes
 
+### 0.2.25
+* automatic view updates: when you change the definition of a view couch potato will now update the design document in the database (langalex)
+* support for properties of type Date, better support for Time (langalex)
+* support for default reduce count methods in custom views (jweiss)
+
 ### 0.2.24
 * persistent instances can now be marked as dirty with #is_dirty (langalex)
 

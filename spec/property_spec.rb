@@ -6,6 +6,7 @@ class Watch
   include CouchPotato::Persistence
   
   property :time, :type => Time
+  property :date, :type => Date
   property :overwritten_read
   property :overwritten_write
   
@@ -98,13 +99,6 @@ describe 'properties' do
     ]
     it_should_persist something_very_complex
   end
-
-  it "should persist a Time object" do
-    w = Watch.new :time => Time.now
-    CouchPotato.database.save_document! w
-    w = CouchPotato.database.load_document w.id
-    w.time.year.should == Time.now.year
-  end
   
   it "should persist an object" do
     p = Person.new
@@ -140,6 +134,68 @@ describe 'properties' do
     CouchPotato.database.save_document! p
     p = CouchPotato.database.load_document p.id
     p.ship_address.should be_false
+  end
+  
+  describe "time properties" do
+    it "should persist a Time as utc" do
+      time = Time.now
+      w = Watch.new :time => time
+      CouchPotato.database.save_document! w
+      w = CouchPotato.database.load_document w.id
+      w.time.to_s.should == time.utc.to_s
+    end
+    
+    it "should parse a string and persist it as time" do
+      w = Watch.new :time => '2009-01-01 13:25 UTC'
+      CouchPotato.database.save_document! w
+      w = CouchPotato.database.load_document w.id
+      w.time.should be_a(Time)
+    end
+    
+    it "should store nil" do
+      w = Watch.new :time => nil
+      CouchPotato.database.save_document! w
+      w = CouchPotato.database.load_document w.id
+      w.time.should be_nil
+    end
+    
+    it "should store an empty string as nil" do
+      w = Watch.new :time => ''
+      CouchPotato.database.save_document! w
+      w = CouchPotato.database.load_document w.id
+      w.time.should be_nil
+    end
+  end
+  
+  describe "date properties" do
+    it "should persist a date" do
+      date = Date.today
+      w = Watch.new :date => date
+      CouchPotato.database.save_document! w
+      w = CouchPotato.database.load_document w.id
+      w.date.should == date
+    end
+    
+    it "should parse a string and persist it as a date" do
+      w = Watch.new :date => '2009-01-10'
+      CouchPotato.database.save_document! w
+      w = CouchPotato.database.load_document w.id
+      w.date.should == Date.parse('2009-01-10')
+    end
+    
+    it "should store nil" do
+      w = Watch.new :date => nil
+      CouchPotato.database.save_document! w
+      w = CouchPotato.database.load_document w.id
+      w.date.should be_nil
+    end
+    
+    it "should store an empty string as nil" do
+      w = Watch.new :date => ''
+      CouchPotato.database.save_document! w
+      w = CouchPotato.database.load_document w.id
+      w.date.should be_nil
+    end
   end
   
   describe "boolean properties" do

@@ -26,7 +26,7 @@ module CouchPotato
           if type == Fixnum
             value.to_s.scan(/\d/).join.to_i unless value.blank?
           else
-            type.json_create value
+            type.json_create value unless value.blank?
           end
         else
           value

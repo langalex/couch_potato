@@ -66,17 +66,18 @@ module CouchPotato
           instance
         end
 
-        # Declare a property on a model class. properties are not typed by default. You can use any of the basic types by JSON (String, Integer, Fixnum, Array, Hash). If you want a property to be of a custom class you have to define it using the :class option.
+        # Declare a property on a model class. Properties are not typed by default.
+        # You can store anything in a property that can be serialized into JSON.
+        # If you want a property to be of a custom class you have to define it using the :type option.
         #
         # example:
         #  class Book
         #    property :title
         #    property :year
-        #    property :publisher, :class => Publisher
+        #    property :publisher, :type => Publisher
         #  end
         def property(name, options = {})
-          clazz = options.delete(:class)
-          properties << (clazz || SimpleProperty).new(self, name, options)
+          properties << SimpleProperty.new(self, name, options)
         end
 
       end
