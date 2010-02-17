@@ -145,11 +145,12 @@ describe 'properties' do
       w.time.to_s.should == time.utc.to_s
     end
     
-    it "should parse a string and persist it as time" do
-      w = Watch.new :time => '2009-01-01 13:25 UTC'
+    it "should parse a string and persist it as utc time" do
+      w = Watch.new :time => '2009-01-01 13:25 +0100'
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       w.time.should be_a(Time)
+      w.time.should == Time.parse('2009-01-01 12:25 +0000')
     end
     
     it "should store nil" do
