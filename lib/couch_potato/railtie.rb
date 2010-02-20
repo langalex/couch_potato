@@ -6,8 +6,8 @@ module CouchPotato
     CouchPotato::Config.database_name = YAML::load(File.read(Rails.root.join('config/couchdb.yml')))[Rails.env]
   end
 
-  if Rails.version >= '3'
-    class Railtie < Rails::Railtie
+  if defined?(::Rails::Railtie)
+    class Railtie < ::Rails::Railtie
       railtie_name :couch_potato
 
       config.after_initialize do |app|
