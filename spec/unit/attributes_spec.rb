@@ -4,6 +4,7 @@ class Plant
   include CouchPotato::Persistence
   property :leaf_count
   property :typed_leaf_count, :type => Fixnum
+  property :typed_leaf_size,  :type => Float
 end
 
 describe "attributes" do
@@ -19,7 +20,7 @@ describe "attributes" do
   describe "attributes" do
     it "should return the attributes" do
       plant = Plant.new(:leaf_count => 1)
-      plant.attributes.should == {:leaf_count => 1, :created_at => nil, :updated_at => nil, :typed_leaf_count => nil}
+      plant.attributes.should == {:leaf_count => 1, :created_at => nil, :updated_at => nil, :typed_leaf_count => nil, :typed_leaf_size => nil}
     end
   end
   
@@ -46,12 +47,13 @@ describe "attributes" do
   end
 
   describe 'typed attributes' do
-    describe "fixnum" do
-      before(:each) do
-        @plant = Plant.new
-      end
-      
-      it "should convert a string into a finum" do
+    
+    before(:each) do
+      @plant = Plant.new
+    end
+    
+    describe "fixnum" do  
+      it "should convert a string into a fixnum" do
         @plant.typed_leaf_count = '4'
         @plant.typed_leaf_count.should == 4
       end
@@ -79,6 +81,43 @@ describe "attributes" do
       it "should set the attributes to nil if given a blank string" do
         @plant.typed_leaf_count = ''
         @plant.typed_leaf_count.should be_nil
+      end
+    end
+    
+    describe "float" do  
+      it "should convert a number in a string with a decimal place" do
+        @plant.typed_leaf_size = '0.5001'
+        @plant.typed_leaf_size.should == 0.5001
+      end
+
+      it "should convert a number in a string without a decimal place" do
+        @plant.typed_leaf_size = '5'
+        @plant.typed_leaf_size.should == 5.0
+      end
+
+      it "should leave a float as it is" do
+        @plant.typed_leaf_size = 0.5
+        @plant.typed_leaf_size.should == 0.5
+      end
+      
+      it "should leave nil as is" do
+        @plant.typed_leaf_size = nil
+        @plant.typed_leaf_size.should be_nil
+      end
+      
+      it "should set the attributes to zero if a string given" do
+        @plant.typed_leaf_size = 'x'
+        @plant.typed_leaf_size.should == 0
+      end
+      
+      it "should parse numbers out of a string" do
+        @plant.typed_leaf_size = 'x00.123'
+        @plant.typed_leaf_size.should == 0.123
+      end
+      
+      it "should set the attributes to nil if given a blank string" do
+        @plant.typed_leaf_size = ''
+        @plant.typed_leaf_size.should be_nil
       end
     end
   end
