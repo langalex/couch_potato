@@ -4,7 +4,7 @@ require 'couch_potato/rspec'
 class WithStubbedView
   include CouchPotato::Persistence
   
-  view :stubbed_view, key: :x
+  view :stubbed_view, :key => :x
 end
 
 describe "stubbing the db" do

@@ -31,7 +31,7 @@ module CouchPotato::RSpec
     def stub_db(options = {})
       db = stub('db', options)
       db.extend CouchPotato::RSpec::StubView
-      CouchPotato.stub(database: db)
+      CouchPotato.stub(:database => db)
       db
     end
   end

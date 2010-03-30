@@ -18,7 +18,7 @@ class WithUnloadedEmbedded
   
   property :embedded
   
-  view :all, type: :custom, map: 'function(doc) {emit(doc._id, null)}', include_docs: true
+  view :all, :type => :custom, :map => 'function(doc) {emit(doc._id, null)}', :include_docs => true
 end
 
 
