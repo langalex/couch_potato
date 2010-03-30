@@ -35,11 +35,13 @@ unless defined?(CouchPotato)
   end
 end
 
-require File.dirname(__FILE__) + '/core_ext/object'
-require File.dirname(__FILE__) + '/core_ext/time'
-require File.dirname(__FILE__) + '/core_ext/date'
-require File.dirname(__FILE__) + '/core_ext/string'
-require File.dirname(__FILE__) + '/core_ext/symbol'
-require File.dirname(__FILE__) + '/couch_potato/validation'
-require File.dirname(__FILE__) + '/couch_potato/persistence'
-require File.dirname(__FILE__) + '/couch_potato/railtie' if defined?(Rails)
+$LOAD_PATH << File.dirname(__FILE__)
+
+require 'core_ext/object'
+require 'core_ext/time'
+require 'core_ext/date'
+require 'core_ext/string'
+require 'core_ext/symbol'
+require 'couch_potato/validation'
+require 'couch_potato/persistence'
+require 'couch_potato/railtie' if defined?(Rails)

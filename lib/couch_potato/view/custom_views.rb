@@ -1,8 +1,8 @@
-require File.dirname(__FILE__) + '/base_view_spec'
-require File.dirname(__FILE__) + '/model_view_spec'
-require File.dirname(__FILE__) + '/properties_view_spec'
-require File.dirname(__FILE__) + '/custom_view_spec'
-require File.dirname(__FILE__) + '/raw_view_spec'
+require 'couch_potato/view/base_view_spec'
+require 'couch_potato/view/model_view_spec'
+require 'couch_potato/view/properties_view_spec'
+require 'couch_potato/view/custom_view_spec'
+require 'couch_potato/view/raw_view_spec'
 
 
 module CouchPotato

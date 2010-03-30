@@ -1,2 +1,2 @@
-require File.dirname(__FILE__) + '/rspec/stub_db'
-require File.dirname(__FILE__) + '/rspec/matchers'
+require 'couch_potato/rspec/stub_db'
+require 'couch_potato/rspec/matchers'

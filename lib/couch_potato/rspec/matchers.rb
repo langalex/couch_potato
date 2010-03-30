@@ -13,8 +13,8 @@ module CouchPotato
 end
 
 
-require File.dirname(__FILE__) + '/matchers/map_to_matcher'
-require File.dirname(__FILE__) + '/matchers/reduce_to_matcher'
+require 'couch_potato/rspec/matchers/map_to_matcher'
+require 'couch_potato/rspec/matchers/reduce_to_matcher'
 
 module Spec
   module Matchers
