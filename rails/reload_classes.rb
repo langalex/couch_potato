@@ -5,7 +5,7 @@ module CouchPotato
         load_document_without_class_reloading id
       rescue ArgumentError => e
         if(name = e.message.scan(/(can't find const|undefined class\/module) ([\w\:]+)/).first[1])
-          eval name
+          eval name.gsub(/\:+$/, '')
           retry
         else
           raise e
