@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 describe CouchPotato::View::ViewQuery, 'query_view' do
   it "should not pass a key if conditions are empty" do

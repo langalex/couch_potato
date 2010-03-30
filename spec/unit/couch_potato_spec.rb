@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 describe CouchPotato, 'full_url_to_database' do
   before(:each) do

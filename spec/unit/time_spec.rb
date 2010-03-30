@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 describe Time, 'to_json' do
   it "should convert to utc and format the time in a way that i can use it for sorting in couchdb" do

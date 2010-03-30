@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 describe CouchPotato::View::ModelViewSpec, 'map_function' do
   it "should include conditions" do

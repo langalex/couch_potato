@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 describe CouchPotato::View::BaseViewSpec, 'initialize' do
   describe "view parameters" do

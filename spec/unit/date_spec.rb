@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 describe Date, 'to_json' do
   it "should format the date in a way that i can use it for sorting in couchdb" do
