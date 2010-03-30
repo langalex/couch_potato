@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'couch_potato/rspec/matchers'
+require 'couch_potato/rspec'
 require 'ostruct'
 
 describe CouchPotato::RSpec::MapToMatcher do

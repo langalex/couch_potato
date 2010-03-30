@@ -304,6 +304,20 @@ To make testing easier and faster database logic has been put into its own class
 
 By creating you own instances of CouchPotato::Database and passing them a fake CouchRest database instance you can completely disconnect your unit tests/spec from the database.
 
+For stubbing out the database couch potato offers some helpers:
+
+    class Comment
+      view :by_commenter_id, :key => :commenter_id
+    end
+    
+    # RSpec
+    require 'couch_potato/rspec'
+    
+    db = stub_db # stubs CouchPotato.database
+    db.stub_view(Comment, :by_commenter_id).with('23').and_return([:comment1, :comment2])
+    
+    CouchPotato.database.view(Comment.by_commenter_id('23)) # => [:comment1, :comment2]
+
 ##### Testing map/reduce functions
 
 Couch Potato provides custom RSpec matchers for testing the map and reduce functions of your views. For example you can do this:
@@ -316,11 +330,11 @@ Couch Potato provides custom RSpec matchers for testing the map and reduce funct
     end
     
     #RSpec
-    require 'couch_potato/rspec/matchers'
+    require 'couch_potato/rspec'
     
     describe User, 'by_name' do
       it "should map users to their name" do
-        User.by_name.should map({:name => 'bill', :age => 23}).to(['bill', null])
+        User.by_name.should map(User.new(:name => 'bill', :age => 23)).to(['bill', null])
       end
       
       it "should reduce the users to the sum of their age" do
