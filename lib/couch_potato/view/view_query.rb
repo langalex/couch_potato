@@ -14,7 +14,7 @@ module CouchPotato
         update_view unless view_has_been_updated?
         begin
           query_view parameters
-        rescue RestClient::ResourceNotFound# => e
+        rescue RestClient::ResourceNotFound
           update_view
           retry
         end
