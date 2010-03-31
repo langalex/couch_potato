@@ -33,14 +33,19 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {:key => '1'..'2'}
       spec.view_parameters.should == {:startkey => '1', :endkey => '2'}
     end
-    
+
     it "should convert a plain value to a hash with a key" do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, '2'
       spec.view_parameters.should == {:key => '2'}
     end
-    
+
+    it "generates the design document path by snake_casing the class name but keeping double colons" do
+      spec = CouchPotato::View::BaseViewSpec.new 'Foo::BarBaz', '', {}, ''
+      spec.design_document.should == 'foo::bar_baz'
+    end
+
   end
-  
+
 end
 
 
