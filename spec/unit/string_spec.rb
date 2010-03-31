@@ -6,8 +6,12 @@ describe String, 'camelize' do
   end
 end
 
-describe String, 'underscore' do
-  it "should underscore a string" do
-    'MyString'.underscore.should == 'my_string'
+describe String, 'snake_case' do
+  it "should snake_case a string" do
+    'MyString'.snake_case.should == 'my_string'
+  end
+
+  it "should snake_case a string using a custom separator" do
+    'My::String'.snake_case('::').should == 'my::string'
   end
 end
