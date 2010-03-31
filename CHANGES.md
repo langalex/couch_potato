@@ -4,6 +4,7 @@
 * fixed reloading nested classes (langalex)
 * fixed constant missing error when loading models with uninitialized classes via views (langalex)
 * added rspec helpers for stubbing out views (langalex)
+* fixed design document names for nested model classes (svenfuchs)
 
 ### 0.2.27
 * workaround for Rails apps using bundler: database name was not initialized from couchdb.yml (langalex)
