@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{couch_potato}
-  s.version = "0.2.27"
+  s.version = "0.2.28"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Lang"]
-  s.date = %q{2010-03-05}
+  s.date = %q{2010-03-31}
   s.description = %q{Ruby persistence layer for CouchDB}
   s.email = %q{alex@upstream-berlin.com}
   s.extra_rdoc_files = [
@@ -40,10 +40,12 @@ Gem::Specification.new do |s|
      "lib/couch_potato/persistence/simple_property.rb",
      "lib/couch_potato/persistence/type_caster.rb",
      "lib/couch_potato/railtie.rb",
+     "lib/couch_potato/rspec.rb",
      "lib/couch_potato/rspec/matchers.rb",
      "lib/couch_potato/rspec/matchers/map_to_matcher.rb",
      "lib/couch_potato/rspec/matchers/print_r.js",
      "lib/couch_potato/rspec/matchers/reduce_to_matcher.rb",
+     "lib/couch_potato/rspec/stub_db.rb",
      "lib/couch_potato/validation.rb",
      "lib/couch_potato/validation/with_active_model.rb",
      "lib/couch_potato/validation/with_validatable.rb",
@@ -81,6 +83,7 @@ Gem::Specification.new do |s|
      "spec/unit/json_create_id_spec.rb",
      "spec/unit/model_view_spec_spec.rb",
      "spec/unit/rspec_matchers_spec.rb",
+     "spec/unit/rspec_stub_db_spec.rb",
      "spec/unit/string_spec.rb",
      "spec/unit/time_spec.rb",
      "spec/unit/validation_spec.rb",
@@ -91,7 +94,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/langalex/couch_potato}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Ruby persistence layer for CouchDB}
   s.test_files = [
     "spec/attachments_spec.rb",
@@ -118,6 +121,7 @@ Gem::Specification.new do |s|
      "spec/unit/json_create_id_spec.rb",
      "spec/unit/model_view_spec_spec.rb",
      "spec/unit/rspec_matchers_spec.rb",
+     "spec/unit/rspec_stub_db_spec.rb",
      "spec/unit/string_spec.rb",
      "spec/unit/time_spec.rb",
      "spec/unit/validation_spec.rb",
