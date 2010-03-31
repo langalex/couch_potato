@@ -8,7 +8,7 @@ module CouchPotato
         normalized_view_parameters = normalize_view_parameters view_parameters
         assert_valid_view_parameters normalized_view_parameters
         @klass = klass
-        @design_document = klass.to_s.underscore
+        @design_document = klass.to_s.snake_case('::')
         @view_name = view_name
         @options = options
         @view_parameters = {}
