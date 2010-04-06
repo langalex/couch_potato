@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{couch_potato}
-  s.version = "0.2.28"
+  s.version = "0.2.29"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Lang"]
-  s.date = %q{2010-03-31}
+  s.date = %q{2010-04-06}
   s.description = %q{Ruby persistence layer for CouchDB}
   s.email = %q{alex@upstream-berlin.com}
   s.extra_rdoc_files = [
@@ -82,6 +82,7 @@ Gem::Specification.new do |s|
      "spec/unit/dirty_attributes_spec.rb",
      "spec/unit/json_create_id_spec.rb",
      "spec/unit/model_view_spec_spec.rb",
+     "spec/unit/properties_view_spec_spec.rb",
      "spec/unit/rspec_matchers_spec.rb",
      "spec/unit/rspec_stub_db_spec.rb",
      "spec/unit/string_spec.rb",
@@ -120,6 +121,7 @@ Gem::Specification.new do |s|
      "spec/unit/dirty_attributes_spec.rb",
      "spec/unit/json_create_id_spec.rb",
      "spec/unit/model_view_spec_spec.rb",
+     "spec/unit/properties_view_spec_spec.rb",
      "spec/unit/rspec_matchers_spec.rb",
      "spec/unit/rspec_stub_db_spec.rb",
      "spec/unit/string_spec.rb",
