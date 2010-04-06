@@ -283,19 +283,19 @@ describe 'properties' do
     end
     
     it "should not include change-tracking variables" do
-      comment.inspect.include?('title_was').should == false
+      comment.inspect.should_not include('title_was')
     end
     
     it "should include the normal persistent variables" do
-      comment.inspect.include?("title: 'title'").should == true
+      comment.inspect.should include("title: 'title'")
     end
     
     it "should include the id" do
-      comment.inspect.include?("_id: '123456abcdef',").should == true
+      comment.inspect.should include("_id: '123456abcdef',")
     end
     
     it "should include the revision" do
-      comment.inspect.include?("_rev: '1-654321fedcba',").should == true
+      comment.inspect.should include("_rev: '1-654321fedcba',")
     end
     
     it "should return a complete string" do
