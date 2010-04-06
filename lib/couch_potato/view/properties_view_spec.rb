@@ -11,6 +11,18 @@ module CouchPotato
         end
       end
       
+      def reduce_function
+        <<-JS
+          function(key, values, rereduce) {
+            if(rereduce) {
+              return sum(values);
+            } else {
+              return values.length;
+            }
+          }
+        JS
+      end
+      
       def process_results(results)
         results['rows'].map do |row|
           klass.json_create row['value'].merge(:_id => row['id'])

@@ -1,5 +1,9 @@
 ## Changes
 
+### master
+* nicer inspect() for models (mattmatt)
+* fixed (re)reduce for property views wasn't working (langalex)
+
 ### 0.2.28
 * fixed reloading nested classes (langalex)
 * fixed constant missing error when loading models with uninitialized classes via views (langalex)
