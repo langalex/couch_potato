@@ -271,4 +271,37 @@ describe 'properties' do
       clock.attributes[:cuckoo].should == 'bavarian'
     end
   end
+  
+  describe "inspecting an object" do
+    let(:comment) do
+      comment = Comment.new(:title => 'title')
+      comment.instance_eval do
+        @_id = "123456abcdef"
+        @_rev = "1-654321fedcba"
+      end
+      comment
+    end
+    
+    it "should not include change-tracking variables" do
+      comment.inspect.include?('title_was').should == false
+    end
+    
+    it "should include the normal persistent variables" do
+      comment.inspect.include?("title: 'title'").should == true
+    end
+    
+    it "should include the id" do
+      comment.inspect.include?("_id: '123456abcdef',").should == true
+    end
+    
+    it "should include the revision" do
+      comment.inspect.include?("_rev: '1-654321fedcba',").should == true
+    end
+    
+    it "should return a complete string" do
+      # stub to work around (un)sorted hash on different rubies
+      comment.stub!(:attributes).and_return([['created_at', ''], ['updated_at', ''], ['title', 'title']])
+      comment.inspect.should == "#<Comment _id: '123456abcdef', _rev: '1-654321fedcba', created_at: '', updated_at: '', title: 'title'>"
+    end
+  end
 end
