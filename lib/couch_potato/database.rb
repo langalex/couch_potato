@@ -32,7 +32,7 @@ module CouchPotato
     #
     #   db.view(User.all(limit: 5, startkey: 2, reduce: false))
     #
-    # For your convenience when passing a has with only a key parameter you can just pass in the value
+    # For your convenience when passing a hash with only a key parameter you can just pass in the value
     #
     #   db.view(User.all(key: 1)) == db.view(User.all(1))
     # 
@@ -40,6 +40,9 @@ module CouchPotato
     #
     #   db.view(User.all(key: 1..20)) == db.view(startkey: 1, endkey: 20) == db.view(User.all(1..20))
     #   
+    # You can also pass in multiple keys:
+    #
+    #   db.view(User.all(keys: [1, 2, 3]))
     def view(spec)
       results = CouchPotato::View::ViewQuery.new(database,
         spec.design_document, spec.view_name, spec.map_function,

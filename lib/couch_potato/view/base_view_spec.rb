@@ -54,7 +54,7 @@ module CouchPotato
       end
       
       def valid_view_parameters
-        %w(key startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end)
+        %w(key keys startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end)
       end
     end
   end

@@ -1,6 +1,9 @@
 ## Changes
 
 ### master
+* pass in multiple keys when querying a view (langalex)
+
+### 0.2.29
 * nicer inspect() for models (mattmatt)
 * fixed (re)reduce for property views wasn't working (langalex)
 
