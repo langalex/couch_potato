@@ -1,6 +1,6 @@
 ## Changes
 
-### master
+### 0.2.30
 * pass in multiple keys when querying a view (langalex)
 
 ### 0.2.29
