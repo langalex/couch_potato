@@ -8,7 +8,7 @@ module CouchPotato
         normalized_view_parameters = normalize_view_parameters view_parameters
         assert_valid_view_parameters normalized_view_parameters
         @klass = klass
-        @design_document = klass.to_s.snake_case('::')
+        @design_document = translate_to_design_doc_name(klass.to_s)
         @view_name = view_name
         @options = options
         @view_parameters = {}
@@ -55,6 +55,14 @@ module CouchPotato
       
       def valid_view_parameters
         %w(key keys startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end)
+      end
+      
+      def translate_to_design_doc_name(klass_name)
+        klass_name = klass_name.dup
+        klass_name.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
+        klass_name.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
+        klass_name.tr!("-", "_")
+        klass_name.downcase
       end
     end
   end
