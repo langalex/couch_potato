@@ -23,6 +23,7 @@ module CouchPotato
       def serialize(json, object)
         json[name] = object.send name
       end
+      alias :value :serialize
       
       private
       

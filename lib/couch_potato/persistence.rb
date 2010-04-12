@@ -73,7 +73,7 @@ module CouchPotato
     #   book.attributes # => {:title => nil, :year => 2009}
     def attributes
       self.class.properties.inject({}) do |res, property|
-        property.serialize(res, self)
+        property.value(res, self)
         res
       end
     end
