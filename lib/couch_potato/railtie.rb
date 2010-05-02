@@ -8,8 +8,6 @@ module CouchPotato
 
   if defined?(::Rails::Railtie)
     class Railtie < ::Rails::Railtie
-      railtie_name :couch_potato
-
       config.after_initialize do |app|
         CouchPotato.rails_init
       end
