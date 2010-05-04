@@ -1,5 +1,9 @@
 ## Changes
 
+### 0.2.31
+* Removed requirement for validatable gem. Allows for using more uptodate versions of the library, or doesn't install it when you're using ActiveModel. (mattmatt)
+* fixed callbacks of super classes were not run (langalex)
+
 ### 0.2.30
 * pass in multiple keys when querying a view (langalex)
 
