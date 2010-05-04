@@ -55,9 +55,10 @@ describe "multiple callbacks at once" do
       self.eaten_apple = true
     end
   end
+  
   it "should run all callback methods given to the callback method call" do
     monkey = Monkey.new
-    CouchPotato.database.save_document! monkey
+    monkey.run_callbacks :before_create
     monkey.eaten_banana.should be_true
     monkey.eaten_apple.should be_true
   end

@@ -1,32 +1,58 @@
 require 'spec_helper'
 
-describe 'before_validation callback' do
-  before(:each) do
-    @tree = Tree.new(:leaf_count => 1, :root_count => 1)
-  end
-
+describe 'callbacks' do
   class Tree
     include CouchPotato::Persistence
 
-    before_validation :water!, lambda {|tree| tree.root_count += 1 }
+    before_validation :grow_leaf, lambda {|tree| tree.root_count ||= 0; tree.root_count += 1 }
 
     property :leaf_count
     property :root_count
 
-    def water!
+    def grow_leaf
+      self.leaf_count ||= 0
       self.leaf_count += 1
     end
   end
-
-  it "should call water! when validated" do
-    @tree.leaf_count.should == 1
-    @tree.should be_valid
-    @tree.leaf_count.should == 2
+  
+  class AppleTree < Tree
+    attr_accessor :watered
+    
+    before_validation :water
+    
+    def water
+      self.watered = true
+    end
+    
+    def watered?
+      watered
+    end
   end
 
-  it "should call lambda when validated" do
-    @tree.root_count.should == 1
-    @tree.should be_valid
-    @tree.root_count.should == 2
+  it "should call a method when validated" do
+    tree = Tree.new(:leaf_count => 1, :root_count => 1)
+    tree.valid?
+    tree.leaf_count.should == 2
   end
+
+  it "should call a lambda when validated" do
+    tree = Tree.new(:leaf_count => 1, :root_count => 1)
+    tree.valid?
+    tree.root_count.should == 2
+  end
+  
+  context 'inheritance' do
+    it "should call the callbacks of the super class" do
+      tree = AppleTree.new :leaf_count => 1
+      tree.valid?
+      tree.leaf_count.should == 2
+    end
+    
+    it "should call the callbacks of the child class" do
+      tree = AppleTree.new :leaf_count => 1
+      tree.valid?
+      tree.should be_watered
+    end
+  end
+  
 end
