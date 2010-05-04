@@ -2,7 +2,12 @@ module CouchPotato
   module Validation
     module WithValidatable
       def self.included(base)
-        require 'validatable'
+        begin
+          require 'validatable'
+        rescue LoadError
+          puts "Please install the gem validatable using 'gem install validatable'"
+          raise
+        end
         base.send :include, ::Validatable
         base.class_eval do
           # Override the validate method to first run before_validation callback

@@ -90,7 +90,6 @@ begin
     s.authors = ["Alexander Lang"]
     s.files = FileList["[A-Z]*.*", "{lib,spec,rails}/**/*", "init.rb"]
     s.add_dependency 'json'
-    s.add_dependency 'validatable'
     s.add_dependency 'couchrest', '>=0.24'
   end
 rescue LoadError
