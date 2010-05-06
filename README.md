@@ -36,6 +36,10 @@ After that you configure the name of the database:
 The server URL will default to http://localhost:5984/ unless specified:
 
     CouchPotato::Config.database_name = "http://example.com:5984/name_of_the_db"
+    
+Or with authentication
+  
+    CouchPotato::Config.database_name = "http://username:password@example.com:5984/name_of_the_db"
   
 Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel)
 
