@@ -23,6 +23,7 @@ module CouchPotato
       base.class_eval do
         attr_accessor :_id, :_rev, :_deleted, :database
         alias_method :id, :_id
+        alias_method :id=, :_id=
       end
     end
 
