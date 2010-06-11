@@ -15,6 +15,14 @@ module CouchPotato
         def errors
           super || []
         end
+        
+        def persisted?
+          !self.new?
+        end
+        
+        def to_key
+          persisted? ? [to_param] : nil
+        end
 
         def destroyed?
           !!_deleted
