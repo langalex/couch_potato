@@ -35,7 +35,7 @@ module CouchPotato
         if count?
           results['rows'].first.try(:[], 'value') || 0
         else
-          results['rows'].map { |row| row['doc'] }
+          results['rows'].map { |row| row['doc'] || row['id'] }
         end
       end
       

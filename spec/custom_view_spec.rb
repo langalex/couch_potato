@@ -33,6 +33,13 @@ describe 'view' do
     results = @db.view(Build.timeline)
     results.map(&:class).should == [Build]
   end
+  
+  it "should return the ids if there document was not included" do
+    build = Build.new(:state => 'success', :time => '2008-01-01')
+    @db.save_document build
+    results = @db.view(Build.timeline(:include_docs => false))
+    results.should == [build.id]
+  end
 
   it "should pass the view options to the view query" do
     query = mock 'query'
