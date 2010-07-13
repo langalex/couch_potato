@@ -1,5 +1,11 @@
 ## Changes
 
+### 0.2.32
+* added persisted? and to_key for proper ActiveModel compliance (thilo)
+* id setter (jhohertz-work)
+* load document ids if include\_documents is false (jweiss)
+* persist given created\_at/updated\_at instead of Time.now (langalex)
+
 ### 0.2.31
 * Removed requirement for validatable gem. Allows for using more uptodate versions of the library, or doesn't install it when you're using ActiveModel. (mattmatt)
 * fixed callbacks of super classes were not run (langalex)
