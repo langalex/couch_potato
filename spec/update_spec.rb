@@ -6,7 +6,7 @@ describe "create" do
   end
   
   before(:each) do
-    @comment = Comment.new :title => 'my_title'
+    @comment = Comment.new :title => 'my_title', :updated_at => Time.now - 100
     CouchPotato.database.save_document! @comment
   end
   
