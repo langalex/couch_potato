@@ -27,12 +27,12 @@ module CouchPotato
         end.flatten.compact.uniq
         
         callbacks.each do |callback|
-          if callback.is_a?(Symbol)
+          if [Symbol, String].include?(callback.class)
             send callback
           elsif callback.is_a?(Proc)
             callback.call self
           else
-            raise "Don't know how to handle callback of type #{name.class.name}"
+            raise "Don't know how to handle callback of type #{callback.class.name}"
           end
         end
       end
