@@ -15,6 +15,7 @@ end
 
 require 'couch_potato/rspec/matchers/map_to_matcher'
 require 'couch_potato/rspec/matchers/reduce_to_matcher'
+require 'couch_potato/rspec/matchers/list_as_matcher'
 
 module Spec
   module Matchers
@@ -28,6 +29,10 @@ module Spec
     
     def rereduce(docs, keys)
       CouchPotato::RSpec::ReduceToProxy.new(docs, keys, true)
+    end
+    
+    def list(results)
+      CouchPotato::RSpec::ListAsProxy.new(results)
     end
   end
 end

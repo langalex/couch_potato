@@ -1,12 +1,11 @@
 require 'spec_helper'
 require 'couch_potato/rspec'
-require 'ostruct'
 
 describe CouchPotato::RSpec::MapToMatcher do
   
   describe "basic map function" do
     before(:each) do
-      @view_spec = OpenStruct.new(:map_function => "function(doc) {emit(doc.name, doc.tags.length);}")
+      @view_spec = stub(:map_function => "function(doc) {emit(doc.name, doc.tags.length);}")
     end
 
     it "should pass if the given function emits the expected javascript" do
@@ -20,7 +19,7 @@ describe CouchPotato::RSpec::MapToMatcher do
   
   describe "functions emitting multiple times" do
     before(:each) do
-      @view_spec = OpenStruct.new(:map_function => "function(doc) {emit(doc.name, doc.tags.length); emit(doc.tags[0], doc.tags[1])};")
+      @view_spec = stub(:map_function => "function(doc) {emit(doc.name, doc.tags.length); emit(doc.tags[0], doc.tags[1])};")
     end
     
     it "should pass if the given function emits the expected javascript" do
@@ -34,7 +33,7 @@ describe CouchPotato::RSpec::MapToMatcher do
   
   describe "failing specs" do
     before(:each) do
-      @view_spec = OpenStruct.new(:map_function => "function(doc) {emit(doc.name, null)}")
+      @view_spec = stub(:map_function => "function(doc) {emit(doc.name, null)}")
     end
     
     it "should have a nice error message for failing should" do
@@ -53,7 +52,7 @@ end
 
 describe CouchPotato::RSpec::ReduceToMatcher do
   before(:each) do
-    @view_spec = OpenStruct.new(:reduce_function => "function(docs, keys, rereduce) {
+    @view_spec = stub(:reduce_function => "function(docs, keys, rereduce) {
       if(rereduce) {
         return(sum(keys) * 2);
       } else {
@@ -92,6 +91,34 @@ describe CouchPotato::RSpec::ReduceToMatcher do
       lambda {
         @view_spec.should_not reduce([], [1, 2, 3]).to(6)
       }.should raise_error('Expected not to reduce to 6 but did.')
+    end
+  end
+end
+
+describe CouchPotato::RSpec::ListAsMatcher do
+  before(:each) do
+    @view_spec = stub(:list_function => "function() {var row = getRow(); send(JSON.stringify([{text: row.text + ' world'}]));}")
+  end
+  
+  it "should pass if the function return the expected json" do
+    @view_spec.should list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello world'}])
+  end
+  
+  it "should not pass if the function does not return the expected json" do
+    @view_spec.should_not list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
+  end
+  
+  describe "failing specs" do
+    it "should have a nice error message for failing should" do
+      lambda {
+        @view_spec.should list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
+      }.should raise_error('Expected to list as [{"text"=>"hello there"}] but got [{"text"=>"hello world"}].')
+    end
+    
+    it "should have a nice error message for failing should not" do
+      lambda {
+        @view_spec.should_not list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello world'}])
+      }.should raise_error('Expected to not list as [{"text"=>"hello world"}] but did.')
     end
   end
 end
