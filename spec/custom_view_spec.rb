@@ -160,7 +160,11 @@ describe 'view' do
 
   describe "with array as key" do
     it "should create a map function with the composite key" do
-      CouchPotato::View::ViewQuery.should_receive(:new).with(anything, anything, anything, string_matching(/emit\(\[doc\['time'\], doc\['state'\]\]/), anything).and_return(stub('view query', :query_view! => {'rows' => []}))
+      CouchPotato::View::ViewQuery.should_receive(:new) do |db, design_name, view, list|
+        view['key_array_timeline'][:map].should match(/emit\(\[doc\['time'\], doc\['state'\]\]/)
+        
+        stub('view query', :query_view! => {'rows' => []})
+      end
       @db.view Build.key_array_timeline
     end
   end
@@ -190,5 +194,39 @@ describe 'view' do
       @db.view(CustomBuild.timeline).size.should == 1
       @db.view(CustomBuild.timeline).first.should be_kind_of(CustomBuild)
     end
+  end
+  
+  describe "list functions" do
+    class Coworker
+      include CouchPotato::Persistence
+      
+      property :name
+      
+      view :all_with_list, :key => :name, :list => :append_doe
+      view :all, :key => :name
+      
+      list :append_doe, <<-JS
+        function(head, req) {
+          var row;
+          send('{"rows": [');
+          while(row = getRow()) {
+            row.doc.name = row.doc.name + ' doe';
+            send(JSON.stringify(row));
+          };
+          send(']}');
+        }
+      JS
+    end
+    
+    it "should use the list function declared at class level" do
+      @db.save! Coworker.new(:name => 'joe')
+      @db.view(Coworker.all_with_list).first.name.should == 'joe doe'
+    end
+    
+    it "should use the list function passed at runtime" do
+      @db.save! Coworker.new(:name => 'joe')
+      @db.view(Coworker.all(:list => :append_doe)).first.name.should == 'joe doe'
+    end
+    
   end
 end

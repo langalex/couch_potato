@@ -208,10 +208,40 @@ end
 
 describe CouchPotato::Database, 'view' do
   before(:each) do
-    @db = CouchPotato::Database.new(stub('couchrest db').as_null_object)
+    @couchrest_db = stub('couchrest db').as_null_object
+    @db = CouchPotato::Database.new(@couchrest_db)
     @result = stub('result')
     @spec = stub('view spec', :process_results => [@result]).as_null_object
     CouchPotato::View::ViewQuery.stub(:new => stub('view query', :query_view! => {'rows' => [@result]}))
+  end
+  
+  it "should initialze a view query with map/reduce/list funtions" do
+    @spec.stub(:design_document => 'design_doc', :view_name => 'my_view',
+      :map_function => '<map_code>', :reduce_function => '<reduce_code>',
+      :list_name => 'my_list', :list_function => '<list_code>')
+    CouchPotato::View::ViewQuery.should_receive(:new).with(
+      @couchrest_db,
+      'design_doc',
+      {'my_view' => {
+        :map => '<map_code>',
+        :reduce => '<reduce_code>'
+      }},
+      {'my_list' => '<list_code>'})
+    @db.view(@spec)
+  end
+  
+  it "should initialze a view query with only map/reduce functions" do
+    @spec.stub(:design_document => 'design_doc', :view_name => 'my_view',
+      :map_function => '<map_code>', :reduce_function => '<reduce_code>',
+      :list_name => nil, :list_function => nil)
+    CouchPotato::View::ViewQuery.should_receive(:new).with(
+      @couchrest_db,
+      'design_doc',
+      {'my_view' => {
+        :map => '<map_code>',
+        :reduce => '<reduce_code>'
+      }}, nil)
+    @db.view(@spec)
   end
   
   it "should set itself on returned results that have an accessor" do

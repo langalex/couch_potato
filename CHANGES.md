@@ -1,5 +1,8 @@
 ## Changes
 
+### 0.3.0
+* support for lists (langalex)
+
 ### 0.2.32
 * added persisted? and to_key for proper ActiveModel compliance (thilo)
 * id setter (jhohertz-work)

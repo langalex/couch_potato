@@ -44,9 +44,15 @@ module CouchPotato
     #
     #   db.view(User.all(keys: [1, 2, 3]))
     def view(spec)
-      results = CouchPotato::View::ViewQuery.new(database,
-        spec.design_document, spec.view_name, spec.map_function,
-        spec.reduce_function).query_view!(spec.view_parameters)
+      results = CouchPotato::View::ViewQuery.new(
+        database,
+        spec.design_document,
+        {spec.view_name => {
+          :map => spec.map_function,
+          :reduce => spec.reduce_function}
+        },
+        ({spec.list_name => spec.list_function} unless spec.list_name.nil?)
+      ).query_view!(spec.view_parameters)
       processed_results = spec.process_results results
       processed_results.instance_eval "def total_rows; #{results['total_rows']}; end" if results['total_rows']
       processed_results.each do |document|

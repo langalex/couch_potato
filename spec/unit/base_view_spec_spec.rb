@@ -39,9 +39,31 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       spec.view_parameters.should == {:key => '2'}
     end
 
-    it "generates the design document path by snake_casing the class name but keeping double colons" do
+    it "should generate the design document path by snake_casing the class name but keeping double colons" do
       spec = CouchPotato::View::BaseViewSpec.new 'Foo::BarBaz', '', {}, ''
       spec.design_document.should == 'foo::bar_baz'
+    end
+    
+    it "should extract the list name from the options" do
+      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => 'test_list'}, {}
+      spec.list_name.should == 'test_list'
+    end
+    
+    it "should extract the list from the view parameters" do
+      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {}, {:list => 'test_list'}
+      spec.list_name.should == 'test_list'
+    end
+    
+    it "should prefer the list name from the view parameters over the one from the options" do
+      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => 'my_list'}, {:list => 'test_list'}
+      spec.list_name.should == 'test_list'
+    end
+    
+    it "should return the list function" do
+      klass = stub 'class'
+      klass.stub(:lists).with('test_list').and_return('<list_code>')
+      spec = CouchPotato::View::BaseViewSpec.new klass, 'all', {:list => 'test_list'}, {}
+      spec.list_function.should == '<list_code>'
     end
 
   end

@@ -1,16 +1,21 @@
 module CouchPotato
   module View
     class BaseViewSpec
-      attr_reader :reduce_function, :design_document, :view_name, :view_parameters, :klass, :options
+      attr_reader :reduce_function, :list_name, :list_function, :design_document, :view_name, :view_parameters, :klass, :options
       private :klass, :options
 
       def initialize(klass, view_name, options, view_parameters)
         normalized_view_parameters = normalize_view_parameters view_parameters
+        
+        @list_name = normalized_view_parameters.delete(:list) || options[:list]
+        
         assert_valid_view_parameters normalized_view_parameters
         @klass = klass
         @design_document = translate_to_design_doc_name(klass.to_s)
         @view_name = view_name
         @options = options
+        
+        @list_function = klass.lists(@list_name) if @list_name
         @view_parameters = {}
         [:group, :include_docs, :descending, :group_level, :limit].each do |key|
           @view_parameters[key] = options[key] if options.include?(key)

@@ -175,9 +175,9 @@ Couch Potato uses the validatable library for validation (http://validatable.rub
     user.valid? # => false
     user.errors.on(:name) # => [:name, 'can't be blank']
 
-#### Finding stuff
+#### Finding stuff / views / lists
 
-In order to find data in your CouchDB you have to create a view first. Couch Potato offers you to create and manage those views for you. All you have to do is declare them in your classes:
+In order to find data in your CouchDB you have to create a [view](http://books.couchdb.org/relax/design-documents/views) first. Couch Potato offers you to create and manage those views for you. All you have to do is declare them in your classes:
 
     class User
       include CouchPotato::Persistence
@@ -249,6 +249,39 @@ To process this raw data you can also pass in a results filter:
 In this case querying the view would only return the emitted value for each row.
 
 You can pass in your own view specifications by passing in :type => MyViewSpecClass. Take a look at the CouchPotato::View::*ViewSpec classes to get an idea of how this works.
+
+##### Lists
+
+CouchPotato also supports [CouchDB lists](http://books.couchdb.org/relax/design-documents/lists). With lists you can process the result of a view query with another JavaScript function. This can be useful for example if you want to filter your results, or add some data to each document.
+
+Defining a list works similarly to views:
+
+    class User
+      include CouchPotato::Persistence
+      
+      property :first_name
+      view :with_full_name, key: first_namne, list: :add_last_name
+      view :all, key: :first_name
+      
+      list :add_last_name, <<-JS
+        function(head, req) {
+          var row;
+          send('{"rows": [');
+          while(row = getRow()) {
+            row.doc.name = row.doc.first_name + ' doe';
+            send(JSON.stringify(row));
+          };
+          send(']}');
+        }
+      JS
+    end
+    
+    CouchPotato.database.save User.new(first_name: 'joe')
+    CouchPotato.database.view(User.with_full_name).first.name # => 'joe doe'
+    
+You can also pass in the list at query time:
+
+    CouchPotato.database.view(User.all(list: :add_last_name))
 
 #### Associations
 

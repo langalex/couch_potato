@@ -44,8 +44,7 @@ module CouchPotato
         end
         
         def _find_view(view) #:nodoc:
-          return @views[view] if @views && @views[view]
-          superclass._find_view(view) if superclass && superclass.respond_to?(:_find_view)
+          (@views && @views[view]) || (superclass._find_view(view) if superclass.respond_to?(:_find_view))
         end
       end
     end
