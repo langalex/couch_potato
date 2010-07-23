@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{couch_potato}
-  s.version = "0.2.32"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Lang"]
-  s.date = %q{2010-07-13}
+  s.date = %q{2010-07-23}
   s.description = %q{Ruby persistence layer for CouchDB}
   s.email = %q{alex@upstream-berlin.com}
   s.extra_rdoc_files = [
@@ -42,6 +42,8 @@ Gem::Specification.new do |s|
      "lib/couch_potato/railtie.rb",
      "lib/couch_potato/rspec.rb",
      "lib/couch_potato/rspec/matchers.rb",
+     "lib/couch_potato/rspec/matchers/json2.js",
+     "lib/couch_potato/rspec/matchers/list_as_matcher.rb",
      "lib/couch_potato/rspec/matchers/map_to_matcher.rb",
      "lib/couch_potato/rspec/matchers/print_r.js",
      "lib/couch_potato/rspec/matchers/reduce_to_matcher.rb",
@@ -52,6 +54,7 @@ Gem::Specification.new do |s|
      "lib/couch_potato/view/base_view_spec.rb",
      "lib/couch_potato/view/custom_view_spec.rb",
      "lib/couch_potato/view/custom_views.rb",
+     "lib/couch_potato/view/lists.rb",
      "lib/couch_potato/view/model_view_spec.rb",
      "lib/couch_potato/view/properties_view_spec.rb",
      "lib/couch_potato/view/raw_view_spec.rb",
@@ -81,6 +84,7 @@ Gem::Specification.new do |s|
      "spec/unit/date_spec.rb",
      "spec/unit/dirty_attributes_spec.rb",
      "spec/unit/json_create_id_spec.rb",
+     "spec/unit/lists_spec.rb",
      "spec/unit/model_view_spec_spec.rb",
      "spec/unit/properties_view_spec_spec.rb",
      "spec/unit/rspec_matchers_spec.rb",
@@ -120,6 +124,7 @@ Gem::Specification.new do |s|
      "spec/unit/date_spec.rb",
      "spec/unit/dirty_attributes_spec.rb",
      "spec/unit/json_create_id_spec.rb",
+     "spec/unit/lists_spec.rb",
      "spec/unit/model_view_spec_spec.rb",
      "spec/unit/properties_view_spec_spec.rb",
      "spec/unit/rspec_matchers_spec.rb",
