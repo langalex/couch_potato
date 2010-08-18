@@ -79,10 +79,10 @@ module CouchPotato
     alias_method :save!, :save_document!
 
     def destroy_document(document)
-      document.run_callbacks :before_destroy
-      document._deleted = true
-      database.delete_doc document.to_hash
-      document.run_callbacks :after_destroy
+      document.run_callbacks :destroy do
+        document._deleted = true
+        database.delete_doc document.to_hash
+      end
       document._id = nil
       document._rev = nil
     end
@@ -112,35 +112,39 @@ module CouchPotato
       
       if validate
         document.errors.clear
-        document.run_callbacks :before_validation_on_save
-        document.run_callbacks :before_validation_on_create
-        return false unless valid_document?(document)
+        document.run_callbacks :validation_on_save do
+          document.run_callbacks :validation_on_create do
+            return false unless valid_document?(document)
+          end
+        end
       end
       
-      document.run_callbacks :before_save
-      document.run_callbacks :before_create
-      res = database.save_doc document.to_hash
-      document._rev = res['rev']
-      document._id = res['id']
-      document.run_callbacks :after_save
-      document.run_callbacks :after_create
+      document.run_callbacks :save do
+        document.run_callbacks :create do
+          res = database.save_doc document.to_hash
+          document._rev = res['rev']
+          document._id = res['id']
+        end
+      end
       true
     end
 
     def update_document(document, validate)
       if validate
         document.errors.clear
-        document.run_callbacks :before_validation_on_save
-        document.run_callbacks :before_validation_on_update
-        return false unless valid_document?(document)
+        document.run_callbacks :validation_on_save do
+          document.run_callbacks :validation_on_update do
+            return false unless valid_document?(document)
+          end
+        end
       end
-      
-      document.run_callbacks :before_save
-      document.run_callbacks :before_update
-      res = database.save_doc document.to_hash
-      document._rev = res['rev']
-      document.run_callbacks :after_save
-      document.run_callbacks :after_update
+
+      document.run_callbacks :save do
+        document.run_callbacks :update do
+          res = database.save_doc document.to_hash
+          document._rev = res['rev']
+        end
+      end
       true
     end
 

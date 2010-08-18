@@ -58,7 +58,7 @@ describe "multiple callbacks at once" do
   
   it "should run all callback methods given to the callback method call" do
     monkey = Monkey.new
-    monkey.run_callbacks :before_create
+    monkey.run_callbacks :create
     monkey.eaten_banana.should be_true
     monkey.eaten_apple.should be_true
   end
@@ -266,7 +266,7 @@ end
 describe "lambda callbacks" do
   it "should run the lambda" do
     recorder = CallbackRecorder.new
-    recorder.run_callbacks :before_create
+    recorder.run_callbacks :create
     recorder.lambda_works.should be_true
   end
 end
