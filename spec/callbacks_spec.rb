@@ -22,9 +22,6 @@ class CallbackRecorder
   
   view :all, :key  => :required_property
   
-  attr_accessor :lambda_works
-  before_create lambda {|model| model.lambda_works = true }
-  
   def callbacks
     @callbacks ||= []
   end
@@ -260,14 +257,6 @@ describe "destroy callbacks" do
   it "should call after_destroy" do
     @db.destroy_document @recorder
     @recorder.callbacks.should include(:after_destroy)
-  end
-end
-
-describe "lambda callbacks" do
-  it "should run the lambda" do
-    recorder = CallbackRecorder.new
-    recorder.run_callbacks :create
-    recorder.lambda_works.should be_true
   end
 end
 
