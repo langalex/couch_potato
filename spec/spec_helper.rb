@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'spec'
+require 'time'
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 
