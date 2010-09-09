@@ -3,15 +3,15 @@ module CouchPotato
     class TypeCaster #:nodoc:
       def cast(value, type)
         if type == :boolean
-          cast_boolen(value)
+          cast_boolean(value)
         else
           cast_native(value, type)
         end
       end
-      
+
       private
-      
-      def cast_boolen(value)
+
+      def cast_boolean(value)
         if [FalseClass, TrueClass].include?(value.class) || value.nil?
           value
         elsif [0, '0'].include?(value)
@@ -20,7 +20,7 @@ module CouchPotato
           true
         end
       end
-      
+
       def cast_native(value, type)
         if type && !value.instance_of?(type)
           if type == Fixnum
@@ -34,7 +34,7 @@ module CouchPotato
           value
         end
       end
-      
+
     end
   end
 end

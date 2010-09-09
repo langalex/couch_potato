@@ -4,5 +4,9 @@ module ActiveSupportMethods
       $1.upcase
     end
   end
+
+  def blank?
+    empty?
+  end
 end
 String.send :include, ActiveSupportMethods unless String.new.respond_to?(:underscore)
