@@ -2,14 +2,11 @@ require 'spec_helper'
 require 'yaml'
 require 'spec/mocks'
 
+RAILS_ENV = 'test'
 module Rails
   class Railtie
     def self.initializer(*args)
     end
-  end
-  
-  def self.env
-    'test'
   end
   
   def self.root
