@@ -4,11 +4,7 @@ require 'spec/mocks'
 
 module Rails
   class Railtie
-    def self.config
-      config = Object.new
-      def config.after_initialize(&block)
-      end
-      config
+    def self.initializer(*args)
     end
   end
   
