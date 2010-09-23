@@ -61,9 +61,19 @@ Add to your config/environment.rb:
 
 Then create a config/couchdb.yml:
 
-    development: development_db_name
-    test: test_db_name
-    production: http://db.server/production_db_name
+    default: &default
+      validation_framework: :active_model #optional
+
+    development:
+      <<: *default
+      database: development_db_name
+    test:
+      <<: *default
+      database: test_db_name
+    production:
+      <<: *default
+      database: <%= ENV['DB_NAME'] %>
+
 
 Alternatively you can also install Couch Potato directly as a plugin.
 

@@ -1,9 +1,16 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../rails/reload_classes')
+require 'erb'
 
 module CouchPotato
 
   def self.rails_init
-    CouchPotato::Config.database_name = YAML::load(File.read(Rails.root.join('config/couchdb.yml')))[Rails.env]
+    config = YAML::load(ERB.new(File.read(Rails.root.join('config/couchdb.yml'))).result)[Rails.env]
+    if config.is_a?(String)
+      CouchPotato::Config.database_name = config
+    else
+      CouchPotato::Config.database_name = config['database']
+      CouchPotato::Config.validation_framework = config['validation_framework']
+    end
   end
 
   if defined?(::Rails::Railtie)
