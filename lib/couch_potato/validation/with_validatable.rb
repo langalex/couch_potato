@@ -11,17 +11,20 @@ module CouchPotato
         base.send :include, ::Validatable
         base.class_eval do
           # Override the validate method to first run before_validation callback
-          def valid?
+          def valid_with_before_validation_callback?
             errors.clear
             run_callbacks :validation do
               before_validation_errors = errors.errors.dup
-              super
+              valid_without_before_validation_callback?
               before_validation_errors.each do |k, v|
                 v.each {|message| errors.add(k, message)}
               end
             end
             errors.empty?
           end
+          
+          alias_method :valid_without_before_validation_callback?, :valid?
+          alias_method :valid?, :valid_with_before_validation_callback?
         end
       end
     end

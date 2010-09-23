@@ -18,9 +18,10 @@ module CouchPotato
   module Persistence
     
     def self.included(base) #:nodoc:
-      base.send :include, Properties, Callbacks, Validation, Json, CouchPotato::View::CustomViews, CouchPotato::View::Lists
+      base.send :include, Properties, Callbacks, Json, CouchPotato::View::CustomViews, CouchPotato::View::Lists
       base.send :include, DirtyAttributes, GhostAttributes, Attachments
       base.send :include, MagicTimestamps, ActiveModelCompliance
+      base.send :include, Validation
       base.class_eval do
         attr_accessor :_id, :_rev, :_deleted, :database
         alias_method :id, :_id

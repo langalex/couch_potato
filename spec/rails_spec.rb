@@ -1,5 +1,4 @@
 require 'spec_helper'
-require File.dirname(__FILE__) + '/../rails/reload_classes'
 
 module LoadConst
   def const_missing(name)

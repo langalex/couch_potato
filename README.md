@@ -18,6 +18,13 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 * declarative views with either custom or generated map/reduce functions
 * extensive spec suite
 
+### Supported Environments
+
+* Ruby 1.8.7, 1.9.1, 1.9.2
+* CouchDB 1.0.1
+
+(Supported means I run the specs against those before releasing a new gem.)
+
 ### Installation
 
 Couch Potato is hosted as a gem which you can install like this:

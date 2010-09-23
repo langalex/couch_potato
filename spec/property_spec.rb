@@ -1,6 +1,6 @@
 require 'spec_helper'
-require File.join(File.dirname(__FILE__), 'fixtures', 'address')
-require File.join(File.dirname(__FILE__), 'fixtures', 'person')
+require 'fixtures/address'
+require 'fixtures/person'
 
 class Watch
   include CouchPotato::Persistence

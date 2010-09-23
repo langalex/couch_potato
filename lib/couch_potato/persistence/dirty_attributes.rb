@@ -6,14 +6,14 @@ module CouchPotato
       def self.included(base) #:nodoc:
         base.class_eval do
           after_save :reset_dirty_attributes
-          
-          def initialize(attributes = {})
-            super
-            assign_attribute_copies_for_dirty_tracking
-          end
         end
       end
       
+      def initialize(attributes = {})
+        super
+        assign_attribute_copies_for_dirty_tracking
+      end
+    
       # returns true if a model has dirty attributes, i.e. their value has changed since the last save
       def dirty? 
         new? || @forced_dirty || self.class.properties.inject(false) do |res, property|
