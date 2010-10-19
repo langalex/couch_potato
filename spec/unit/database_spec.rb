@@ -119,10 +119,10 @@ describe CouchPotato::Database, 'save_document' do
     it "should not run the validations when saved with false" do
       category = Category.new(:name => 'food')
       @db.save_document(category)
-      category.new?.should == false
+      category.new?.should be_false
       category.name = nil
       @db.save_document(category, false)
-      category.dirty?.should == false
+      category.dirty?.should be_false
     end
 
     it "should run the validations when saved with true" do

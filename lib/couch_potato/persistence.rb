@@ -40,9 +40,11 @@ module CouchPotato
     #   book = Book.new :title => 'Time to Relax'
     #   book.title # => 'Time to Relax'
     def initialize(attributes = {})
-      attributes.each do |name, value|
-        self.send("#{name}=", value)
-      end if attributes
+      if attributes
+        attributes.each do |name, value|
+          self.send("#{name}=", value)
+        end
+      end
     end
     
     # assign multiple attributes at once.

@@ -37,8 +37,6 @@ module CouchPotato
       
       def define_accessors(base, name, options)
         base.class_eval do
-          attr_reader "#{name}_was"
-
           define_method "#{name}" do
             value = self.instance_variable_get("@#{name}")
             if value.nil? && options[:default]
@@ -51,19 +49,13 @@ module CouchPotato
           end
           
           define_method "#{name}=" do |value|
-            self.instance_variable_set("@#{name}", type_caster.cast(value, options[:type]))
+            typecasted_value = type_caster.cast(value, options[:type])
+            send("#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
+            self.instance_variable_set("@#{name}", typecasted_value)
           end
           
           define_method "#{name}?" do
             !self.send(name).nil? && !self.send(name).try(:blank?)
-          end
-          
-          define_method "#{name}_changed?" do
-            !self.instance_variable_get("@#{name}_not_changed") && self.send(name) != self.send("#{name}_was")
-          end
-          
-          define_method "#{name}_not_changed" do
-            self.instance_variable_set("@#{name}_not_changed", true)
           end
         end
       end

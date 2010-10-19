@@ -4,6 +4,7 @@ module CouchPotato
     module DirtyAttributes
       
       def self.included(base) #:nodoc:
+        base.send :include, ActiveModel::Dirty
         base.class_eval do
           after_save :reset_dirty_attributes
         end
@@ -11,14 +12,12 @@ module CouchPotato
       
       def initialize(attributes = {})
         super
-        assign_attribute_copies_for_dirty_tracking
+        # assign_attribute_copies_for_dirty_tracking
       end
     
       # returns true if a model has dirty attributes, i.e. their value has changed since the last save
       def dirty? 
-        new? || @forced_dirty || self.class.properties.inject(false) do |res, property|
-          res || property.dirty?(self)
-        end
+        changed? || @forced_dirty
       end
       
       # marks a model as dirty
@@ -26,19 +25,21 @@ module CouchPotato
         @forced_dirty = true
       end
       
-      private
-      
-      def assign_attribute_copies_for_dirty_tracking
-        attributes.each do |name, value|
-          self.instance_variable_set("@#{name}_was", clone_attribute(value))
-        end if attributes
+      def method_missing(name, *args)
+        if(name.to_s.include?('_will_change!'))
+          self.class.define_attribute_methods self.class.property_names
+          send(name, *args)
+        else
+          super
+        end
       end
       
+      private
+      
       def reset_dirty_attributes
+        @previously_changed = changes
+        @changed_attributes.clear
         @forced_dirty = nil
-        self.class.properties.each do |property|
-          instance_variable_set("@#{property.name}_was", clone_attribute(send(property.name)))
-        end
       end
       
       def clone_attribute(value)
