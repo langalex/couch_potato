@@ -24,9 +24,9 @@ module CouchPotato
       def cast_native(value, type)
         if type && !value.instance_of?(type)
           if type == Fixnum
-            value.to_s.scan(/\d/).join.to_i unless value.blank?
+            value.to_s.scan(/-?\d+/).join.to_i unless value.blank?
           elsif type == Float
-            value.to_s.scan(/\d+\.?\d*/).join.to_f unless value.blank?
+            value.to_s.scan(/-?\d+\.?\d*/).join.to_f unless value.blank?
           else
             type.json_create value unless value.blank?
           end
