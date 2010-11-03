@@ -30,7 +30,8 @@ module CouchPotato
     end
 
     # initialize a new instance of the model optionally passing it a hash of attributes.
-    # the attributes have to be declared using the #property method
+    # the attributes have to be declared using the #property method.
+    # the new model will be yielded to an optionally given block.
     # 
     # example: 
     #   class Book
@@ -38,11 +39,18 @@ module CouchPotato
     #     property :title
     #   end
     #   book = Book.new :title => 'Time to Relax'
+    #
+    #   OR
+    #
+    #   book = Book.new do |b|
+    #     b.title = 'Time to Relax'
+    #   end
     #   book.title # => 'Time to Relax'
     def initialize(attributes = {})
       attributes.each do |name, value|
         self.send("#{name}=", value)
       end if attributes
+      yield self if block_given?
     end
     
     # assign multiple attributes at once.
