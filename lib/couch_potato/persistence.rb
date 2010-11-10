@@ -105,6 +105,14 @@ module CouchPotato
     def ==(other) #:nodoc:
       other.class == self.class && self.to_json == other.to_json
     end
+    
+    def eql?(other)
+      self == other
+    end
+    
+    def hash
+      _id.hash * (_id.hash.to_s.size ** 10) + _rev.hash
+    end
    
     def inspect
       attributes_as_string = attributes.map {|attribute, value| "#{attribute}: #{value.inspect}"}.join(", ")
