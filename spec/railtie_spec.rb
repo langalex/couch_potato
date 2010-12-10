@@ -17,6 +17,14 @@ end
 require 'couch_potato/railtie'
 
 describe "railtie" do
+  before(:all) do
+    @validation_framework = CouchPotato::Config.validation_framework
+  end
+  
+  after(:all) do
+    CouchPotato::Config.validation_framework = @validation_framework
+  end
+  
   context 'yaml file contains only database names' do
     it "should set the database name from the yaml file" do
       File.stub(:read => "test: test_db")
