@@ -74,8 +74,7 @@ Then create a config/couchdb.yml:
       <<: *default
       database: <%= ENV['DB_NAME'] %>
 
-
-Alternatively you can also install Couch Potato directly as a plugin.
+Note: please make sure that when you run `Date.today.as_json` in the Rails console it returns something like `2010/12/10` and not `2010-12-10` - if it does another gem has overwritten Couch Potato's Date patches - in this case move Couch Potato further down in your Gemfile or whereever you load it.
 
 ### Introduction
 
