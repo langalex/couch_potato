@@ -1,5 +1,21 @@
 ## Changes
 
+### 0.4.0
+* ruby 1.9.2 compatibility (langalex)
+* couch potato objects now behave correctly when used as keys in Hashes (langalex)
+* use as\_json instead of to\_s(:json), which is the rails way
+* use ActiveModel dirty tracking (langalex) - this means no more "deep tracking", e.g. `user.tags << 'new_tag'; user.dirty? # false`
+
+### 0.3.2
+* support yielding to blocks on #initialize (martinrehfeld)
+* support for negative numbers in Fixnum/Float properties (langalex)
+
+### 0.3.1
+* ActiveModel callbacks (kazjote)
+* do not use Rails.env in initializer as it will free Rails.env for all times and in Rails 2.3.x apps it will be called too early thus always beeing development (jweiss)
+* ruby 1.9.2 compatibility (langalex)
+* can configure validation framework in couchdb.yml, process couchdb.yml with erb (langalex)
+
 ### 0.3.0
 * support for lists (langalex)
 
