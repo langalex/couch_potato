@@ -32,7 +32,7 @@ describe CouchPotato::Database, 'rails specific behavior' do
       CouchPotato.couchrest_database.save_doc(JSON.create_id => 'Autoloader::Uninitialized', '_id' => '1')
       CouchPotato.database.load('1').class.name.should == 'Autoloader::Uninitialized'
     end
-  
+    
     it "should load nested models" do
       CouchPotato.couchrest_database.save_doc(JSON.create_id => 'Autoloader::Nested::Nested2', '_id' => '1')
       CouchPotato.database.load('1').class.name.should == 'Autoloader::Nested::Nested2'
