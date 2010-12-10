@@ -35,9 +35,12 @@ module CouchPotato
           instance = self.new
           instance._id = json[:_id] || json['_id']
           instance._rev = json[:_rev] || json['_rev']
+          instance.instance_variable_set('@skip_dirty_tracking', true)
           properties.each do |property|
             property.build(instance, json)
           end
+          instance.instance_variable_set('@skip_dirty_tracking', false)
+          # instance.instance_variable_get("@changed_attributes").clear if instance.instance_variable_get("@changed_attributes")
           instance
         end
       end

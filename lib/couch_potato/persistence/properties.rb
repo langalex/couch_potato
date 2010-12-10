@@ -59,13 +59,6 @@ module CouchPotato
           properties.map(&:name)
         end
 
-        def json_create(json) #:nodoc:
-          return if json.nil?
-          instance = super
-          instance.send(:assign_attribute_copies_for_dirty_tracking)
-          instance
-        end
-
         # Declare a property on a model class. Properties are not typed by default.
         # You can store anything in a property that can be serialized into JSON.
         # If you want a property to be of a custom class you have to define it using the :type option.

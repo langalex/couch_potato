@@ -47,9 +47,11 @@ module CouchPotato
     #   end
     #   book.title # => 'Time to Relax'
     def initialize(attributes = {})
-      attributes.each do |name, value|
-        self.send("#{name}=", value)
-      end if attributes
+      if attributes
+        attributes.each do |name, value|
+          self.send("#{name}=", value)
+        end
+      end
       yield self if block_given?
     end
     

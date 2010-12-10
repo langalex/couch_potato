@@ -7,13 +7,14 @@ module CouchPotato
         
         before_create lambda {|model|
           model.created_at ||= Time.now
-          model.created_at_not_changed
+          @changed_attributes.delete 'created_at'
           model.updated_at ||= Time.now
-          model.updated_at_not_changed
+          @changed_attributes.delete 'updated_at'
         }
         before_update lambda {|model|
           model.updated_at = Time.now
-          model.updated_at_not_changed}
+          @changed_attributes.delete 'updated_at'
+        }
       end
     end
   end

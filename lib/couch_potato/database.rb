@@ -63,7 +63,7 @@ module CouchPotato
 
     # saves a document. returns true on success, false on failure
     def save_document(document, validate = true)
-      return true unless document.dirty?
+      return true unless document.dirty? || document.new?
       if document.new?
         create_document(document, validate)
       else
