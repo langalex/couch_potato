@@ -7,10 +7,10 @@ describe Date, 'to_json' do
   end
 end
 
-describe Date, 'to_s(:json)' do
+describe Date, 'as_json' do
   it "should format it in the same way as to_json does so i can use this to do queries over date attributes" do
     date = Date.parse('2009-01-01')
-    date.to_s(:json).should == "2009/01/01"
+    date.as_json.should == "2009/01/01"
   end
 end
 

@@ -7,10 +7,10 @@ describe Time, 'to_json' do
   end
 end
 
-describe Time, 'to_s(:json)' do
+describe Time, 'as_json' do
   it "should format it in the same way as to_json does so i can use this to do queries over time attributes" do
     time = Time.parse('2009-01-01 11:12:23 +0200')
-    time.to_s(:json).should == "2009/01/01 09:12:23 +0000"
+    time.as_json.should == "2009/01/01 09:12:23 +0000"
   end
 end
 
