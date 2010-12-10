@@ -3,10 +3,14 @@ module CouchPotato
     def self.included(base)
       base.class_eval do
         attr_accessor :_document
-        def self.json_create(json)
-          instance = super
+        def self.json_create_with_ghost(json)
+          instance = json_create_without_ghost(json)
           instance._document = json if json
           instance
+        end
+        
+        class << self
+          alias_method_chain :json_create, :ghost
         end
       end
     end
@@ -18,6 +22,6 @@ module CouchPotato
         super
       end
     end
-    
   end
 end
+
