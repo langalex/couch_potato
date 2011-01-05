@@ -54,12 +54,7 @@ Optionally you can configure which framework you want to use for validations (ei
 
 #### Using with Rails
 
-Add to your config/environment.rb:
-
-    config.gem 'couch_potato', :source => 'http://gemcutter.org'
-    config.frameworks -= [:active_record] # if you switch completely
-
-Then create a config/couchdb.yml:
+Create a config/couchdb.yml:
 
     default: &default
       validation_framework: :active_model #optional
@@ -73,6 +68,24 @@ Then create a config/couchdb.yml:
     production:
       <<: *default
       database: <%= ENV['DB_NAME'] %>
+
+#### Rails 2.x
+
+Add to your _config/environment.rb_:
+
+    config.gem 'couch_potato', :source => 'http://gemcutter.org'
+    config.frameworks -= [:active_record] # if you switch completely
+    
+#### Rails 3.x
+
+Add to your _Gemfile_:
+
+    # gem 'rails' # we don't want to load activerecord so we can't require rails
+    gem 'railties'
+    gem 'actionpack'
+    gem 'actionmailer'
+    gem 'activemodel'
+    gem "couch_potato"
 
 Note: please make sure that when you run `Date.today.as_json` in the Rails console it returns something like `2010/12/10` and not `2010-12-10` - if it does another gem has overwritten Couch Potato's Date patches - in this case move Couch Potato further down in your Gemfile or whereever you load it.
 
