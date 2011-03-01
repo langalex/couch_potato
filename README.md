@@ -48,7 +48,7 @@ Or with authentication
   
     CouchPotato::Config.database_name = "http://username:password@example.com:5984/name_of_the_db"
   
-Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel)
+Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel (default))
 
     CouchPotato::Config.validation_framework = :validatable | :active_model
 
@@ -193,7 +193,7 @@ You can also force a dirty state:
 
 #### Object validations
 
-Couch Potato uses the validatable library for validation (http://validatable.rubyforge.org/)\
+Couch Potato by default uses ActiveModel for validation
 
     class User
       property :name
@@ -202,7 +202,9 @@ Couch Potato uses the validatable library for validation (http://validatable.rub
 
     user = User.new
     user.valid? # => false
-    user.errors.on(:name) # => [:name, 'can't be blank']
+    user.errors[:name] # => ['can't be blank']
+  
+If you want you can use [Validatable](http://validatable.rubyforge.org/) by setting `CouchPotato::Config.validation(http://validatable.rubyforge.org/)\_framework = :validatable`
 
 #### Finding stuff / views / lists
 
