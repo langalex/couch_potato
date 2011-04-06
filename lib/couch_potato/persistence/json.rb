@@ -2,7 +2,10 @@ module CouchPotato
   module Persistence
     module Json
       def self.included(base) #:nodoc:
-        base.extend ClassMethods
+        base.class_eval do
+          extend ClassMethods
+          attr_accessor :_document
+        end
       end
       
       # returns a JSON representation of a model in order to store it in CouchDB
@@ -35,12 +38,7 @@ module CouchPotato
           instance = self.new
           instance._id = json[:_id] || json['_id']
           instance._rev = json[:_rev] || json['_rev']
-          instance.instance_variable_set('@skip_dirty_tracking', true)
-          properties.each do |property|
-            property.build(instance, json)
-          end
-          instance.instance_variable_set('@skip_dirty_tracking', false)
-          # instance.instance_variable_get("@changed_attributes").clear if instance.instance_variable_get("@changed_attributes")
+          instance._document = HashWithIndifferentAccess.new(json)
           instance
         end
       end

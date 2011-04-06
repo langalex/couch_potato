@@ -12,7 +12,6 @@ module CouchPotato
       
       def initialize(attributes = {})
         super
-        # assign_attribute_copies_for_dirty_tracking
       end
     
       # returns true if a model has dirty attributes, i.e. their value has changed since the last save
