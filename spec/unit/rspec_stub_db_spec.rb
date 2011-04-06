@@ -10,7 +10,7 @@ end
 describe "stubbing the db" do
   it "should replace CouchPotato.database with a stub" do
     stub_db
-    CouchPotato.database.should be_a(Spec::Mocks::Mock)
+    CouchPotato.database.should be_a(RSpec::Mocks::Mock)
   end
   
   it "should return the stub" do
@@ -26,7 +26,7 @@ describe "stubbing a view" do
   end
   
   it "should stub the view to return a stub" do
-    WithStubbedView.stubbed_view('123').should be_a(Spec::Mocks::Mock)
+    WithStubbedView.stubbed_view('123').should be_a(RSpec::Mocks::Mock)
   end
   
   it "should stub the database to return fake results when called with the stub" do

@@ -1,5 +1,8 @@
+require 'bundler'
+Bundler::GemHelper.install_tasks
+
 require 'rake'
-require 'spec/rake/spectask'
+require "rspec/core/rake_task"
 require 'rake/rdoctask'
 
 def with_validatable(&block)
@@ -45,15 +48,15 @@ task :spec_unit_active_model do
 end
 
 desc "Run functional specs with default validation framework, override with VALIDATION_FRAMEWORK"
-Spec::Rake::SpecTask.new(:spec_functional_default) do |t|
-  t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
-  t.spec_files = FileList['spec/*_spec.rb']
+RSpec::Core::RakeTask.new(:spec_functional_default) do |spec|
+  spec.pattern = 'spec/*_spec.rb'
+  spec.rspec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
 end
 
 desc "Run unit specs with default validation framework, override with VALIDATION_FRAMEWORK"
-Spec::Rake::SpecTask.new(:spec_unit_default) do |t|
-  t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
-  t.spec_files = FileList['spec/unit/*_spec.rb']
+RSpec::Core::RakeTask.new(:spec_unit_default) do |spec|
+  spec.pattern = 'spec/unit/*_spec.rb'
+  spec.rspec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
 end
 
 desc "Run functional specs with all validation frameworks"
@@ -76,23 +79,4 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('README.md')
   rdoc.rdoc_files.include('lib/couch_potato.rb')
   rdoc.rdoc_files.include('lib/couch_potato/**/*.rb')
-end
-
-
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |s|
-    s.name = "couch_potato"
-    s.summary = %Q{Ruby persistence layer for CouchDB}
-    s.email = "alex@upstream-berlin.com"
-    s.homepage = "http://github.com/langalex/couch_potato"
-    s.description = "Ruby persistence layer for CouchDB"
-    s.authors = ["Alexander Lang"]
-    s.files = FileList["[A-Z]*.*", "{lib,spec,rails}/**/*", "init.rb"]
-    s.add_dependency 'json'
-    s.add_dependency 'couchrest', '>=1.0.1'
-    s.add_dependency 'activemodel'
-  end
-rescue LoadError
-  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
 end

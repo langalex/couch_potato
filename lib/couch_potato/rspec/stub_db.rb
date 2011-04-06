@@ -14,7 +14,7 @@ module CouchPotato::RSpec
       end
 
       def and_return(return_value)
-        view_stub = Spec::Mocks::Mock.new("#{@clazz}.#{@view}(#{@args.try(:join, ', ')}) view")
+        view_stub = RSpec::Mocks::Mock.new("#{@clazz}.#{@view}(#{@args.try(:join, ', ')}) view")
         _stub = @clazz.stub(@view)
         _stub.with(*@args) if @args
         _stub.and_return(view_stub)
@@ -37,7 +37,7 @@ module CouchPotato::RSpec
   end
 end
 
-module Spec
+module RSpec
   module Mocks
     module ExampleMethods
       include CouchPotato::RSpec::StubDb

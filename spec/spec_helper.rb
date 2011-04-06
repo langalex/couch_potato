@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'spec'
+require 'rspec'
 require 'time'
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
@@ -41,7 +41,7 @@ def recreate_db
 end
 recreate_db
 
-Spec::Matchers.define :string_matching do |regex|
+RSpec::Matchers.define :string_matching do |regex|
   match do |string|
     string =~ regex
   end

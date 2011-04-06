@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 class DbTestUser
+  include CouchPotato::Persistence
 end
 
 # namespaced model
@@ -52,7 +53,7 @@ describe CouchPotato::Database, 'load' do
   end
 
   it "should set itself on the model" do
-    user = mock 'user'
+    user = mock('user').as_null_object
     DbTestUser.stub!(:new).and_return(user)
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => DbTestUser.json_create({JSON.create_id => 'DbTestUser'})))
     user.should_receive(:database=).with(db)

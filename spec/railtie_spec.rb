@@ -10,7 +10,7 @@ module Rails
   end
   
   def self.root
-    Spec::Mocks::Mock.new :join => ''
+    RSpec::Mocks::Mock.new :join => ''
   end
 end
 
