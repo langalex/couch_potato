@@ -13,10 +13,3 @@ describe Time, 'as_json' do
     time.as_json.should == "2009/01/01 09:12:23 +0000"
   end
 end
-
-describe Time, 'to_s' do
-  it "should leave the original to_s untouched" do
-    time = Time.parse('2009-01-01 10:12:23 +0100').getutc
-    time.to_s.should include("09:12:23")
-  end
-end

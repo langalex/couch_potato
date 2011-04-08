@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'rspec'
 require 'time'
+require 'active_support'
+require 'timecop'
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 
