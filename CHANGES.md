@@ -1,5 +1,10 @@
 ## Changes
 
+### 0.5.0
+* time zone support (Time properties are now converted to current Time.zone)
+* lazy property initialization (performance!)
+* active_model is now the default validation framework
+
 ### 0.4.0
 * ruby 1.9.2 compatibility (langalex)
 * couch potato objects now behave correctly when used as keys in Hashes (langalex)
