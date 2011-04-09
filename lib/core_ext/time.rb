@@ -11,7 +11,7 @@ class Time
   
   def self.json_create string
     return nil if string.nil?
-    d = DateTime.parse(string).new_offset
+    d = DateTime.parse(string.to_s).new_offset
     self.utc(d.year, d.month, d.day, d.hour, d.min, d.sec).in_time_zone
   end
 end
