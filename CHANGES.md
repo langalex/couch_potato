@@ -1,5 +1,13 @@
 ## Changes
 
+### 0.5.2
+* added CouchPotato::Database#first and #first! methods
+* added workaround for BigCouch/Cloudant to not add null reduce functions to views
+* don't add _attachments if there are none
+
+### 0.5.1
+* fixed issues with tzinfo gem (Bernd Ahlers)
+
 ### 0.5.0
 * time zone support (Time properties are now converted to current Time.zone)
 * lazy property initialization (performance!)
