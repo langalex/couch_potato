@@ -13,7 +13,7 @@ module CouchPotato
     end
     
     def to_hash
-      if _attachments
+      if _attachments && _attachments.any?
         super.merge('_attachments' => _attachments)
       else
         super

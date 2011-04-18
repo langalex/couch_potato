@@ -12,6 +12,12 @@ describe CouchPotato::Persistence::Json do
       sake = Drink.new(:alcohol => "18%")
       sake.to_hash[JSON.create_id].should eql("Drink")
     end
+    
+    it "should not include _attachments if there are none" do
+      sake = Drink.new(:alcohol => "18%")
+      sake.to_hash.keys.should_not include('_attachments')
+    end
+    
   end
   
   context '.json_create' do
