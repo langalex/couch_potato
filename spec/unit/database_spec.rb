@@ -207,6 +207,46 @@ describe CouchPotato::Database, 'save_document' do
   end
 end
 
+describe CouchPotato::Database, 'first' do
+  before(:each) do
+    @couchrest_db = stub('couchrest db').as_null_object
+    @db = CouchPotato::Database.new(@couchrest_db)
+    @result = stub('result')
+    @spec = stub('view spec', :process_results => [@result]).as_null_object
+    CouchPotato::View::ViewQuery.stub(:new => stub('view query', :query_view! => {'rows' => [@result]}))
+  end
+  
+  it "should return the first result from a view query" do
+    @db.first(@spec).should == @result
+  end
+  
+  it "should return nil if there are no results" do
+    @spec.stub(:process_results => [])
+    @db.first(@spec).should be_nil
+  end
+end
+
+describe CouchPotato::Database, 'first!' do
+  before(:each) do
+    @couchrest_db = stub('couchrest db').as_null_object
+    @db = CouchPotato::Database.new(@couchrest_db)
+    @result = stub('result')
+    @spec = stub('view spec', :process_results => [@result]).as_null_object
+    CouchPotato::View::ViewQuery.stub(:new => stub('view query', :query_view! => {'rows' => [@result]}))
+  end
+  
+  it "should return the first result from a view query" do
+    @db.first!(@spec).should == @result
+  end
+  
+  it "should raise an error if there are no results" do
+    @spec.stub(:process_results => [])
+    lambda {
+      @db.first!(@spec)
+    }.should raise_error(CouchPotato::NotFound)
+  end
+end
+
 describe CouchPotato::Database, 'view' do
   before(:each) do
     @couchrest_db = stub('couchrest db').as_null_object

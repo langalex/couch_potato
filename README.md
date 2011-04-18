@@ -256,6 +256,9 @@ If you have larger structures and you only want to load some attributes you can 
 
   CouchPotato.database.view(User.everyone).first.name # => "joe"
   CouchPotato.database.view(User.everyone).first.bio # => nil
+  
+  CouchPotato.database.first(User.everyone).name # => "joe" # convenience function, returns nil if nothing found
+  CouchPotato.database.first!(User.everyone) # would raise CouchPotato::NotFound if nothing was found
 
 You can also pass in custom map/reduce functions with the custom view spec:
 

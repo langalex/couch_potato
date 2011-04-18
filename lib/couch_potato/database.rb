@@ -60,6 +60,16 @@ module CouchPotato
       end if processed_results.respond_to?(:each)
       processed_results
     end
+    
+    # returns the first result from a #view query or nil
+    def first(spec)
+      view(spec).first
+    end
+    
+    # returns th first result from a #view or raises CouchPotato::NotFound
+    def first!(spec)
+      first(spec) || raise(CouchPotato::NotFound)
+    end
 
     # saves a document. returns true on success, false on failure
     def save_document(document, validate = true)
