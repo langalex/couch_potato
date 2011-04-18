@@ -4,7 +4,7 @@ module CouchPotato
     class ValidationsFailedError < ::StandardError; end
 
     def initialize(couchrest_database)
-      @database = couchrest_database
+      @couchrest_database = couchrest_database
       begin
         couchrest_database.info
       rescue RestClient::ResourceNotFound
@@ -45,7 +45,7 @@ module CouchPotato
     #   db.view(User.all(keys: [1, 2, 3]))
     def view(spec)
       results = CouchPotato::View::ViewQuery.new(
-        database,
+        couchrest_database,
         spec.design_document,
         {spec.view_name => {
           :map => spec.map_function,
@@ -81,7 +81,7 @@ module CouchPotato
     def destroy_document(document)
       document.run_callbacks :destroy do
         document._deleted = true
-        database.delete_doc document.to_hash
+        couchrest_database.delete_doc document.to_hash
       end
       document._id = nil
       document._rev = nil
@@ -92,7 +92,7 @@ module CouchPotato
     def load_document(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
       begin
-        instance = database.get(id)
+        instance = couchrest_database.get(id)
         instance.database = self
         instance
       rescue(RestClient::ResourceNotFound)
@@ -102,7 +102,12 @@ module CouchPotato
     alias_method :load, :load_document
 
     def inspect #:nodoc:
-      "#<CouchPotato::Database @root=\"#{database.root}\">"
+      "#<CouchPotato::Database @root=\"#{couchrest_database.root}\">"
+    end
+    
+    # returns the underlying CouchRest::Database instance
+    def couchrest_database
+      @couchrest_database
     end
 
     private
@@ -121,7 +126,7 @@ module CouchPotato
       
       document.run_callbacks :save do
         document.run_callbacks :create do
-          res = database.save_doc document.to_hash
+          res = couchrest_database.save_doc document.to_hash
           document._rev = res['rev']
           document._id = res['id']
         end
@@ -141,7 +146,7 @@ module CouchPotato
 
       document.run_callbacks :save do
         document.run_callbacks :update do
-          res = database.save_doc document.to_hash
+          res = couchrest_database.save_doc document.to_hash
           document._rev = res['rev']
         end
       end
@@ -156,10 +161,5 @@ module CouchPotato
       end
       document.errors.empty?
     end
-    
-    def database
-      @database
-    end
-
   end
 end

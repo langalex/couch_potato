@@ -124,7 +124,7 @@ describe 'properties' do
     db.should_receive(:save_doc).with do |attributes|
       attributes.has_key?(:ship_address).should == true
     end.and_return({})
-    CouchPotato.database.stub(:database).and_return(db)
+    CouchPotato.database.stub(:couchrest_database).and_return(db)
     CouchPotato.database.save_document! p
   end
 
