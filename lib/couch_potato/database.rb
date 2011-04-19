@@ -110,6 +110,10 @@ module CouchPotato
       end
     end
     alias_method :load, :load_document
+    
+    def load!(id)
+      load(id) || raise(CouchPotato::NotFound)
+    end
 
     def inspect #:nodoc:
       "#<CouchPotato::Database @root=\"#{couchrest_database.root}\">"

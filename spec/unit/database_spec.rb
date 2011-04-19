@@ -64,7 +64,17 @@ describe CouchPotato::Database, 'load' do
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => Parent::Child.json_create({JSON.create_id => 'Parent::Child'})))
     db.load('1').class.should == Parent::Child
   end
-  
+end
+
+describe CouchPotato::Database, 'load!' do
+  it "should raise an error if no document found" do
+    couchrest_db = stub('couchrest db', :info => nil)
+    couchrest_db.stub(:get).and_raise(RestClient::ResourceNotFound)
+    db = CouchPotato::Database.new(couchrest_db)
+    lambda {
+      db.load! '1'
+    }.should raise_error(CouchPotato::NotFound)
+  end
 end
 
 describe CouchPotato::Database, 'save_document' do
