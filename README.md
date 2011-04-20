@@ -254,11 +254,17 @@ If you have larger structures and you only want to load some attributes you can 
       view :all, :key => :created_at, :properties => [:name], :type => :properties
     end
 
-  CouchPotato.database.view(User.everyone).first.name # => "joe"
-  CouchPotato.database.view(User.everyone).first.bio # => nil
+    CouchPotato.database.view(User.everyone).first.name # => "joe"
+    CouchPotato.database.view(User.everyone).first.bio # => nil
   
-  CouchPotato.database.first(User.everyone).name # => "joe" # convenience function, returns nil if nothing found
-  CouchPotato.database.first!(User.everyone) # would raise CouchPotato::NotFound if nothing was found
+    CouchPotato.database.first(User.everyone).name # => "joe" # convenience function, returns nil if nothing found
+    CouchPotato.database.first!(User.everyone) # would raise CouchPotato::NotFound if nothing was found
+
+If you want Rails to automatically show a 404 page when `CouchPotato::NotFound` is raised add this to your `ApplicationController`:
+    
+    rescue_from CouchPotato::NotFound {
+      render(:file => '404.html', :status => :not_found, :layout => false)
+    }
 
 You can also pass in custom map/reduce functions with the custom view spec:
 
