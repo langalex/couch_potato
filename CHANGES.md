@@ -1,17 +1,20 @@
 ## Changes
 
+### 0.5.3
+* added CouchPotato::Database.load! (langalex)
+
 ### 0.5.2
-* added CouchPotato::Database#first and #first! methods
-* added workaround for BigCouch/Cloudant to not add null reduce functions to views
-* don't add _attachments if there are none
+* added CouchPotato::Database#first and #first! methods (langalex)
+* added workaround for BigCouch/Cloudant to not add null reduce functions to views (langalex)
+* don't add _attachments if there are none (langalex)
 
 ### 0.5.1
 * fixed issues with tzinfo gem (Bernd Ahlers)
 
 ### 0.5.0
-* time zone support (Time properties are now converted to current Time.zone)
-* lazy property initialization (performance!)
-* active_model is now the default validation framework
+* time zone support (Time properties are now converted to current Time.zone) (langalex)
+* lazy property initialization (performance!) (langalex)
+* active_model is now the default validation framework (langalex)
 
 ### 0.4.0
 * ruby 1.9.2 compatibility (langalex)
