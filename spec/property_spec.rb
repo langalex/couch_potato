@@ -200,7 +200,7 @@ describe 'properties' do
   end
   
   describe "boolean properties" do
-    it "should persist '0' for false" do
+    it "should persist '0' as false" do
       a = Address.new
       a.verified = '0'
       CouchPotato.database.save_document! a
@@ -208,7 +208,7 @@ describe 'properties' do
       a.verified.should be_false
     end
     
-    it "should persist 0 for false" do
+    it "should persist 0 as false" do
       a = Address.new
       a.verified = 0
       CouchPotato.database.save_document! a
@@ -216,7 +216,15 @@ describe 'properties' do
       a.verified.should be_false
     end
     
-    it "should persist '1' for true" do
+    it "should persist 'false' as false" do
+      a = Address.new
+      a.verified = 'false'
+      CouchPotato.database.save_document! a
+      a = CouchPotato.database.load_document a.id
+      a.verified.should be_false
+    end
+    
+    it "should persist '1' as true" do
       a = Address.new
       a.verified = '1'
       CouchPotato.database.save_document! a
@@ -224,7 +232,7 @@ describe 'properties' do
       a.verified.should be_true
     end
     
-    it "should persist 1 for true" do
+    it "should persist 1 as true" do
       a = Address.new
       a.verified = 1
       CouchPotato.database.save_document! a

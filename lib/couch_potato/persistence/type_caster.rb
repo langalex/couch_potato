@@ -14,7 +14,7 @@ module CouchPotato
       def cast_boolean(value)
         if [FalseClass, TrueClass].include?(value.class) || value.nil?
           value
-        elsif [0, '0'].include?(value)
+        elsif [0, '0', 'false'].include?(value)
           false
         else
           true
