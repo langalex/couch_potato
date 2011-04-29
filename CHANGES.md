@@ -1,5 +1,8 @@
 ## Changes
 
+### 0.5.4
+* cast 'false' to false for boolean properties (langalex)
+
 ### 0.5.3
 * added CouchPotato::Database.load! (langalex)
 
