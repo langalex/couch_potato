@@ -3,7 +3,7 @@ require 'erb'
 
 module CouchPotato
   def self.rails_init
-    config = YAML::load(ERB.new(File.read(Rails.root.join('config/couchdb.yml'))).result)[RAILS_ENV]
+    config = YAML::load(ERB.new(File.read(Rails.root.join('config/couchdb.yml'))).result)[Rails.env]
     if config.is_a?(String)
       CouchPotato::Config.database_name = config
     else
