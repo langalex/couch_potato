@@ -70,8 +70,8 @@ module CouchPotato
         doc_name = klass_name.downcase
 
         if CouchPotato::Config.split_design_documents_per_view
-          doc_name += "_view_" + view_name if view_name.present?
-          doc_name += "_list_" + list_name if list_name.present?
+          doc_name += "_view_#{view_name}"  if view_name.present?
+          doc_name += "_list_#{list_name}" if list_name.present?
         end
         doc_name
       end

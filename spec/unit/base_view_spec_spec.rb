@@ -68,23 +68,23 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
 
     it "should generate the design document per view if configured to" do
       CouchPotato::Config.split_design_documents_per_view = true
-      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil, :to_s => 'User'), '', {:list => 'test_list'}, {}
+      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil, :to_s => 'User'), '', {:list => :test_list}, {}
       spec.design_document.should == 'user_list_test_list'
     end
 
     it "should extract the list name from the options" do
-      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => 'test_list'}, {}
-      spec.list_name.should == 'test_list'
+      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => :test_list}, {}
+      spec.list_name.should == :test_list
     end
     
     it "should extract the list from the view parameters" do
-      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {}, {:list => 'test_list'}
-      spec.list_name.should == 'test_list'
+      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {}, {:list => :test_list}
+      spec.list_name.should == :test_list
     end
     
     it "should prefer the list name from the view parameters over the one from the options" do
-      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => 'my_list'}, {:list => 'test_list'}
-      spec.list_name.should == 'test_list'
+      spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => 'my_list'}, {:list => :test_list}
+      spec.list_name.should == :test_list
     end
     
     it "should return the list function" do
