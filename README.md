@@ -20,8 +20,8 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Supported Environments
 
-* Ruby 1.8.7, 1.9.1, 1.9.2
-* CouchDB 1.0.1
+* Ruby 1.8.7, 1.9.2
+* CouchDB 1.0.2
 
 (Supported means I run the specs against those before releasing a new gem.)
 
@@ -51,13 +51,18 @@ Or with authentication
 Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel (default))
 
     CouchPotato::Config.validation_framework = :validatable | :active_model
+    
+Another switch allows you to store each CouchDB view in its own design document. Otherwise views are grouped by model.
+
+    CouchPotato::Config.split_design_documents_per_view = true
 
 #### Using with Rails
 
 Create a config/couchdb.yml:
 
     default: &default
-      validation_framework: :active_model #optional
+      validation_framework: :active_model # optional
+      split_design_documents_per_view: true # optional
 
     development:
       <<: *default
