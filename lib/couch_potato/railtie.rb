@@ -9,6 +9,7 @@ module CouchPotato
     else
       CouchPotato::Config.database_name = config['database']
       CouchPotato::Config.validation_framework = config['validation_framework']
+      CouchPotato::Config.split_design_documents_per_view = config['split_design_documents_per_view']
     end
   end
 

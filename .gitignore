@@ -1,5 +1,7 @@
 *.gem
 .bundle
 Gemfile.lock
-pkg/*
 couch_potato_js_runner.js
+pkg
+.rvmrc
+*.swp
