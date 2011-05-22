@@ -13,7 +13,7 @@ module CouchPotato
         end
 
         def errors
-          super || []
+          super || {}
         end
         
         def persisted?
