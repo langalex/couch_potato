@@ -4,6 +4,7 @@ class Plate
   include CouchPotato::Persistence
   
   property :food
+  property :comments, :type => Array, :default => []
 end
 
 describe 'dirty attribute tracking' do
@@ -130,6 +131,20 @@ describe 'dirty attribute tracking' do
       @plate.is_dirty
       db.save! @plate
       @plate.should_not be_dirty
+    end
+  end
+
+  describe "type array" do
+    it "should be dirty when added through << method" do
+      plate = Plate.new
+      plate.comments << {:body => "hi"}
+      plate.should be_dirty
+    end
+
+    it "should be dirty when added through += assignment" do
+      plate = Plate.new
+      plate.comments += [{:body => "hi"}]
+      plate.should be_dirty
     end
   end
   
