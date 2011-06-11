@@ -8,6 +8,9 @@ module CouchPotato
     # 
     # in addition you can pass in conditions as a javascript string
     #   view :my_view_only_completed, :key => :name, :conditions => 'doc.completed = true'
+    #
+    # doing statistics is also possible by giving custom emit and reduce functions (couchdb >= 0.11)
+    #   view :my_statistics_view, :key => :my_number, :emit => :my_number, :reduce_function => '_stats'
     class ModelViewSpec < BaseViewSpec
       
       def view_parameters
@@ -21,14 +24,28 @@ module CouchPotato
       
       def map_function
         map_body do
-          "emit(#{formatted_key(key)}, 1);"
+          "emit(#{formatted_key(key)}, #{emit_value});"
+        end
+      end
+
+      # Allow custom emit values
+      def emit_value
+        case options[:emit]
+        when Symbol then "doc['#{options[:emit]}']"
+        when String then options[:emit]
+        else
+          1
         end
       end
       
       def reduce_function
-        "function(key, values) {
-          return sum(values);
-        }"
+        case options[:reduce_function]
+        when String then options[:reduce_function]
+        else
+          "function(key, values) {
+            return sum(values);
+          }"
+        end
       end
       
       def process_results(results)
