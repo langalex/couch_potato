@@ -267,9 +267,9 @@ If you have larger structures and you only want to load some attributes you can 
 
 If you want Rails to automatically show a 404 page when `CouchPotato::NotFound` is raised add this to your `ApplicationController`:
     
-    rescue_from CouchPotato::NotFound {
-      render(:file => '404.html', :status => :not_found, :layout => false)
-    }
+    rescue_from CouchPotato::NotFound do
+      render(:file => 'public/404.html', :status => :not_found, :layout => false)
+    end
 
 You can also pass in custom map/reduce functions with the custom view spec:
 
