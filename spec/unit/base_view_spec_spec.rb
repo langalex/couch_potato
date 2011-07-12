@@ -32,6 +32,11 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
         }
       }.should_not raise_error
     end
+    
+    it "should remove stale when it's nil" do
+      spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {:stale => nil}
+      spec.view_parameters.should == {}
+    end
 
     it "should convert a range passed as key into startkey and endkey" do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {:key => '1'..'2'}

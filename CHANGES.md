@@ -1,5 +1,9 @@
 ## Changes
 
+### 0.5.6
+
+* remove the stale parameter from a view query if it's nil, as couchdb only allows stale to be ok or update\_after (langalex)
+
 ### 0.5.5
 
 * support for split_design_documents_per_view (jweiss)

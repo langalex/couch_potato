@@ -32,7 +32,11 @@ module CouchPotato
       def normalize_view_parameters(params)
         normalized_params = params.dup
         hash = wrap_in_hash params
-        replace_range_key hash
+        remove_nil_stale(replace_range_key(hash))
+      end
+      
+      def remove_nil_stale(params)
+        params.reject{|name, value| name.to_s == 'stale' && value.nil?}
       end
       
       def wrap_in_hash(params)
