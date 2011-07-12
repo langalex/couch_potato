@@ -27,6 +27,8 @@ module CouchPotato
         alias_method :id, :_id
         alias_method :id=, :_id=
       end
+      
+      CouchPotato.models << base
     end
 
     # initialize a new instance of the model optionally passing it a hash of attributes.

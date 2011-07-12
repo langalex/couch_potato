@@ -13,6 +13,12 @@ module CouchPotato
   Config.split_design_documents_per_view = false
   
   class NotFound < StandardError; end
+  
+  # returns all the classes that implement the CouchPotato::Persistence module
+  def self.models
+    @models ||= []
+    @models
+  end
 
   # Returns a database instance which you can then use to create objects and query views. You have to set the CouchPotato::Config.database_name before this works.
   def self.database
