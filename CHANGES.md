@@ -1,5 +1,11 @@
 ## Changes
 
+### 0.5.5
+
+* support for split_design_documents_per_view (jweiss)
+* errors now returns a Hash instead of an Array (bterkuile)
+* support passing in list names as symbols in view specs (langalex)
+
 ### 0.5.4
 * cast 'false' to false for boolean properties (langalex)
 
