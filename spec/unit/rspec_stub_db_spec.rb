@@ -32,4 +32,28 @@ describe "stubbing a view" do
   it "should stub the database to return fake results when called with the stub" do
     @db.view(WithStubbedView.stubbed_view('123')).should == [:result]
   end
+  
+  it "stubs the database to return the first fake result" do
+    @db.first(WithStubbedView.stubbed_view('123')).should == :result
+    @db.first!(WithStubbedView.stubbed_view('123')).should == :result
+  end
+  
+  it "skips stubbing the first view (i.e. doesn't crash) if the fake result does not respond to first" do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return(:results)
+    
+    @db.view(WithStubbedView.stubbed_view('123')).should == :results
+  end
+  
+  it "supports the block style return syntax with `with`" do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123') {:results}
+    
+    @db.view(WithStubbedView.stubbed_view('123')).should == :results
+  end
+  
+  it "supports the block style return syntax without `with`" do
+    @db.stub_view(WithStubbedView, :stubbed_view) {:results}
+    
+    @db.view(WithStubbedView.stubbed_view('123')).should == :results
+  end
+  
 end

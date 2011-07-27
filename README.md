@@ -400,6 +400,7 @@ For stubbing out the database couch potato offers some helpers:
     db.stub_view(Comment, :by_commenter_id).with('23').and_return([:comment1, :comment2])
     
     CouchPotato.database.view(Comment.by_commenter_id('23)) # => [:comment1, :comment2]
+    CouchPotato.database.first(Comment.by_commenter_id('23)) # => :comment1
 
 ##### Testing map/reduce functions
 
