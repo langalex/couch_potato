@@ -22,7 +22,11 @@ module CouchPotato::RSpec
         @db.stub(:view).with(view_stub).and_return(return_value)
         if return_value.respond_to?(:first)
           @db.stub(:first).with(view_stub).and_return(return_value.first)
-          @db.stub(:first!).with(view_stub).and_return(return_value.first)
+          if return_value.first
+            @db.stub(:first!).with(view_stub).and_return(return_value.first)
+          else
+            @db.stub(:first!).with(view_stub).and_raise(CouchPotato::NotFound)
+          end
         end
       end
     end

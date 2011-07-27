@@ -38,6 +38,13 @@ describe "stubbing a view" do
     @db.first!(WithStubbedView.stubbed_view('123')).should == :result
   end
   
+  it "raises an error if there is no first result" do
+    @db.stub_view(WithStubbedView, :stubbed_view).and_return([])
+    lambda {
+      @db.first!(WithStubbedView.stubbed_view('123'))
+    }.should raise_error(CouchPotato::NotFound)
+  end
+  
   it "skips stubbing the first view (i.e. doesn't crash) if the fake result does not respond to first" do
     @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return(:results)
     
