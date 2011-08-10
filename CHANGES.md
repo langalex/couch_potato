@@ -1,5 +1,10 @@
 ## Changes
 
+### 0.5.7
+
+* support CouchPotato::Database#first/#first! calls when using `stub_db` from tests (langalex)
+* support RSpec2 block syntax in `stub_db` (langalex)
+
 ### 0.5.6
 
 * remove the stale parameter from a view query if it's nil, as couchdb only allows stale to be ok or update\_after (langalex)
