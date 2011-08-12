@@ -8,8 +8,7 @@ require 'ostruct'
 JSON.create_id = 'ruby_class'
 
 module CouchPotato
-  Config = Struct.new(:database_name, :validation_framework, :split_design_documents_per_view).new
-  Config.validation_framework = :active_model
+  Config = Struct.new(:database_name, :split_design_documents_per_view).new
   Config.split_design_documents_per_view = false
   
   class NotFound < StandardError; end

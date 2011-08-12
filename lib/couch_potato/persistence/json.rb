@@ -1,3 +1,5 @@
+require 'active_support/core_ext/hash'
+
 module CouchPotato
   module Persistence
     module Json

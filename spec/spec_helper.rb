@@ -9,7 +9,6 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'couch_potato'
 
 CouchPotato::Config.database_name = ENV['DATABASE'] || 'couch_potato_test'
-CouchPotato::Config.validation_framework = ENV['VALIDATION_FRAMEWORK'].to_sym unless ENV['VALIDATION_FRAMEWORK'].blank?
 
 # silence deprecation warnings from ActiveModel as the Spec uses Errors#on
 begin

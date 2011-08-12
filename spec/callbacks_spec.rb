@@ -276,15 +276,15 @@ describe "validation callbacks" do
   it "should keep error messages set in custom before_validation filters" do
     user = ValidatedUser.new(:name => "john")
     user.valid?.should == false
-    user.errors.on(:name).should == "should be Paul"
+    user.errors[:name].should == ["should be Paul"]
   end
 
   it "should combine the errors from validations and callbacks" do
     user = ValidatedUser.new(:name => nil)
     user.valid?.should == false
-    user.errors.on(:name).any? {|msg| msg =~ /can't be (empty|blank)/ }.should == true
-    user.errors.on(:name).any? {|msg| msg == "should be Paul" }.should == true
-    user.errors.on(:name).size.should == 2
+    user.errors[:name].any? {|msg| msg =~ /can't be (empty|blank)/ }.should == true
+    user.errors[:name].any? {|msg| msg == "should be Paul" }.should == true
+    user.errors[:name].size.should == 2
   end
 
   it "should clear the errors on subsequent calls to valid?" do
@@ -292,6 +292,6 @@ describe "validation callbacks" do
     user.valid?.should == false
     user.name = 'Paul'
     user.valid?.should == true
-    user.errors.on(:name).should == nil
+    user.errors[:name].should == []
   end
 end
