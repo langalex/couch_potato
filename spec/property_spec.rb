@@ -9,6 +9,7 @@ class Watch
   property :date, :type => Date
   property :overwritten_read
   property :overwritten_write
+  property :collection, :type => Array, :default => []
   
   def overwritten_read
     super.to_s
@@ -45,6 +46,13 @@ describe 'properties' do
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
     c.title.should == 'my title'
+  end
+
+  it "should persist an array with empty default" do
+    w = Watch.new :collection => [3]
+    CouchPotato.database.save_document! w
+    w = CouchPotato.database.load_document w.id
+    w.collection.should == [3]
   end
   
   it "should persist a number" do

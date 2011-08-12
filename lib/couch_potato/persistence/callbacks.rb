@@ -20,8 +20,7 @@ module CouchPotato
       # 
       # This method is called by the CouchPotato::Database object when saving/destroying an object 
       def run_callbacks(name, &block)
-        return if skip_callbacks
-
+        return block.call if skip_callbacks
         send(:"_run_#{name}_callbacks", &block)
       end
     end

@@ -59,6 +59,19 @@ describe "multiple callbacks at once" do
     monkey.eaten_banana.should be_true
     monkey.eaten_apple.should be_true
   end
+
+  it "should not run callbacks when skip_callbacks is set" do
+    monkey = Monkey.new
+    monkey.eaten_banana.should be_nil
+    monkey.eaten_apple.should be_nil
+    monkey.skip_callbacks = true
+    CouchPotato.database.save_document(monkey)
+    monkey._id.should_not be_nil
+    monkey.eaten_banana.should be_nil
+    monkey.eaten_apple.should be_nil
+    CouchPotato.database.destroy_document(monkey)
+    monkey._deleted.should be_true
+  end
 end
 
 describe 'create callbacks' do
