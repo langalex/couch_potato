@@ -169,8 +169,9 @@ module CouchPotato
 
     def valid_document?(document)
       errors = document.errors.errors.dup
+      errors.instance_variable_set("@messages", errors.messages.dup) if errors.respond_to?(:messages)
       document.valid?
-      errors.each_pair do |k, v|
+      errors.each do |k, v|
         v.each {|message| document.errors.add(k, message)}
       end
       document.errors.empty?
