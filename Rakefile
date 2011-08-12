@@ -68,7 +68,17 @@ task :spec_unit => [:spec_unit_validatable, :spec_unit_active_model] do
 end
 
 desc "Run all specs"
-task :spec => [:spec_unit, :spec_functional] do
+task :spec do
+  ['3_0', '3_1'].each do |version|
+    Bundler.with_clean_env do
+      ENV['BUNDLE_GEMFILE'] = "active_support_#{version}"
+      sh "bundle install"
+      Rake::Task[:spec_unit_active_model].execute
+      Rake::Task[:spec_functional_active_model].execute
+      Rake::Task[:spec_unit_validatable].execute
+      Rake::Task[:spec_functional_validatable].execute
+    end
+  end
 end
 
 desc 'Generate documentation'
