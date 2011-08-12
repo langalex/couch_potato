@@ -41,7 +41,11 @@ module CouchPotato
       end
       
       def view_functions
-        {'map' => @map_function, 'reduce' => @reduce_function}
+        if @reduce_function
+          {'map' => @map_function, 'reduce' => @reduce_function}
+        else
+          {'map' => @map_function}
+        end
       end
       
       def empty_design_document

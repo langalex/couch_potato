@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "create" do
-  before(:all) do
+  before(:each) do
     recreate_db
   end
   describe "succeeds" do
@@ -23,6 +23,7 @@ describe "create" do
       CouchPotato.couchrest_database.get(@comment.id).updated_at.should == Time.parse('2010-01-02 12:34:48 +0000')
     end
   end
+  
   describe "fails" do
     it "should not store anything" do
       @comment = Comment.new

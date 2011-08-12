@@ -58,6 +58,11 @@ describe "attributes" do
         @plant.typed_leaf_count.should == 4
       end
       
+      it "should convert a string into a negative fixnum" do
+        @plant.typed_leaf_count = '-4'
+        @plant.typed_leaf_count.should == -4
+      end
+      
       it "should leave a fixnum as is" do
         @plant.typed_leaf_count = 4
         @plant.typed_leaf_count.should == 4
@@ -93,6 +98,11 @@ describe "attributes" do
       it "should convert a number in a string without a decimal place" do
         @plant.typed_leaf_size = '5'
         @plant.typed_leaf_size.should == 5.0
+      end
+      
+      it "should convert a negative number in a string" do
+        @plant.typed_leaf_size = '-5.0'
+        @plant.typed_leaf_size.should == -5.0
       end
 
       it "should leave a float as it is" do

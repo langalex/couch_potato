@@ -1,21 +1,23 @@
+require 'active_support/time'
+
 class Time
   def to_json(*a)
-    %("#{to_s(:json)}")
+    %("#{as_json}")
   end
   
-  def to_s_with_json(*args)
-    if args[0] == :json
-      getutc.strftime("%Y/%m/%d %H:%M:%S +0000")
-    else
-      to_s_without_json *args
-    end
+  def as_json(*args)
+    getutc.strftime("%Y/%m/%d %H:%M:%S +0000")
   end
-  alias_method :to_s_without_json, :to_s
-  alias_method :to_s, :to_s_with_json
   
   def self.json_create string
     return nil if string.nil?
-    d = DateTime.parse(string).new_offset
-    self.utc(d.year, d.month, d.day, d.hour, d.min, d.sec)
+    d = DateTime.parse(string.to_s).new_offset
+    self.utc(d.year, d.month, d.day, d.hour, d.min, d.sec).in_time_zone
+  end
+end
+
+ActiveSupport::TimeWithZone.class_eval do
+  def as_json(*args)
+    utc.as_json
   end
 end

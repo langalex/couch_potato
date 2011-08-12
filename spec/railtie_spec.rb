@@ -2,21 +2,31 @@ require 'spec_helper'
 require 'yaml'
 require 'spec/mocks'
 
-RAILS_ENV = 'test'
 module Rails
+  def self.env
+    'test'
+  end
   class Railtie
     def self.initializer(*args)
     end
   end
   
   def self.root
-    Spec::Mocks::Mock.new :join => ''
+    RSpec::Mocks::Mock.new :join => ''
   end
 end
 
 require 'couch_potato/railtie'
 
 describe "railtie" do
+  before(:all) do
+    @validation_framework = CouchPotato::Config.validation_framework
+  end
+  
+  after(:all) do
+    CouchPotato::Config.validation_framework = @validation_framework
+  end
+  
   context 'yaml file contains only database names' do
     it "should set the database name from the yaml file" do
       File.stub(:read => "test: test_db")

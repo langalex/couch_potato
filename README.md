@@ -20,8 +20,8 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Supported Environments
 
-* Ruby 1.8.7, 1.9.1, 1.9.2
-* CouchDB 1.0.1
+* Ruby 1.8.7, 1.9.2
+* CouchDB 1.1.0
 
 (Supported means I run the specs against those before releasing a new gem.)
 
@@ -48,21 +48,21 @@ Or with authentication
   
     CouchPotato::Config.database_name = "http://username:password@example.com:5984/name_of_the_db"
   
-Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel)
+Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel (default))
 
     CouchPotato::Config.validation_framework = :validatable | :active_model
+    
+Another switch allows you to store each CouchDB view in its own design document. Otherwise views are grouped by model.
+
+    CouchPotato::Config.split_design_documents_per_view = true
 
 #### Using with Rails
 
-Add to your config/environment.rb:
-
-    config.gem 'couch_potato', :source => 'http://gemcutter.org'
-    config.frameworks -= [:active_record] # if you switch completely
-
-Then create a config/couchdb.yml:
+Create a config/couchdb.yml:
 
     default: &default
-      validation_framework: :active_model #optional
+      validation_framework: :active_model # optional
+      split_design_documents_per_view: true # optional
 
     development:
       <<: *default
@@ -74,8 +74,25 @@ Then create a config/couchdb.yml:
       <<: *default
       database: <%= ENV['DB_NAME'] %>
 
+#### Rails 2.x
 
-Alternatively you can also install Couch Potato directly as a plugin.
+Add to your _config/environment.rb_:
+
+    config.gem 'couch_potato', :source => 'http://gemcutter.org'
+    config.frameworks -= [:active_record] # if you switch completely
+    
+#### Rails 3.x
+
+Add to your _Gemfile_:
+
+    # gem 'rails' # we don't want to load activerecord so we can't require rails
+    gem 'railties'
+    gem 'actionpack'
+    gem 'actionmailer'
+    gem 'activemodel'
+    gem "couch_potato"
+
+Note: please make sure that when you run `Date.today.as_json` in the Rails console it returns something like `2010/12/10` and not `2010-12-10` - if it does another gem has overwritten Couch Potato's Date patches - in this case move Couch Potato further down in your Gemfile or whereever you load it.
 
 ### Introduction
 
@@ -181,7 +198,7 @@ You can also force a dirty state:
 
 #### Object validations
 
-Couch Potato uses the validatable library for validation (http://validatable.rubyforge.org/)\
+Couch Potato by default uses ActiveModel for validation
 
     class User
       property :name
@@ -190,7 +207,9 @@ Couch Potato uses the validatable library for validation (http://validatable.rub
 
     user = User.new
     user.valid? # => false
-    user.errors.on(:name) # => [:name, 'can't be blank']
+    user.errors[:name] # => ['can't be blank']
+  
+If you want you can use [Validatable](http://validatable.rubyforge.org/) by setting `CouchPotato::Config.validation(http://validatable.rubyforge.org/)\_framework = :validatable`
 
 #### Finding stuff / views / lists
 
@@ -240,8 +259,17 @@ If you have larger structures and you only want to load some attributes you can 
       view :all, :key => :created_at, :properties => [:name], :type => :properties
     end
 
-  CouchPotato.database.view(User.everyone).first.name # => "joe"
-  CouchPotato.database.view(User.everyone).first.bio # => nil
+    CouchPotato.database.view(User.everyone).first.name # => "joe"
+    CouchPotato.database.view(User.everyone).first.bio # => nil
+  
+    CouchPotato.database.first(User.everyone).name # => "joe" # convenience function, returns nil if nothing found
+    CouchPotato.database.first!(User.everyone) # would raise CouchPotato::NotFound if nothing was found
+
+If you want Rails to automatically show a 404 page when `CouchPotato::NotFound` is raised add this to your `ApplicationController`:
+    
+    rescue_from CouchPotato::NotFound do
+      render(:file => 'public/404.html', :status => :not_found, :layout => false)
+    end
 
 You can also pass in custom map/reduce functions with the custom view spec:
 
@@ -372,6 +400,7 @@ For stubbing out the database couch potato offers some helpers:
     db.stub_view(Comment, :by_commenter_id).with('23').and_return([:comment1, :comment2])
     
     CouchPotato.database.view(Comment.by_commenter_id('23)) # => [:comment1, :comment2]
+    CouchPotato.database.first(Comment.by_commenter_id('23)) # => :comment1
 
 ##### Testing map/reduce functions
 

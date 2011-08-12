@@ -7,7 +7,7 @@ module CouchPotato
       begin
         yield
       rescue ArgumentError => e
-        if(name = e.message.scan(/(can't find const|undefined class\/module) ([\w\:]+)/).first[1])
+        if(name = e.message.scan(/(can't find const|undefined class\/module) ([\w\:]+)/).try(:first).try(:[], 1))
           eval name.gsub(/\:+$/, '')
           retry
         else

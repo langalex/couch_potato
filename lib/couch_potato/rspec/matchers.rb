@@ -17,7 +17,7 @@ require 'couch_potato/rspec/matchers/map_to_matcher'
 require 'couch_potato/rspec/matchers/reduce_to_matcher'
 require 'couch_potato/rspec/matchers/list_as_matcher'
 
-module Spec
+module RSpec
   module Matchers
     def map(document)
       CouchPotato::RSpec::MapToProxy.new(document)

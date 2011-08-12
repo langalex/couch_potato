@@ -1,5 +1,55 @@
 ## Changes
 
+### 0.5.7
+
+* support CouchPotato::Database#first/#first! calls when using `stub_db` from tests (langalex)
+* support RSpec2 block syntax in `stub_db` (langalex)
+
+### 0.5.6
+
+* remove the stale parameter from a view query if it's nil, as couchdb only allows stale to be ok or update\_after (langalex)
+
+### 0.5.5
+
+* support for split_design_documents_per_view (jweiss)
+* errors now returns a Hash instead of an Array (bterkuile)
+* support passing in list names as symbols in view specs (langalex)
+
+### 0.5.4
+* cast 'false' to false for boolean properties (langalex)
+
+### 0.5.3
+* added CouchPotato::Database.load! (langalex)
+
+### 0.5.2
+* added CouchPotato::Database#first and #first! methods (langalex)
+* added workaround for BigCouch/Cloudant to not add null reduce functions to views (langalex)
+* don't add _attachments if there are none (langalex)
+
+### 0.5.1
+* fixed issues with tzinfo gem (Bernd Ahlers)
+
+### 0.5.0
+* time zone support (Time properties are now converted to current Time.zone) (langalex)
+* lazy property initialization (performance!) (langalex)
+* active_model is now the default validation framework (langalex)
+
+### 0.4.0
+* ruby 1.9.2 compatibility (langalex)
+* couch potato objects now behave correctly when used as keys in Hashes (langalex)
+* use as\_json instead of to\_s(:json), which is the rails way
+* use ActiveModel dirty tracking (langalex) - this means no more "deep tracking", e.g. `user.tags << 'new_tag'; user.dirty? # false`
+
+### 0.3.2
+* support yielding to blocks on #initialize (martinrehfeld)
+* support for negative numbers in Fixnum/Float properties (langalex)
+
+### 0.3.1
+* ActiveModel callbacks (kazjote)
+* do not use Rails.env in initializer as it will free Rails.env for all times and in Rails 2.3.x apps it will be called too early thus always beeing development (jweiss)
+* ruby 1.9.2 compatibility (langalex)
+* can configure validation framework in couchdb.yml, process couchdb.yml with erb (langalex)
+
 ### 0.3.0
 * support for lists (langalex)
 

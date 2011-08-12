@@ -11,7 +11,7 @@ module CouchPotato
         
         assert_valid_view_parameters normalized_view_parameters
         @klass = klass
-        @design_document = translate_to_design_doc_name(klass.to_s)
+        @design_document = translate_to_design_doc_name(klass.to_s, view_name, @list_name)
         @view_name = view_name
         @options = options
         
@@ -32,7 +32,11 @@ module CouchPotato
       def normalize_view_parameters(params)
         normalized_params = params.dup
         hash = wrap_in_hash params
-        replace_range_key hash
+        remove_nil_stale(replace_range_key(hash))
+      end
+      
+      def remove_nil_stale(params)
+        params.reject{|name, value| name.to_s == 'stale' && value.nil?}
       end
       
       def wrap_in_hash(params)
@@ -62,12 +66,18 @@ module CouchPotato
         %w(key keys startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end)
       end
       
-      def translate_to_design_doc_name(klass_name)
+      def translate_to_design_doc_name(klass_name, view_name, list_name)
         klass_name = klass_name.dup
         klass_name.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
         klass_name.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
         klass_name.tr!("-", "_")
-        klass_name.downcase
+        doc_name = klass_name.downcase
+
+        if CouchPotato::Config.split_design_documents_per_view
+          doc_name += "_view_#{view_name}"  if view_name.present?
+          doc_name += "_list_#{list_name}" if list_name.present?
+        end
+        doc_name
       end
     end
   end

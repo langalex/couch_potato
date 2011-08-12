@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 class DbTestUser
+  include CouchPotato::Persistence
 end
 
 # namespaced model
@@ -52,7 +53,7 @@ describe CouchPotato::Database, 'load' do
   end
 
   it "should set itself on the model" do
-    user = mock 'user'
+    user = mock('user').as_null_object
     DbTestUser.stub!(:new).and_return(user)
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => DbTestUser.json_create({JSON.create_id => 'DbTestUser'})))
     user.should_receive(:database=).with(db)
@@ -63,7 +64,17 @@ describe CouchPotato::Database, 'load' do
     db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => Parent::Child.json_create({JSON.create_id => 'Parent::Child'})))
     db.load('1').class.should == Parent::Child
   end
-  
+end
+
+describe CouchPotato::Database, 'load!' do
+  it "should raise an error if no document found" do
+    couchrest_db = stub('couchrest db', :info => nil)
+    couchrest_db.stub(:get).and_raise(RestClient::ResourceNotFound)
+    db = CouchPotato::Database.new(couchrest_db)
+    lambda {
+      db.load! '1'
+    }.should raise_error(CouchPotato::NotFound)
+  end
 end
 
 describe CouchPotato::Database, 'save_document' do
@@ -119,10 +130,10 @@ describe CouchPotato::Database, 'save_document' do
     it "should not run the validations when saved with false" do
       category = Category.new(:name => 'food')
       @db.save_document(category)
-      category.new?.should == false
+      category.new?.should be_false
       category.name = nil
       @db.save_document(category, false)
-      category.dirty?.should == false
+      category.dirty?.should be_false
     end
 
     it "should run the validations when saved with true" do
@@ -203,6 +214,46 @@ describe CouchPotato::Database, 'save_document' do
       spock.errors.on(:name).should == nil
     end
     
+  end
+end
+
+describe CouchPotato::Database, 'first' do
+  before(:each) do
+    @couchrest_db = stub('couchrest db').as_null_object
+    @db = CouchPotato::Database.new(@couchrest_db)
+    @result = stub('result')
+    @spec = stub('view spec', :process_results => [@result]).as_null_object
+    CouchPotato::View::ViewQuery.stub(:new => stub('view query', :query_view! => {'rows' => [@result]}))
+  end
+  
+  it "should return the first result from a view query" do
+    @db.first(@spec).should == @result
+  end
+  
+  it "should return nil if there are no results" do
+    @spec.stub(:process_results => [])
+    @db.first(@spec).should be_nil
+  end
+end
+
+describe CouchPotato::Database, 'first!' do
+  before(:each) do
+    @couchrest_db = stub('couchrest db').as_null_object
+    @db = CouchPotato::Database.new(@couchrest_db)
+    @result = stub('result')
+    @spec = stub('view spec', :process_results => [@result]).as_null_object
+    CouchPotato::View::ViewQuery.stub(:new => stub('view query', :query_view! => {'rows' => [@result]}))
+  end
+  
+  it "should return the first result from a view query" do
+    @db.first!(@spec).should == @result
+  end
+  
+  it "should raise an error if there are no results" do
+    @spec.stub(:process_results => [])
+    lambda {
+      @db.first!(@spec)
+    }.should raise_error(CouchPotato::NotFound)
   end
 end
 

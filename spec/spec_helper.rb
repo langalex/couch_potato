@@ -1,18 +1,14 @@
 require 'rubygems'
-require 'spec'
+require 'rspec'
 require 'time'
+require 'active_support'
+require 'timecop'
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 
 require 'couch_potato'
 
-if ENV["RUN_CODE_RUN"]
-  CouchPotato::Config.database_name = 'http://langalex.couch.io/couch_potato_test'
-else
-  CouchPotato::Config.database_name = 'couch_potato_test'
-end
-
-
+CouchPotato::Config.database_name = ENV['DATABASE'] || 'couch_potato_test'
 CouchPotato::Config.validation_framework = ENV['VALIDATION_FRAMEWORK'].to_sym unless ENV['VALIDATION_FRAMEWORK'].blank?
 
 # silence deprecation warnings from ActiveModel as the Spec uses Errors#on
@@ -41,7 +37,7 @@ def recreate_db
 end
 recreate_db
 
-Spec::Matchers.define :string_matching do |regex|
+RSpec::Matchers.define :string_matching do |regex|
   match do |string|
     string =~ regex
   end

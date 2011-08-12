@@ -33,24 +33,6 @@ describe 'dirty attribute tracking' do
       @couchrest_db.should_receive(:save_doc)
       @db.save_document(plate)
     end
-
-    it "should correctly track dirty hashes (deep clone)" do
-      plate = Plate.new :food => {:veggies => ['carrots', 'peas']}
-      @db.save_document(plate)
-      plate.food[:veggies] << 'beans'
-      @couchrest_db.should_receive(:save_doc)
-      @db.save_document(plate)
-    end
-
-    it "should correctly track dirty hashes (deep clone) after a save" do
-      plate = Plate.new :food => {:veggies => ['carrots', 'peas']}
-      @db.save_document(plate)
-      plate.food[:veggies] << 'beans'
-      @db.save_document(plate)
-      plate.food[:veggies] << 'cauliflower'
-      @couchrest_db.should_receive(:save_doc)
-      @db.save_document(plate)
-    end
   end
   
   describe "newly created object" do
@@ -67,21 +49,22 @@ describe 'dirty attribute tracking' do
       
       describe "with type BigDecimal" do
         before(:each) do
-          class ::Plate
+          class Bowl
+            include CouchPotato::Persistence
             property :price
           end
         end
         it "should not dup BigDecimal" do
 
           lambda {
-            Plate.new :price => BigDecimal.new("5.23") 
+            Bowl.new :price => BigDecimal.new("5.23") 
           }.should_not raise_error(TypeError)
         end
         
         it "should return the old value" do
-          plate = Plate.new :price => BigDecimal.new("5.23") 
-          plate.price = BigDecimal.new("2.23")
-          plate.price_was.should == 5.23
+          bowl = Bowl.new :price => BigDecimal.new("5.23") 
+          bowl.price = BigDecimal.new("2.23")
+          bowl.price_was.should == 5.23
         end
         
       end
@@ -94,13 +77,7 @@ describe 'dirty attribute tracking' do
       end
 
       it "should return false if attribute not changed" do
-        @plate.should_not be_food_changed
-      end
-      
-      it "should return false if attribute forced not changed" do
-        @plate.food = 'burger'
-        @plate.food_not_changed
-        @plate.should_not be_food_changed
+        Plate.new.should_not be_food_changed
       end
       
       it "should return true if forced dirty" do
@@ -127,13 +104,6 @@ describe 'dirty attribute tracking' do
       it "should return true if attribute changed" do
         @plate.food = 'burger'
         @plate.should be_food_changed
-      end
-      
-      it "should return true if array attribute changed" do
-        couchrest_db = stub('database', :get => Plate.json_create({'_id' => '1', '_rev' => '2', 'food' => ['sushi'], JSON.create_id => 'Plate'}), :info => nil)
-        plate = CouchPotato::Database.new(couchrest_db).load_document '1'
-        plate.food << 'burger'
-        plate.should be_food_changed
       end
 
       it "should return false if attribute not changed" do

@@ -1,0 +1,5 @@
+rvm:
+  - 1.9.2
+  - 1.8.7
+  - ree
+env: "DATABASE='http://couchpotato.iriscouch.com/couch_potato_test' "

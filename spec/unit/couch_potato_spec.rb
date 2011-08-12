@@ -19,6 +19,15 @@ describe CouchPotato, 'full_url_to_database' do
   end
 end
 
+describe CouchPotato, '.models' do
+  it "returns all classes that have implemented CouchPotato::Persistence" do
+    clazz = Class.new
+    clazz.send(:include, CouchPotato::Persistence)
+    
+    CouchPotato.models.should include(clazz)
+  end
+end
+
 describe CouchPotato, 'validation_framework' do
   before(:each) do
     @original_validation_framework = CouchPotato::Config.validation_framework

@@ -1,5 +1,19 @@
 module CouchPotato
   module Persistence
+    module PropertyMethods
+      private
+      
+      def load_attribute_from_document(name)
+        if (_document || {}).has_key?(name.to_s)
+          property = self.class.properties.find{|property| property.name == name}
+          @skip_dirty_tracking = true
+          value = property.build(self, _document)
+          @skip_dirty_tracking = false
+          value
+        end
+      end
+    end
+    
     class SimpleProperty  #:nodoc:
       attr_accessor :name, :type
       
@@ -7,6 +21,7 @@ module CouchPotato
         self.name = name
         self.type = options[:type]
         @type_caster = TypeCaster.new
+        owner_clazz.send :include, PropertyMethods unless owner_clazz.ancestors.include?(PropertyMethods)
         
         define_accessors accessors_module_for(owner_clazz), name, options
       end
@@ -37,10 +52,11 @@ module CouchPotato
       
       def define_accessors(base, name, options)
         base.class_eval do
-          attr_reader "#{name}_was"
-
+          include PropertyMethods
+          
           define_method "#{name}" do
-            value = self.instance_variable_get("@#{name}")
+            load_attribute_from_document(name) unless instance_variable_defined?("@#{name}")
+            value = instance_variable_get("@#{name}")
             if value.nil? && options[:default]
               default = clone_attribute(options[:default])
               self.instance_variable_set("@#{name}", default)
@@ -51,19 +67,13 @@ module CouchPotato
           end
           
           define_method "#{name}=" do |value|
-            self.instance_variable_set("@#{name}", type_caster.cast(value, options[:type]))
+            typecasted_value = type_caster.cast(value, options[:type])
+            send("#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
+            self.instance_variable_set("@#{name}", typecasted_value)
           end
           
           define_method "#{name}?" do
             !self.send(name).nil? && !self.send(name).try(:blank?)
-          end
-          
-          define_method "#{name}_changed?" do
-            !self.instance_variable_get("@#{name}_not_changed") && self.send(name) != self.send("#{name}_was")
-          end
-          
-          define_method "#{name}_not_changed" do
-            self.instance_variable_set("@#{name}_not_changed", true)
           end
         end
       end
