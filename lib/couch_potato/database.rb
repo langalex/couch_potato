@@ -168,10 +168,15 @@ module CouchPotato
     end
 
     def valid_document?(document)
-      errors = document.errors.errors.dup
-      document.valid?
-      errors.each_pair do |k, v|
-        v.each {|message| document.errors.add(k, message)}
+      errors = {}
+      document.errors.each do |k, v|
+        errors[k] = v.dup
+      end
+      document.errors.clear # Clear,
+      document.valid? # Recheck
+      # And add previously available errors
+      errors.each do |k, v|
+        document.errors.add(k, v)
       end
       document.errors.empty?
     end
