@@ -173,7 +173,7 @@ describe CouchPotato::Database, 'save_document' do
     it "should keep errors added in before_validation_on_* callbacks when creating a new object" do
       spock = Vulcan.new(:name => 'spock')
       @db.save_document(spock)
-      spock.errors.on(:validation).should == 'failed'
+      spock.errors[:validation].should == ['failed']
     end
     
     it "should keep errors added in before_validation_on_* callbacks when creating a new object" do
@@ -182,14 +182,14 @@ describe CouchPotato::Database, 'save_document' do
       spock.new?.should == false
       spock.name = "spock's father"
       @db.save_document(spock)
-      spock.errors.on(:validation).should == 'failed'
+      spock.errors[:validation].should == ['failed']
     end
     
     it "should keep errors generated from normal validations together with errors set in normal validations" do
       spock = Vulcan.new
       @db.save_document(spock)
-      spock.errors.on(:validation).should == 'failed'
-      spock.errors.on(:name).should =~ /can't be (empty|blank)/
+      spock.errors[:validation].should == ['failed']
+      spock.errors[:name].first.should =~ /can't be (empty|blank)/
     end
     
     it "should clear errors on subsequent, valid saves when creating" do
@@ -198,7 +198,7 @@ describe CouchPotato::Database, 'save_document' do
       
       spock.name = 'Spock'
       @db.save_document(spock)
-      spock.errors.on(:name).should == nil
+      spock.errors[:name].should == []
     end
     
     it "should clear errors on subsequent, valid saves when updating" do
@@ -207,11 +207,11 @@ describe CouchPotato::Database, 'save_document' do
       
       spock.name = nil
       @db.save_document(spock)
-      spock.errors.on(:name).should =~ /can't be (empty|blank)/
+      spock.errors[:name].first.should =~ /can't be (empty|blank)/
       
       spock.name = 'Spock'
       @db.save_document(spock)
-      spock.errors.on(:name).should == nil
+      spock.errors[:name].should == []
     end
     
   end
