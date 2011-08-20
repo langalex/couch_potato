@@ -16,7 +16,7 @@ describe CouchPotato::View::ModelViewSpec, 'map_function' do
     spec.map_function.should include(%{emit(doc[''], doc['count'])})
   end
 
-  it "should have a custom emit value when specified as symbol" do
+  it "should have a custom emit value when specified as string" do
     spec = CouchPotato::View::ModelViewSpec.new Object, 'all', {:emit_value => "doc['a'] + doc['b']"}, {}
     spec.map_function.should include("emit(doc[''], doc['a'] + doc['b'])")
   end
@@ -36,8 +36,8 @@ describe CouchPotato::View::ModelViewSpec, 'map_function' do
     spec.map_function.should include("emit(doc[''], 1")
   end
 
-  it "should have a emit value of 1 when something else is specified" do
+  it "should raise exception when emit value cannot be handled" do
     spec = CouchPotato::View::ModelViewSpec.new Object, 'all', {:emit_value => []}, {}
-    spec.map_function.should include("emit(doc[''], 1")
+    lambda { spec.map_function }.should raise_error
   end
 end

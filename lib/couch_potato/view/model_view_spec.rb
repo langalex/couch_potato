@@ -25,14 +25,15 @@ module CouchPotato
         end
       end
 
-      # Allow custom emit values
+      # Allow custom emit values. Raise when the specified argument is not recognized
       def emit_value
         case options[:emit_value]
         when Symbol then "doc['#{options[:emit_value]}']"
         when String then options[:emit_value]
         when Numeric then options[:emit_value]
+        when NilClass then 1
         else
-          1
+          raise "The emit value specified is not recognized"
         end
       end
       
