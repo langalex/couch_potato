@@ -172,7 +172,11 @@ module CouchPotato
       errors.instance_variable_set("@messages", errors.messages.dup) if errors.respond_to?(:messages)
       document.valid?
       errors.each do |k, v|
-        v.each {|message| document.errors.add(k, message)}
+        if v.respond_to?(:each)
+          v.each {|message| document.errors.add(k, message)}
+        else
+          document.errors.add(k, v)
+        end
       end
       document.errors.empty?
     end
