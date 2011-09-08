@@ -131,15 +131,15 @@ module CouchPotato
       
       if validate
         document.errors.clear
-        document.run_callbacks :validation_on_save do
-          document.run_callbacks :validation_on_create do
+        return false if false == document.run_callbacks(:validation_on_save) do
+          return false if false == document.run_callbacks(:validation_on_create) do
             return false unless valid_document?(document)
           end
         end
       end
       
-      document.run_callbacks :save do
-        document.run_callbacks :create do
+      return false if false == document.run_callbacks(:save) do
+        return false if false == document.run_callbacks(:create) do
           res = couchrest_database.save_doc document.to_hash
           document._rev = res['rev']
           document._id = res['id']
@@ -151,15 +151,15 @@ module CouchPotato
     def update_document(document, validate)
       if validate
         document.errors.clear
-        document.run_callbacks :validation_on_save do
-          document.run_callbacks :validation_on_update do
+        return false if false == document.run_callbacks(:validation_on_save) do
+          return false if false == document.run_callbacks(:validation_on_update) do
             return false unless valid_document?(document)
           end
         end
       end
 
-      document.run_callbacks :save do
-        document.run_callbacks :update do
+      return false if false == document.run_callbacks(:save) do
+        return false if false == document.run_callbacks(:update) do
           res = couchrest_database.save_doc document.to_hash
           document._rev = res['rev']
         end

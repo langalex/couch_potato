@@ -295,3 +295,91 @@ describe "validation callbacks" do
     user.errors[:name].should == []
   end
 end
+
+describe "validation callbacks and filter halt" do
+  class FilterValidationUpdateUser
+    include CouchPotato::Persistence
+
+    property :name
+    before_validation :check_name
+    before_validation_on_update :return_false_from_callback
+
+    def check_name
+      errors.add(:name, 'should be Paul') unless name == "Paul"
+    end
+
+    def return_false_from_callback
+      false
+    end
+  end
+
+  class FilterValidationCreateUser
+    include CouchPotato::Persistence
+
+    property :name
+    before_validation :check_name
+    before_validation_on_save :return_false_from_callback
+    before_validation_on_create :return_false_from_callback
+
+    def check_name
+      errors.add(:name, 'should be Paul') unless name == "Paul"
+    end
+
+    def return_false_from_callback
+      false
+    end
+  end
+
+  class FilterSaveUpdateUser
+    include CouchPotato::Persistence
+
+    property :name
+    before_update :return_false_from_callback
+
+    def return_false_from_callback
+      false
+    end
+  end
+
+  class FilterSaveCreateUser
+    include CouchPotato::Persistence
+
+    property :name
+    before_save :return_false_from_callback
+    before_create :return_false_from_callback
+
+    def return_false_from_callback
+      false
+    end
+  end
+
+  before(:each) do
+    recreate_db
+    @db = CouchPotato.database
+  end
+
+  it "should keep error messages set in custom before_validation if an update filter returns false" do
+    @user = FilterValidationUpdateUser.new(:name => "Paul")
+    @db.save_document(@user).should == true
+    @user.name = 'Bert'
+    @db.save_document(@user).should == false
+  end
+
+  it "should keep error messages set in custom before_validation if a create filter returns false" do
+    @user = FilterValidationCreateUser.new(:name => "Bert")
+    @db.save_document(@user).should == false
+  end
+
+  it "should return false on saving a document when a before update filter returned false" do
+    @user = FilterSaveUpdateUser.new(:name => "Paul")
+    @db.save_document(@user).should == true
+    @user.name = 'Bert'
+    @db.save_document(@user).should == false
+  end
+
+  it "should return false on saving a document when a before save or before create filter returned false" do
+    @user = FilterSaveCreateUser.new(:name => "Bert")
+    @db.save_document(@user).should == false
+  end
+
+end
