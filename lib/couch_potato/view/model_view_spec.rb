@@ -21,7 +21,19 @@ module CouchPotato
       
       def map_function
         map_body do
-          "emit(#{formatted_key(key)}, 1);"
+          "emit(#{formatted_key(key)}, #{emit_value});"
+        end
+      end
+
+      # Allow custom emit values. Raise when the specified argument is not recognized
+      def emit_value
+        case options[:emit_value]
+        when Symbol then "doc['#{options[:emit_value]}']"
+        when String then options[:emit_value]
+        when Numeric then options[:emit_value]
+        when NilClass then 1
+        else
+          raise "The emit value specified is not recognized"
         end
       end
       
