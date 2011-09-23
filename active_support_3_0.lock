@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    couch_potato (0.5.7)
+    couch_potato (0.6.0)
       activemodel
       couchrest (>= 1.0.1)
       json (~> 1.6.0)
