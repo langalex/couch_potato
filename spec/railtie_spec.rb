@@ -22,11 +22,13 @@ describe "railtie" do
   before(:all) do
     @validation_framework = CouchPotato::Config.validation_framework
     @database_name = CouchPotato::Config.database_name
+    @default_language = CouchPotato::Config.default_language
   end
 
   after(:all) do
     CouchPotato::Config.validation_framework = @validation_framework
     CouchPotato::Config.database_name = @database_name
+    CouchPotato::Config.default_language = @default_language
   end
 
   context 'yaml file contains only database names' do
@@ -41,17 +43,23 @@ describe "railtie" do
 
   context 'yaml file contains more configuration' do
     before(:each) do
-      File.stub(:read => "test: \n  database: test_db\n  validation_framework: :active_model")
+      File.stub(:read => "test: \n  database: test_db\n  validation_framework: :active_model\n  default_language: :erlang")
     end
 
-    it "should set the database name from the yaml file" do
+    it "set the database name from the yaml file" do
       CouchPotato::Config.should_receive(:database_name=).with('test_db')
 
       CouchPotato.rails_init
     end
 
-    it "should set the validation framework from the yaml file" do
+    it "sets the validation framework from the yaml file" do
       CouchPotato::Config.should_receive(:validation_framework=).with(:active_model)
+
+      CouchPotato.rails_init
+    end
+
+    it 'sets the default language from the yaml file' do
+      CouchPotato::Config.should_receive(:default_language=).with(:erlang)
 
       CouchPotato.rails_init
     end

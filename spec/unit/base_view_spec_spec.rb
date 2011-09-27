@@ -4,6 +4,11 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
   describe "view parameters" do
     before(:each) do
       CouchPotato::Config.split_design_documents_per_view = false
+      @default_language = CouchPotato::Config.default_language
+    end
+
+    after(:each) do
+      CouchPotato::Config.default_language = @default_language
     end
 
     it "should raise an error when passing invalid view parameters" do
@@ -99,9 +104,10 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       spec.list_function.should == '<list_code>'
     end
 
-    it 'sets the language to javascript by default' do
+    it 'reads the language from the couch potato config by default' do
+      CouchPotato::Config.default_language = :ruby
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {}
-      spec.language.should == :javascript
+      spec.language.should == :ruby
     end
 
     it 'sets the language to the given language' do

@@ -48,9 +48,10 @@ Or with authentication
 
     CouchPotato::Config.database_name = "http://username:password@example.com:5984/name_of_the_db"
 
-Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel (default))
+Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel (default)) and the default language for design documents (:javascript (default) or :erlang).
 
     CouchPotato::Config.validation_framework = :validatable | :active_model
+    CouchPotato::Config.default_language = :javascript | :erlang
 
 Another switch allows you to store each CouchDB view in its own design document. Otherwise views are grouped by model.
 
@@ -63,6 +64,7 @@ Create a config/couchdb.yml:
     default: &default
       validation_framework: :active_model # optional
       split_design_documents_per_view: true # optional
+      default_language = :erlang # optional
 
     development:
       <<: *default

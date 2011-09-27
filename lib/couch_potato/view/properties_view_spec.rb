@@ -33,6 +33,10 @@ module CouchPotato
         {:include_docs => false}.merge(super)
       end
 
+      def language
+        :javascript
+      end
+
       private
 
       def properties
