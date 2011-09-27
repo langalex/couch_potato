@@ -42,3 +42,22 @@ RSpec::Matchers.define :string_matching do |regex|
     string =~ regex
   end
 end
+
+RSpec::Matchers.define :eql_ignoring_indentation do |expected|
+  match do |string|
+    strip_indentation(string) == strip_indentation(expected)
+  end
+
+  failure_message_for_should do |actual|
+    "expected\n#{strip_indentation(actual).inspect} to == \n#{strip_indentation(expected).inspect} but wasn't."
+  end
+
+  failure_message_for_should_not do |actual|
+    "expected\n#{strip_indentation(actual).inspect} to not == \n#{strip_indentation(expected).inspect} but wasn."
+  end
+
+  def strip_indentation(string)
+    string.gsub(/^\s+/m, '')
+  end
+
+end
