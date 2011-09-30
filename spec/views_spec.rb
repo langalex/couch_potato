@@ -46,6 +46,14 @@ describe 'views' do
       results.should == [build]
     end
 
+    it 'does not crash couchdb when a document does not have the key' do
+      build = {'ruby_class' => 'ErlangBuild'}
+      @db.couchrest_database.save_doc build
+
+      results = @db.view(ErlangBuild.by_name(key: nil))
+      results.size.should == 1
+    end
+
     it 'builds views with composite keys' do
       build = ErlangBuild.new(:name => 'erlang', :code => '123')
       @db.save_document build

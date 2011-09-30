@@ -25,7 +25,8 @@ module CouchPotato
           when :javascript
             "emit(#{formatted_key}, #{emit_value});"
           when :erlang
-            "Emit(#{composite_key_brackets emit_key}, 1);"
+            "#{formatted_key},
+            Emit(#{composite_key_brackets emit_key}, 1);"
           else
             invalid_language
           end
@@ -71,8 +72,8 @@ module CouchPotato
           raise NotImplementedError.new("emit_value in #{language} not implemented") if options[:emit_value]
           <<-ERL
           fun({Doc}) ->
-             case {proplists:get_value(<<"#{JSON.create_id}">>, Doc), #{formatted_key}} of
-             {<<"#{@klass.name}">>, #{emit_key}} ->
+             case proplists:get_value(<<"#{JSON.create_id}">>, Doc) of
+             <<"#{@klass.name}">> ->
                #{yield}
              _ ->
                ok
@@ -126,9 +127,15 @@ module CouchPotato
             "doc['#{_key}']"
           end
         when :erlang
-          [_key].flatten.map{|key_part|
-            %Q{proplists:get_value(<<"#{key_part}">>, Doc)}
-          }.join(', ')
+          if _key.is_a? Array
+            parts = []
+            _key.each_with_index{|k, i|
+              parts << "Key_#{i} = proplists:get_value(<<\"#{k}\">>, Doc, null)"
+            }
+            parts.join(",\n")
+          else
+            "Key = proplists:get_value(<<\"#{_key}\">>, Doc, null)"
+          end
         else
           invalid_language
         end

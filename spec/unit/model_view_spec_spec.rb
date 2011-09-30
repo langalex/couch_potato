@@ -10,8 +10,9 @@ describe CouchPotato::View::ModelViewSpec, 'map_function' do
     spec = CouchPotato::View::ModelViewSpec.new Object, 'all', {:key => :name, :language => :erlang}, {}
     spec.map_function.should eql_ignoring_indentation(<<-ERL
       fun({Doc}) ->
-        case {proplists:get_value(<<"ruby_class">>, Doc), proplists:get_value(<<"name">>, Doc)} of
-        {<<"Object">>, Key} ->
+        case proplists:get_value(<<"ruby_class">>, Doc) of
+        <<"Object">> ->
+            Key = proplists:get_value(<<"name">>, Doc, null),
             Emit(Key, 1);
         _ ->
             ok
@@ -25,8 +26,10 @@ describe CouchPotato::View::ModelViewSpec, 'map_function' do
     spec = CouchPotato::View::ModelViewSpec.new Object, 'all', {:key => [:code, :name], :language => :erlang}, {}
     spec.map_function.should eql_ignoring_indentation(<<-ERL
       fun({Doc}) ->
-        case {proplists:get_value(<<"ruby_class">>, Doc), proplists:get_value(<<"code">>, Doc), proplists:get_value(<<"name">>, Doc)} of
-        {<<"Object">>, Key_0, Key_1} ->
+        case proplists:get_value(<<"ruby_class">>, Doc) of
+        <<"Object">> ->
+            Key_0 = proplists:get_value(<<"code">>, Doc, null),
+            Key_1 = proplists:get_value(<<"name">>, Doc, null),
             Emit([Key_0, Key_1], 1);
         _ ->
             ok
