@@ -50,7 +50,7 @@ describe 'views' do
       build = {'ruby_class' => 'ErlangBuild'}
       @db.couchrest_database.save_doc build
 
-      results = @db.view(ErlangBuild.by_name(key: nil))
+      results = @db.view(ErlangBuild.by_name(:key => nil))
       results.size.should == 1
     end
 

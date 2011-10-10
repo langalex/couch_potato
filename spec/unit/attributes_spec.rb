@@ -12,7 +12,7 @@ class Plant
   property :leaf_count
   property :typed_leaf_count, :type => Fixnum
   property :typed_leaf_size,  :type => Float
-  property :branch, type: Branch
+  property :branch, :type => Branch
 end
 
 
