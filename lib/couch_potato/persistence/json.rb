@@ -44,7 +44,7 @@ module CouchPotato
           instance = self.new
           instance._id = json[:_id] || json['_id']
           instance._rev = json[:_rev] || json['_rev']
-          instance._document = json
+          instance._document = HashWithIndifferentAccess.new(json)
           instance
         end
       end
