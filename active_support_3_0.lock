@@ -1,3 +1,11 @@
+PATH
+  remote: .
+  specs:
+    couch_potato (0.6.0)
+      activemodel
+      couchrest (>= 1.0.1)
+      json (~> 1.6.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -7,16 +15,17 @@ GEM
       i18n (~> 0.5.0)
     activesupport (3.0.6)
     builder (2.1.2)
-    couchrest (1.0.2)
-      json (~> 1.5.1)
+    couchrest (1.1.2)
       mime-types (~> 1.15)
+      multi_json (~> 1.0.0)
       rest-client (~> 1.6.1)
     diff-lcs (1.1.2)
     i18n (0.5.0)
-    json (1.5.1)
+    json (1.6.1)
     mime-types (1.16)
+    multi_json (1.0.3)
     rake (0.8.7)
-    rest-client (1.6.1)
+    rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec (2.5.0)
       rspec-core (~> 2.5.0)
@@ -34,8 +43,7 @@ PLATFORMS
 
 DEPENDENCIES
   activemodel (~> 3.0)
-  couchrest (>= 1.0.1)
-  json
+  couch_potato!
   rake
   rspec (>= 2.0)
   timecop

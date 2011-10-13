@@ -1,11 +1,4 @@
 source :rubygems
 
-gem 'json'
-gem 'couchrest', '>=1.0.1'
 gem "activemodel", "~> 3.1.0"
-
-
-gem 'rspec', '>=2.0'
-gem 'timecop'
-gem 'tzinfo'
-gem 'rake'
+gemspec

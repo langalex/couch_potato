@@ -7,11 +7,12 @@ require 'ostruct'
 JSON.create_id = 'ruby_class'
 
 module CouchPotato
-  Config = Struct.new(:database_name, :split_design_documents_per_view).new
+  Config = Struct.new(:database_name, :split_design_documents_per_view, :default_language).new
   Config.split_design_documents_per_view = false
-  
+  Config.default_language = :javascript
+
   class NotFound < StandardError; end
-  
+
   # returns all the classes that implement the CouchPotato::Persistence module
   def self.models
     @models ||= []

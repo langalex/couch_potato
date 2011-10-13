@@ -43,15 +43,16 @@ After that you configure the name of the database:
 The server URL will default to http://localhost:5984/ unless specified:
 
     CouchPotato::Config.database_name = "http://example.com:5984/name_of_the_db"
-    
+
 Or with authentication
-  
+
     CouchPotato::Config.database_name = "http://username:password@example.com:5984/name_of_the_db"
-  
-Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel (default))
+
+Optionally you can configure which framework you want to use for validations (either validatable or ActiveModel (default)) and the default language for design documents (:javascript (default) or :erlang).
 
     CouchPotato::Config.validation_framework = :validatable | :active_model
-    
+    CouchPotato::Config.default_language = :javascript | :erlang
+
 Another switch allows you to store each CouchDB view in its own design document. Otherwise views are grouped by model.
 
     CouchPotato::Config.split_design_documents_per_view = true
@@ -63,6 +64,7 @@ Create a config/couchdb.yml:
     default: &default
       validation_framework: :active_model # optional
       split_design_documents_per_view: true # optional
+      default_language = :erlang # optional
 
     development:
       <<: *default
@@ -80,7 +82,7 @@ Add to your _config/environment.rb_:
 
     config.gem 'couch_potato', :source => 'http://gemcutter.org'
     config.frameworks -= [:active_record] # if you switch completely
-    
+
 #### Rails 3.x
 
 Add to your _Gemfile_:
@@ -126,8 +128,8 @@ Properties can be typed:
 
       property :address, :type => Address
     end
-    
-In this case Address also implements CouchPotato::Persistence which means its JSON representation will be added to the user document.  
+
+In this case Address also implements CouchPotato::Persistence which means its JSON representation will be added to the user document.
 Couch Potato also has support for the basic types (right now Fixnum, Date, Time and :boolean are supported):
 
     class User
@@ -138,7 +140,7 @@ Couch Potato also has support for the basic types (right now Fixnum, Date, Time 
     end
 
 With this in place when you set the user's age as a String (e.g. using an hTML form) it will be converted into a Fixnum automatically.
-    
+
 
 Properties can have a default value:
 
@@ -208,7 +210,7 @@ Couch Potato by default uses ActiveModel for validation
     user = User.new
     user.valid? # => false
     user.errors[:name] # => ['can't be blank']
-  
+
 If you want you can use [Validatable](http://validatable.rubyforge.org/) by setting `CouchPotato::Config.validation(http://validatable.rubyforge.org/)\_framework = :validatable`
 
 #### Finding stuff / views / lists
@@ -240,6 +242,16 @@ Composite keys are also possible:
       view :all, :key => [:created_at, :name]
     end
 
+You can let Couch Potato generate these map/reduce functions in Erlang, which reslts in much faster view generation:
+
+    class User
+      property :name
+
+      view :all, :key => [:created_at, :name], :language => :erlang
+    end
+
+So far only very simple views like the above work with Erlang.
+
 You can also pass conditions as a JavaScript string:
 
     class User
@@ -261,12 +273,12 @@ If you have larger structures and you only want to load some attributes you can 
 
     CouchPotato.database.view(User.everyone).first.name # => "joe"
     CouchPotato.database.view(User.everyone).first.bio # => nil
-  
+
     CouchPotato.database.first(User.everyone).name # => "joe" # convenience function, returns nil if nothing found
     CouchPotato.database.first!(User.everyone) # would raise CouchPotato::NotFound if nothing was found
 
 If you want Rails to automatically show a 404 page when `CouchPotato::NotFound` is raised add this to your `ApplicationController`:
-    
+
     rescue_from CouchPotato::NotFound do
       render(:file => 'public/404.html', :status => :not_found, :layout => false)
     end
@@ -303,11 +315,11 @@ Defining a list works similarly to views:
 
     class User
       include CouchPotato::Persistence
-      
+
       property :first_name
       view :with_full_name, key: first_namne, list: :add_last_name
       view :all, key: :first_name
-      
+
       list :add_last_name, <<-JS
         function(head, req) {
           var row;
@@ -320,10 +332,10 @@ Defining a list works similarly to views:
         }
       JS
     end
-    
+
     CouchPotato.database.save User.new(first_name: 'joe')
     CouchPotato.database.view(User.with_full_name).first.name # => 'joe doe'
-    
+
 You can also pass in the list at query time:
 
     CouchPotato.database.view(User.all(list: :add_last_name))
@@ -356,11 +368,11 @@ There is basic attachment support: if you want to store any attachments set the 
     class User
       include CouchPotato::Persistence
     end
-    
+
     data = File.read('some_file.text') # or from upload
     user = User.new
     user._attachments = {'photo' => {'data' => data, 'content_type' => 'image/png'}}
-    
+
 When saving this object an attachment with the name _photo_ will be uploaded into CouchDB. It will be available under the url of the user object + _/photo_. When loading the user at a later time you still have access to the _content_type_ and additionally to the _length_ of the attachment:
 
     user_reloaded = CouchPotato.database.load user.id
@@ -392,13 +404,13 @@ For stubbing out the database couch potato offers some helpers:
     class Comment
       view :by_commenter_id, :key => :commenter_id
     end
-    
+
     # RSpec
     require 'couch_potato/rspec'
-    
+
     db = stub_db # stubs CouchPotato.database
     db.stub_view(Comment, :by_commenter_id).with('23').and_return([:comment1, :comment2])
-    
+
     CouchPotato.database.view(Comment.by_commenter_id('23)) # => [:comment1, :comment2]
     CouchPotato.database.first(Comment.by_commenter_id('23)) # => :comment1
 
@@ -408,28 +420,28 @@ Couch Potato provides custom RSpec matchers for testing the map and reduce funct
 
     Class User
       include CouchPotato::Persistence
-      
+
       view :by_name, :key => :name
       view :by_age, :key => :age
     end
-    
+
     #RSpec
     require 'couch_potato/rspec'
-    
+
     describe User, 'by_name' do
       it "should map users to their name" do
         User.by_name.should map(User.new(:name => 'bill', :age => 23)).to(['bill', null])
       end
-      
+
       it "should reduce the users to the sum of their age" do
         User.by_age.should reduce([], [[23], [22]]).to(45)
       end
-      
+
       it "should rereduce" do
         User.by_age.should rereduce([], [[23], [22]]).to(45)
       end
     end
-    
+
 This will actually run your map/reduce functions in a JavaScript interpreter, passing the arguments as JSON and converting the results back to Ruby. For more examples see the [spec](http://github.com/langalex/couch_potato/blob/master/spec/unit/rspec_matchers_spec.rb).
 
 In order for this to work you must have the `js` executable in your PATH. This is usually part of the _spidermonkey_ package/port. (On MacPorts that's _spidemonkey_, on Linux it could be one of _libjs_, _libmozjs_ or _libspidermonkey_). When you installed CouchDB via your packet manager Spidermonkey should already be there.
