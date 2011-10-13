@@ -1,0 +1,4 @@
+source :rubygems
+
+gem 'activemodel', '~>3.0'
+gemspec

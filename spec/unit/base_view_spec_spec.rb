@@ -4,6 +4,11 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
   describe "view parameters" do
     before(:each) do
       CouchPotato::Config.split_design_documents_per_view = false
+      @default_language = CouchPotato::Config.default_language
+    end
+
+    after(:each) do
+      CouchPotato::Config.default_language = @default_language
     end
 
     it "should raise an error when passing invalid view parameters" do
@@ -32,7 +37,7 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
         }
       }.should_not raise_error
     end
-    
+
     it "should remove stale when it's nil" do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {:stale => nil}
       spec.view_parameters.should == {}
@@ -81,17 +86,17 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => :test_list}, {}
       spec.list_name.should == :test_list
     end
-    
+
     it "should extract the list from the view parameters" do
       spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {}, {:list => :test_list}
       spec.list_name.should == :test_list
     end
-    
+
     it "should prefer the list name from the view parameters over the one from the options" do
       spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => 'my_list'}, {:list => :test_list}
       spec.list_name.should == :test_list
     end
-    
+
     it "should return the list function" do
       klass = stub 'class'
       klass.stub(:lists).with('test_list').and_return('<list_code>')
@@ -99,8 +104,17 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       spec.list_function.should == '<list_code>'
     end
 
-  end
+    it 'reads the language from the couch potato config by default' do
+      CouchPotato::Config.default_language = :ruby
+      spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {}
+      spec.language.should == :ruby
+    end
 
+    it 'sets the language to the given language' do
+      spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {:language => :erlang}, {}
+      spec.language.should == :erlang
+    end
+  end
 end
 
 

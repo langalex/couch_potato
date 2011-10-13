@@ -22,10 +22,53 @@ end
 class CustomBuild < Build
 end
 
-describe 'view' do
+class ErlangBuild
+  include CouchPotato::Persistence
+  property :name
+  property :code
+
+  view :by_name, :key => :name, :language => :erlang
+  view :by_name_and_code, :key => [:name, :code], :language => :erlang
+end
+
+describe 'views' do
   before(:each) do
     recreate_db
     @db = CouchPotato.database
+  end
+
+  context 'in erlang' do
+    it 'builds views with single keys' do
+      build = ErlangBuild.new(:name => 'erlang')
+      @db.save_document build
+
+      results = @db.view(ErlangBuild.by_name('erlang'))
+      results.should == [build]
+    end
+
+    it 'does not crash couchdb when a document does not have the key' do
+      build = {'ruby_class' => 'ErlangBuild'}
+      @db.couchrest_database.save_doc build
+
+      results = @db.view(ErlangBuild.by_name(:key => nil))
+      results.size.should == 1
+    end
+
+    it 'builds views with composite keys' do
+      build = ErlangBuild.new(:name => 'erlang', :code => '123')
+      @db.save_document build
+
+      results = @db.view(ErlangBuild.by_name_and_code(['erlang', '123']))
+      results.should == [build]
+    end
+
+    it 'can reduce over erlang views' do
+      build = ErlangBuild.new(:name => 'erlang')
+      @db.save_document build
+
+      results = @db.view(ErlangBuild.by_name(:reduce => true))
+      results.should == 1
+    end
   end
 
   it "should return instances of the class" do
@@ -33,7 +76,7 @@ describe 'view' do
     results = @db.view(Build.timeline)
     results.map(&:class).should == [Build]
   end
-  
+
   it "should return the ids if there document was not included" do
     build = Build.new(:state => 'success', :time => '2008-01-01')
     @db.save_document build
@@ -61,19 +104,19 @@ describe 'view' do
   it "should count zero documents" do
     @db.view(Build.count(:reduce => true)).should == 0
   end
-  
+
   it "should return the total_rows" do
     @db.save_document! Build.new(:state => 'success', :time => '2008-01-01')
     @db.view(Build.count(:reduce => false)).total_rows.should == 1
   end
-  
+
   describe "with multiple keys" do
     it "should return the documents with matching keys" do
       build = Build.new(:state => 'success', :time => '2008-01-01')
       @db.save! build
       @db.view(Build.timeline(:keys => ['2008-01-01'])).should == [build]
     end
-    
+
     it "should not return documents with non-matching keys" do
       build = Build.new(:state => 'success', :time => '2008-01-01')
       @db.save! build
@@ -128,7 +171,7 @@ describe 'view' do
       CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
       @db.view(Build.custom_timeline).map(&:time).should == [nil]
     end
-    
+
     describe "that returns null documents" do
       it "should return instances of the class" do
         CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
@@ -139,7 +182,7 @@ describe 'view' do
         CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01'})
         @db.view(Build.custom_timeline_returns_docs).map(&:state).should == ['success']
       end
-      
+
       it "should still return instance of class if document included JSON.create_id" do
         CouchPotato.couchrest_database.save_doc({:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => "Build"})
         view_data = @db.view(Build.custom_timeline_returns_docs)
@@ -147,14 +190,14 @@ describe 'view' do
         view_data.map(&:state).should == ['success']
       end
     end
-    
+
     describe "additional reduce function given" do
       it "should still assign the id" do
         doc = CouchPotato.couchrest_database.save_doc({})
         CouchPotato.couchrest_database.save_doc({:foreign_key => doc['id']})
         @db.view(Build.custom_with_reduce).map(&:_id).should == [doc['id']]
       end
-      
+
       describe "when the additional reduce function is a typical count" do
         it "should parse the reduce count" do
           doc = CouchPotato.couchrest_database.save_doc({})
@@ -169,7 +212,7 @@ describe 'view' do
     it "should create a map function with the composite key" do
       CouchPotato::View::ViewQuery.should_receive(:new) do |db, design_name, view, list|
         view['key_array_timeline'][:map].should match(/emit\(\[doc\['time'\], doc\['state'\]\]/)
-        
+
         stub('view query', :query_view! => {'rows' => []})
       end
       @db.view Build.key_array_timeline
@@ -202,16 +245,16 @@ describe 'view' do
       @db.view(CustomBuild.timeline).first.should be_kind_of(CustomBuild)
     end
   end
-  
+
   describe "list functions" do
     class Coworker
       include CouchPotato::Persistence
-      
+
       property :name
-      
+
       view :all_with_list, :key => :name, :list => :append_doe
       view :all, :key => :name
-      
+
       list :append_doe, <<-JS
         function(head, req) {
           var row;
@@ -224,16 +267,15 @@ describe 'view' do
         }
       JS
     end
-    
+
     it "should use the list function declared at class level" do
       @db.save! Coworker.new(:name => 'joe')
       @db.view(Coworker.all_with_list).first.name.should == 'joe doe'
     end
-    
+
     it "should use the list function passed at runtime" do
       @db.save! Coworker.new(:name => 'joe')
       @db.view(Coworker.all(:list => :append_doe)).first.name.should == 'joe doe'
     end
-    
   end
 end

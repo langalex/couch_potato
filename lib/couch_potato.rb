@@ -1,19 +1,20 @@
 require 'couchrest'
 require 'json'
 require 'json/add/core'
-require 'json/add/rails'
 
 require 'ostruct'
 
 JSON.create_id = 'ruby_class'
 
 module CouchPotato
-  Config = Struct.new(:database_name, :validation_framework, :split_design_documents_per_view).new
+  Config = Struct.new(:database_name, :validation_framework,
+    :split_design_documents_per_view, :default_language).new
   Config.validation_framework = :active_model
   Config.split_design_documents_per_view = false
-  
+  Config.default_language = :javascript
+
   class NotFound < StandardError; end
-  
+
   # returns all the classes that implement the CouchPotato::Persistence module
   def self.models
     @models ||= []

@@ -2,12 +2,13 @@ module CouchPotato
   module View
     # Used to query views (and create them if they don't exist). Usually you won't have to use this class directly. Instead it is used internally by the CouchPotato::Database.view method.
     class ViewQuery
-      def initialize(couchrest_database, design_document_name, view, list = nil)
+      def initialize(couchrest_database, design_document_name, view, list = nil, language = :javascript)
         @database = couchrest_database
         @design_document_name = design_document_name
         @view_name = view.keys[0]
         @map_function = view.values[0][:map]
         @reduce_function = view.values[0][:reduce]
+        @language = language
         if list
           @list_function = list.values[0]
           @list_name = list.keys[0]
@@ -35,11 +36,11 @@ module CouchPotato
         design_doc['views'][@view_name.to_s] = view_functions
         if @list_function
           design_doc['lists'] ||= {}
-          design_doc['lists'][@list_name.to_s] = @list_function 
+          design_doc['lists'][@list_name.to_s] = @list_function
         end
         @database.save_doc(design_doc) if original_views != design_doc['views'] || original_lists != design_doc['lists']
       end
-      
+
       def view_functions
         if @reduce_function
           {'map' => @map_function, 'reduce' => @reduce_function}
@@ -47,19 +48,19 @@ module CouchPotato
           {'map' => @map_function}
         end
       end
-      
+
       def empty_design_document
-        {'views' => {}, 'lists' => {}, "_id" => "_design/#{@design_document_name}", "language" => "javascript"}
+        {'views' => {}, 'lists' => {}, "_id" => "_design/#{@design_document_name}", "language" => @language.to_s}
       end
-      
+
       def view_has_been_updated?
         updated_views[[@design_document_name, @view_name]]
       end
-      
+
       def view_updated
         updated_views[[@design_document_name, @view_name]] = true
       end
-      
+
       def updated_views
         @@updated_views ||= {}
         @@updated_views

@@ -10,6 +10,7 @@ module CouchPotato
       CouchPotato::Config.database_name = config['database']
       CouchPotato::Config.validation_framework = config['validation_framework'] if config['validation_framework']
       CouchPotato::Config.split_design_documents_per_view = config['split_design_documents_per_view'] if config['split_design_documents_per_view']
+      CouchPotato::Config.default_language = config['default_language'] if config['default_language']
     end
   end
 
