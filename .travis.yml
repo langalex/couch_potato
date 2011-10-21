@@ -4,3 +4,6 @@ rvm:
   - ree
 env: 
   - DATABASE=http://couchpotato.iriscouch.com/couch_potato_test
+gemfile:
+  - active_support_3_0
+  - active_support_3_1
