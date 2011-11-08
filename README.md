@@ -418,27 +418,26 @@ For stubbing out the database couch potato offers some helpers:
 
 Couch Potato provides custom RSpec matchers for testing the map and reduce functions of your views. For example you can do this:
 
-    Class User
+    class User
       include CouchPotato::Persistence
 
+      property :name
+      property :age, :type => Fixnum
+
       view :by_name, :key => :name
-      view :by_age, :key => :age
+      view :by_age,  :key => :age
     end
 
     #RSpec
     require 'couch_potato/rspec'
 
-    describe User, 'by_name' do
+    describe User, 'views' do
       it "should map users to their name" do
-        User.by_name.should map(User.new(:name => 'bill', :age => 23)).to(['bill', null])
+        User.by_name.should map(User.new(:name => 'bill', :age => 23)).to(['bill', 1])
       end
 
       it "should reduce the users to the sum of their age" do
-        User.by_age.should reduce([], [[23], [22]]).to(45)
-      end
-
-      it "should rereduce" do
-        User.by_age.should rereduce([], [[23], [22]]).to(45)
+        User.by_age.should reduce([], [23, 22]).to(45)
       end
     end
 
