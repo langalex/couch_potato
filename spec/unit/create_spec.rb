@@ -23,14 +23,14 @@ describe "create" do
 
     it "should set created at in the current time zone" do
       Time.zone = 'Europe/Berlin'
-      Timecop.travel 2010, 1, 1, 12 do
+      Timecop.travel Time.zone.parse('2010-01-01 12:00 +0100') do
         create_comment.created_at.to_s.should == '2010-01-01 12:00:00 +0100'
       end
     end
 
     it "should set updated at in the current time zone" do
       Time.zone = 'Europe/Berlin'
-      Timecop.travel 2010, 1, 1, 12 do
+      Timecop.travel Time.zone.parse('2010-01-01 12:00 +0100') do
         create_comment.updated_at.to_s.should == '2010-01-01 12:00:00 +0100'
       end
     end
