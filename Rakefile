@@ -21,14 +21,20 @@ end
 
 desc "Run all specs"
 task :spec do
-  ['3_0', '3_1'].each do |version|
-    Bundler.with_clean_env do
-      ENV['BUNDLE_GEMFILE'] = "active_support_#{version}"
-      sh "bundle install"
-      Rake::Task[:spec_unit].execute
-      Rake::Task[:spec_functional].execute
+  if ENV['TRAVIS'] # travis handles the environments for us
+    Rake::Task[:spec_unit].execute
+    Rake::Task[:spec_functional].execute
+  else
+    ['3_0', '3_1'].each do |version|
+      Bundler.with_clean_env do
+        ENV['BUNDLE_GEMFILE'] = "active_support_#{version}"
+        sh "bundle install"
+        Rake::Task[:spec_unit].execute
+        Rake::Task[:spec_functional].execute
+      end
     end
   end
+  
 end
 
 desc 'Generate documentation'
