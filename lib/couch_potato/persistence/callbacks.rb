@@ -12,7 +12,6 @@ module CouchPotato
 
           define_model_callbacks :create, :save, :update, :destroy
           define_model_callbacks *[:save, :create, :update].map {|c| :"validation_on_#{c}"}
-          define_model_callbacks :validation unless Config.validation_framework == :active_model
         end
       end
 

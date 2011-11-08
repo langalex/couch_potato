@@ -5,13 +5,7 @@ module CouchPotato
         require 'active_model'
         require 'active_model/translation'
         base.send :include, ::ActiveModel::Validations
-        base.instance_eval do
-          def before_validation(*names)
-            names.each do |name|
-              validate name
-            end
-          end
-        end
+        base.send :include, ::ActiveModel::Validations::Callbacks
       end
     end
   end
