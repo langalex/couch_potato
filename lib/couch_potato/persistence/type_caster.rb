@@ -4,6 +4,9 @@ module CouchPotato
       def cast(value, type)
         if type == :boolean
           cast_boolean(value)
+        elsif type.instance_of?(Array)
+          nested_type = type.first
+          value.map { |val| cast_native(val, nested_type) }
         else
           cast_native(value, type)
         end
