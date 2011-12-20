@@ -92,6 +92,18 @@ module CouchPotato
         res
       end
     end
+
+    def []=(index, obj)
+      attributes[index] = obj
+    end
+
+    def [](index)
+      attributes[index]
+    end
+
+    def has_key?(key)
+      !attributes[key].nil?
+    end
     
     # returns true if a  model hasn't been saved yet, false otherwise
     def new?

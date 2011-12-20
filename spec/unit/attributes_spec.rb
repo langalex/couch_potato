@@ -23,13 +23,32 @@ describe "attributes" do
       plant.attributes = {:leaf_count => 1}
       plant.leaf_count.should == 1
     end
+
+    it "should assign the attributes via []=" do
+      plant = Plant.new
+      plant[:leaf_count] = 1
+      plant.leaf_count.should == 1
+    end
   end
 
   context "attributes" do
     it "should return the attributes" do
       plant = Plant.new(:leaf_count => 1)
       plant.attributes.should == {:leaf_count => 1, :created_at => nil, :updated_at => nil,
-        :typed_leaf_count => nil, :typed_leaf_size => nil, :branch => nil}
+                                  :typed_leaf_count => nil, :typed_leaf_size => nil, :branch => nil}
+    end
+
+    it "should return the attributes via []" do
+      plant = Plant.new(:leaf_count => 1)
+      plant.attributes[:leaf_count].should eql(plant[:leaf_count])
+      plant.attributes[:leaf_count].should eql(1)
+    end
+  end
+
+  context "has_key?" do
+    it "should respond to has_key?" do
+      plant = Plant.new(:leaf_count => 1)
+      plant.has_key?(:leaf_count).should be_true
     end
   end
 
@@ -146,4 +165,3 @@ describe "attributes" do
     end
   end
 end
-
