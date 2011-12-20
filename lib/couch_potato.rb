@@ -29,14 +29,29 @@ module CouchPotato
     @@__couchrest_database ||= CouchRest.database(full_url_to_database)
   end
 
+  # Executes a block of code and yields a datbase with the given name.
+  #
+  # example:
+  #  CouchPotato.with_database('couch_customer') do |couch|
+  #    couch.save @customer
+  #  end
+  #
+  def self.with_database(database_name)
+    yield(Database.new(couchrest_database_for_name(database_name)))
+  end
+
+  def self.couchrest_database_for_name(database_name)
+    CouchRest.database(full_url_to_database(database_name))
+  end
+
   private
 
-  def self.full_url_to_database
-    raise('No Database configured. Set CouchPotato::Config.database_name') unless CouchPotato::Config.database_name
-    if CouchPotato::Config.database_name.match(%r{https?://})
-      CouchPotato::Config.database_name
+  def self.full_url_to_database(database_name=CouchPotato::Config.database_name)
+    raise('No Database configured. Set CouchPotato::Config.database_name') unless database_name
+    if database_name.match(%r{https?://})
+      database_name
     else
-      "http://127.0.0.1:5984/#{CouchPotato::Config.database_name}"
+      "http://127.0.0.1:5984/#{database_name}"
     end
   end
 end
