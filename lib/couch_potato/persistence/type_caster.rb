@@ -6,7 +6,7 @@ module CouchPotato
           cast_boolean(value)
         elsif type.instance_of?(Array)
           nested_type = type.first
-          value.map { |val| cast_native(val, nested_type) }
+          value.map { |val| cast_native(val, nested_type) } if value
         else
           cast_native(value, type)
         end
