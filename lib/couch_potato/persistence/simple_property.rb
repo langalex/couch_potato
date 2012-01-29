@@ -52,8 +52,6 @@ module CouchPotato
 
       def define_accessors(base, name, options)
         base.class_eval do
-          include PropertyMethods
-
           define_method "#{name}" do
             load_attribute_from_document(name) unless instance_variable_defined?("@#{name}")
             value = instance_variable_get("@#{name}")

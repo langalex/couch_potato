@@ -25,7 +25,7 @@ task :spec do
     Rake::Task[:spec_unit].execute
     Rake::Task[:spec_functional].execute
   else
-    ['3_0', '3_1'].each do |version|
+    ['3_0', '3_1', '3_2'].each do |version|
       Bundler.with_clean_env do
         ENV['BUNDLE_GEMFILE'] = "active_support_#{version}"
         sh "bundle install"
@@ -34,7 +34,7 @@ task :spec do
       end
     end
   end
-  
+
 end
 
 desc 'Generate documentation'

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 begin
   require 'active_model'
-  
+
   describe 'ActiveModel conformance of couch potato objects' do
     include ActiveModel::Lint::Tests
 
@@ -23,47 +23,53 @@ begin
     before(:each) do
       @model = ActiveComment.new
     end
-    
+
+    describe '#to_partial_path' do
+      it 'returns a path based on the class name' do
+        @model.to_partial_path.should == 'active_comments/active_comment'
+      end
+    end
+
     describe "#persisted?" do
       it "should return false if it is a new document " do
         @model.should_not be_persisted
       end
-      
+
       it "should be true if it was saved" do
         @comment = ActiveComment.new(:name => 'Thilo', :email => 'test@local.host')
         CouchPotato.database.save_document! @comment
         @comment.should be_persisted
       end
     end
-    
+
     describe "#to_key" do
       it "should return nil if the document was not persisted" do
         @model.to_key.should be_nil
       end
-      
+
       it "should return the id of the document if it was persisted" do
         @comment = ActiveComment.new(:name => 'Thilo', :email => 'test@local.host')
         CouchPotato.database.save_document! @comment
         @comment.to_key.should == [@comment.id]
       end
     end
-    
-    
+
+
     describe "#errors" do
       it "should return a single error as array" do
         @model.valid?
         @model.errors[:name].should be_kind_of(Array)
       end
-      
+
       it "should return multiple errors as array" do
         @model.valid?
         @model.errors[:email].size.should == 2
       end
-      
+
       it "should return no error as an empty array" do
         @model.errors[:name].should == []
       end
-      
+
       it "should be able to be Marshal.dump'ed" do
         lambda { Marshal.dump(@model.errors) }.should_not raise_error
       end
@@ -88,7 +94,7 @@ begin
       object.should be_a(klass)
     end
   end
-  
+
 rescue LoadError
   STDERR.puts "WARNING: active_model gem not installed. Not running ActiveModel specs."
 end

@@ -12,14 +12,18 @@ module CouchPotato
           self
         end
 
+        def to_partial_path
+          "#{self.class.name.underscore.pluralize}/#{self.class.name.underscore}"
+        end
+
         def errors
           super || {}
         end
-        
+
         def persisted?
           !self.new?
         end
-        
+
         def to_key
           persisted? ? [to_param] : nil
         end

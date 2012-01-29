@@ -5,33 +5,33 @@ module CouchPotato
     module Properties
       class PropertyList
         include Enumerable
-        
+
         attr_accessor :list
-        
+
         def initialize(clazz)
           @clazz = clazz
           @list = []
         end
-        
+
         def each
           (list + inherited_properties).each {|property| yield property}
         end
-        
+
         def <<(property)
           @list << property
         end
-        
+
         def inherited_properties
           superclazz = @clazz.superclass
           properties = []
-          while superclazz && superclazz.respond_to?(:properties)
+          while superclazz && superclazz.is_a?(PropertyList)
             properties << superclazz.properties.list
             superclazz = superclazz.superclass
           end
           properties.flatten
         end
       end
-      
+
       def self.included(base) #:nodoc:
         base.extend ClassMethods
         base.class_eval do
@@ -41,11 +41,11 @@ module CouchPotato
           end
         end
       end
-      
+
       def type_caster #:nodoc:
         @type_caster ||= TypeCaster.new
       end
-      
+
       module ClassMethods
         # returns all the property names of a model class that have been defined using the #property method
         #
