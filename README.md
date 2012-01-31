@@ -64,7 +64,7 @@ Create a config/couchdb.yml:
     default: &default
       validation_framework: :active_model # optional
       split_design_documents_per_view: true # optional
-      default_language = :erlang # optional
+      default_language: :erlang # optional
 
     development:
       <<: *default
