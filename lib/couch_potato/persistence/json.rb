@@ -41,10 +41,9 @@ module CouchPotato
         # creates a model instance from JSON
         def json_create(json)
           return if json.nil?
-          instance = self.new
+          instance = self.new :_document => HashWithIndifferentAccess.new(json)
           instance._id = json[:_id] || json['_id']
           instance._rev = json[:_rev] || json['_rev']
-          instance._document = HashWithIndifferentAccess.new(json)
           instance
         end
       end
