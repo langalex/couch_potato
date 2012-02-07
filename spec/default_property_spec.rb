@@ -5,6 +5,7 @@ class Test
 
   property :test, :default => 'Test value'
   property :complex, :default => [1, 2, 3]
+  property :false_value, :default => false
 end
 
 describe 'default properties' do
@@ -34,5 +35,10 @@ describe 'default properties' do
   
   it "should not return the default value when the actual value is empty" do
     t = Test.new(:complex => []).complex.should == []
+  end
+  
+  it "uses the default value also if the default is false" do
+    t = Test.new
+    t.false_value.should == false
   end
 end
