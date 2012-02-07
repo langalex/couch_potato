@@ -37,9 +37,12 @@ module CouchPotato
   #  end
   #
   def self.with_database(database_name)
-    yield(Database.new(couchrest_database_for_name(database_name)))
+    @@__databases ||= {}
+    @@__databases["#{database_name}"] = Database.new(couchrest_database_for_name(database_name)) unless @@__databases["#{database_name}"]
+    yield(@@__databases["#{database_name}"])
   end
 
+  # Creates a CouchRest-Database for directly accessing that functionality.
   def self.couchrest_database_for_name(database_name)
     CouchRest.database(full_url_to_database(database_name))
   end
