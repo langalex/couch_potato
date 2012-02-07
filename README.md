@@ -378,6 +378,16 @@ When saving this object an attachment with the name _photo_ will be uploaded int
     user_reloaded = CouchPotato.database.load user.id
     user_reloaded._attachments['photo'] # => {'content_type' => 'image/png', 'length' => 37861}
 
+#### Multi DB Support
+
+Couch Potato supports accessing multiple CouchDBs:
+
+    CouchPotato.with_database('couch_customer') do |couch|
+      couch.save @customer
+    end
+
+Unless configured otherwise this would save the customer model to _http://127.0.0.1:5984/couch_customer_.
+
 #### Testing
 
 To make testing easier and faster database logic has been put into its own class, which you can replace and stub out in whatever way you want:
