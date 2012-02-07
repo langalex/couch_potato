@@ -180,6 +180,12 @@ If you want to have properties that don't map to any JSON type, i.e. other than 
 
 The date_of_birth property is now automatically serialized to JSON and back when storing/retrieving objects.
 
+If you want to store an Array of objects, just pass the definiton as an Array of Dates:
+
+    class User
+      property :birthdays, :type => [Date]
+    end
+
 #### Dirty tracking
 
 CouchPotato tracks the dirty state of attributes in the same way ActiveRecord does:
