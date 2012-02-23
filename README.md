@@ -158,7 +158,12 @@ Now you can save your objects. All database operations are encapsulated in the C
 You can of course also retrieve your instance:
 
     CouchPotato.database.load_document "id_of_the_user_document" # => <#User 0x3075>
+    
+#### Operations on multiple documents
 
+You can also load a bunch of documents with one request.
+
+    CouchPotato.database.bulk_load ['user1', 'user2', 'user3'] # => [<#User 0x3075>, <#User 0x3076>, <#User 0x3077>]
 
 #### Properties
 

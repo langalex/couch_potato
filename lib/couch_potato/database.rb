@@ -115,6 +115,25 @@ module CouchPotato
     def load!(id)
       load(id) || raise(CouchPotato::NotFound)
     end
+    
+    def bulk_load(ids)
+      if ids.is_a?(Array)
+        response = couchrest_database.bulk_load ids
+        existing_rows = response['rows'].select{|row| row.key? 'doc'}
+        docs = existing_rows.map{|row| row["doc"]}
+        docs.each{|doc| doc.database = self}
+      else
+        raise "Input must be an array."
+      end
+    end
+
+    def bulk_load!(ids)
+      docs = bulk_load(ids)
+      if ids.length > docs.length
+        missing_docs = ids - docs.map(&:id)
+        raise CouchPotato::NotFound, missing_docs
+      end
+    end
 
     def inspect #:nodoc:
       "#<CouchPotato::Database @root=\"#{couchrest_database.root}\">"

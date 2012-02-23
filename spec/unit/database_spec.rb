@@ -77,6 +77,56 @@ describe CouchPotato::Database, 'load!' do
   end
 end
 
+describe CouchPotato::Database, 'bulk_load' do
+
+  let(:doc1) { DbTestUser.new }
+  let(:doc2) { DbTestUser.new }
+  let(:response) do
+    {"rows" => [{}, {"doc" => doc1}, {"doc" => doc2}]}
+  end
+  let(:couchrest_db) { stub('couchrest db', :info => nil, :bulk_load => response).as_null_object }
+  let(:db) { CouchPotato::Database.new(couchrest_db) }
+
+  it "raises an exception when no array is given" do
+    lambda {
+      db.bulk_load "1"
+    }.should raise_error("Input must be an array.")
+  end
+
+  it "requests the couchrest bulk method" do
+    couchrest_db.should_receive(:bulk_load).with(['1', '2', '3'])
+    db.bulk_load ['1', '2', '3']
+  end
+
+  it "returns only found documents" do
+    db.bulk_load(['1', '2', '3']).should have(2).items
+  end
+  
+  it "writes itself to each of the documents" do
+    doc1.should_receive(:database=).with(db)
+    doc2.should_receive(:database=).with(db)
+    db.bulk_load ['1', '2', '3']
+  end
+end
+
+describe CouchPotato::Database, 'bulk_load!' do
+
+  it "raises an exception when not all documents could be found" do
+    couchrest_db = stub('couchrest db', :info => nil)
+    db = CouchPotato::Database.new(couchrest_db)
+
+    docs = [
+      DbTestUser.new(:id => '1'),
+      DbTestUser.new(:id => '2')
+    ]
+
+    db.stub(:bulk_load).and_return(docs)
+    lambda {
+      db.bulk_load! ['1', '2', '3']
+    }.should raise_error(CouchPotato::NotFound, ['3'])
+  end
+end
+
 describe CouchPotato::Database, 'save_document' do
   before(:each) do
     @db = CouchPotato::Database.new(stub('couchrest db').as_null_object)
