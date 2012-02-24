@@ -16,7 +16,7 @@ require File.dirname(__FILE__) + '/view/view_query'
 
 module CouchPotato
   module Persistence
-    
+
     def self.included(base) #:nodoc:
       base.send :include, Properties, Callbacks, Json, CouchPotato::View::CustomViews, CouchPotato::View::Lists
       base.send :include, DirtyAttributes, GhostAttributes, Attachments
@@ -27,15 +27,15 @@ module CouchPotato
         alias_method :id, :_id
         alias_method :id=, :_id=
       end
-      
+
       CouchPotato.models << base
     end
 
     # initialize a new instance of the model optionally passing it a hash of attributes.
     # the attributes have to be declared using the #property method.
     # the new model will be yielded to an optionally given block.
-    # 
-    # example: 
+    #
+    # example:
     #   class Book
     #     include CouchPotato::Persistence
     #     property :title
@@ -56,7 +56,7 @@ module CouchPotato
       end
       yield self if block_given?
     end
-    
+
     # assign multiple attributes at once.
     # the attributes have to be declared using the #property method
     #
@@ -75,7 +75,7 @@ module CouchPotato
         self.send "#{attribute}=", value
       end
     end
-    
+
     # returns all of a model's attributes that have been defined using the #property method as a Hash
     #
     # example:
@@ -93,46 +93,46 @@ module CouchPotato
       end
     end
 
-    def []=(index, obj)
-      attributes[index] = obj
+    def []=(attribute, value)
+      send "#{attribute}=", value
     end
 
-    def [](index)
-      attributes[index]
+    def [](attribute)
+      send(attribute)
     end
 
     def has_key?(key)
-      !attributes[key].nil?
+      attributes.has_key?(key)
     end
-    
+
     # returns true if a  model hasn't been saved yet, false otherwise
     def new?
       _rev.nil?
     end
     alias_method :new_record?, :new?
-    
+
     # returns the document id
     # this is used by rails to construct URLs
     # can be overridden to for example use slugs for URLs instead if ids
     def to_param
       _id
     end
-    
+
     def ==(other) #:nodoc:
       other.class == self.class && self.to_json == other.to_json
     end
-    
+
     def eql?(other)
       self == other
     end
-    
+
     def hash
       _id.hash * (_id.hash.to_s.size ** 10) + _rev.hash
     end
-   
+
     def inspect
       attributes_as_string = attributes.map {|attribute, value| "#{attribute}: #{value.inspect}"}.join(", ")
       %Q{#<#{self.class} _id: "#{_id}", _rev: "#{_rev}", #{attributes_as_string}>}
     end
-  end    
+  end
 end
