@@ -46,7 +46,8 @@ module CouchPotato
 
       module ClassMethods
         def property(name, *args)
-          define_attribute_methods [name]
+          undefine_attribute_methods
+          define_attribute_methods property_names + [name]
           super name, *args
         end
       end
