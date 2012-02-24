@@ -50,9 +50,11 @@ module CouchPotato
     #   book.title # => 'Time to Relax'
     def initialize(attributes = {})
       if attributes
+        @skip_dirty_tracking = true
         attributes.each do |name, value|
           self.send("#{name}=", value)
         end
+        @skip_dirty_tracking = false
       end
       yield self if block_given?
     end
