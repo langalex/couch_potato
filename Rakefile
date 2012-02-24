@@ -27,6 +27,7 @@ task :spec do
   else
     ['3_0', '3_1', '3_2'].each do |version|
       Bundler.with_clean_env do
+        puts "Running tests with ActiveSupport #{version.sub('_', '.')}"
         ENV['BUNDLE_GEMFILE'] = "active_support_#{version}"
         sh "bundle install"
         Rake::Task[:spec_unit].execute
