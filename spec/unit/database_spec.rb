@@ -45,8 +45,11 @@ describe CouchPotato::Database, 'full_url_to_database' do
 end
 
 describe CouchPotato::Database, 'load' do
+  
+  let(:couchrest_db) { stub('couchrest db', :info => nil) }
+  let(:db) { CouchPotato::Database.new couchrest_db }
+  
   it "should raise an exception if nil given" do
-    db = CouchPotato::Database.new(stub('couchrest db', :info => nil))
     lambda {
       db.load nil
     }.should raise_error("Can't load a document without an id (got nil)")
@@ -55,25 +58,81 @@ describe CouchPotato::Database, 'load' do
   it "should set itself on the model" do
     user = mock('user').as_null_object
     DbTestUser.stub!(:new).and_return(user)
-    db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => DbTestUser.json_create({JSON.create_id => 'DbTestUser'})))
+    couchrest_db.stub(:get).and_return DbTestUser.json_create({JSON.create_id => 'DbTestUser'})
     user.should_receive(:database=).with(db)
     db.load '1'
   end
 
   it "should load namespaced models" do
-    db = CouchPotato::Database.new(stub('couchrest db', :info => nil, :get => Parent::Child.json_create({JSON.create_id => 'Parent::Child'})))
+    couchrest_db.stub(:get).and_return Parent::Child.json_create({JSON.create_id => 'Parent::Child'})
     db.load('1').class.should == Parent::Child
+  end
+  
+  context "when several ids given" do
+    
+    let(:doc1) { DbTestUser.new }
+    let(:doc2) { DbTestUser.new }
+    let(:response) do
+      {"rows" => [{}, {"doc" => doc1}, {"doc" => doc2}]}
+    end
+    
+    before(:each) do
+      couchrest_db.stub(:bulk_load).and_return response
+    end
+
+    it "requests the couchrest bulk method" do
+      couchrest_db.should_receive(:bulk_load).with(['1', '2', '3'])
+      db.load ['1', '2', '3']
+    end
+
+    it "returns only found documents" do
+      db.load(['1', '2', '3']).should have(2).items
+    end
+
+    it "writes itself to each of the documents" do
+      db.load(['1', '2', '3']).each do |doc|
+        doc.database.should eql(db)
+      end
+    end
   end
 end
 
 describe CouchPotato::Database, 'load!' do
+  
+  let(:db) { CouchPotato::Database.new(stub('couchrest db', :info => nil)) }
+  
   it "should raise an error if no document found" do
-    couchrest_db = stub('couchrest db', :info => nil)
-    couchrest_db.stub(:get).and_raise(RestClient::ResourceNotFound)
-    db = CouchPotato::Database.new(couchrest_db)
+    db.couchrest_database.stub(:get).and_raise(RestClient::ResourceNotFound)
     lambda {
       db.load! '1'
     }.should raise_error(CouchPotato::NotFound)
+  end
+  
+  context "when several ids given" do
+    
+    let(:docs) do
+      [
+        DbTestUser.new(:id => '1'),
+        DbTestUser.new(:id => '2')
+      ]
+    end
+    
+    before(:each) do
+      db.stub(:load).and_return(docs)
+    end
+    
+    it "raises an exception when not all documents could be found" do
+      lambda {
+        db.load! ['1', '2', '3']
+      }.should raise_error(CouchPotato::NotFound, ['3'])
+    end
+    
+    it "raises no exception when all documents are found" do
+      docs << DbTestUser.new(:id => '3')
+      lambda {
+        db.load! ['1', '2', '3']
+      }.should_not raise_error(CouchPotato::NotFound)
+    end
   end
 end
 
