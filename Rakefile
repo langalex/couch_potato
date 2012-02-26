@@ -3,7 +3,11 @@ Bundler::GemHelper.install_tasks
 
 require 'rake'
 require "rspec/core/rake_task"
-require 'rake/rdoctask'
+begin
+  require 'rdoc/task'
+rescue LoadError
+  require 'rake/rdoctask'
+end
 
 task :default => :spec
 
