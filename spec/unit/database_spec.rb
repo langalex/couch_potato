@@ -109,16 +109,29 @@ describe CouchPotato::Database, 'load!' do
   end
   
   context "when several ids given" do
-    it "raises an exception when not all documents could be found" do
-      docs = [
+    
+    let(:docs) do
+      [
         DbTestUser.new(:id => '1'),
         DbTestUser.new(:id => '2')
       ]
-      
+    end
+    
+    before(:each) do
       db.stub(:load).and_return(docs)
+    end
+    
+    it "raises an exception when not all documents could be found" do
       lambda {
         db.load! ['1', '2', '3']
       }.should raise_error(CouchPotato::NotFound, ['3'])
+    end
+    
+    it "raises no exception when all documents are found" do
+      docs << DbTestUser.new(:id => '3')
+      lambda {
+        db.load! ['1', '2', '3']
+      }.should_not raise_error(CouchPotato::NotFound)
     end
   end
 end

@@ -122,7 +122,7 @@ module CouchPotato
       if id.is_a?(Array)
         missing_docs = id - doc.map(&:id)
       end
-      raise(CouchPotato::NotFound, missing_docs) if doc.nil? || missing_docs
+      raise(CouchPotato::NotFound, missing_docs) if doc.nil? || !missing_docs.empty?
     end
 
     def inspect #:nodoc:
