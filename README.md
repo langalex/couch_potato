@@ -163,7 +163,7 @@ You can of course also retrieve your instance:
 
 You can also load a bunch of documents with one request.
 
-    CouchPotato.database.bulk_load ['user1', 'user2', 'user3'] # => [<#User 0x3075>, <#User 0x3076>, <#User 0x3077>]
+    CouchPotato.database.load ['user1', 'user2', 'user3'] # => [<#User 0x3075>, <#User 0x3076>, <#User 0x3077>]
 
 #### Properties
 

@@ -99,40 +99,30 @@ module CouchPotato
     end
     alias_method :destroy, :destroy_document
 
-    # loads a document by its id
+    # loads a document by its id(s)
     def load_document(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
-      begin
-        instance = couchrest_database.get(id)
-        instance.database = self
-        instance
-      rescue(RestClient::ResourceNotFound)
-        nil
+      
+      if id.is_a?(Array)
+        bulk_load id
+      else
+        begin
+          instance = couchrest_database.get(id)
+          instance.database = self
+          instance
+        rescue(RestClient::ResourceNotFound)
+          nil
+        end
       end
     end
     alias_method :load, :load_document
 
     def load!(id)
-      load(id) || raise(CouchPotato::NotFound)
-    end
-    
-    def bulk_load(ids)
-      if ids.is_a?(Array)
-        response = couchrest_database.bulk_load ids
-        existing_rows = response['rows'].select{|row| row.key? 'doc'}
-        docs = existing_rows.map{|row| row["doc"]}
-        docs.each{|doc| doc.database = self}
-      else
-        raise "Input must be an array."
+      doc = load(id)
+      if id.is_a?(Array)
+        missing_docs = id - doc.map(&:id)
       end
-    end
-
-    def bulk_load!(ids)
-      docs = bulk_load(ids)
-      if ids.length > docs.length
-        missing_docs = ids - docs.map(&:id)
-        raise CouchPotato::NotFound, missing_docs
-      end
+      raise(CouchPotato::NotFound, missing_docs) if doc.nil? || missing_docs
     end
 
     def inspect #:nodoc:
@@ -145,6 +135,13 @@ module CouchPotato
     end
 
     private
+    
+    def bulk_load(ids)
+      response = couchrest_database.bulk_load ids
+      existing_rows = response['rows'].select{|row| row.key? 'doc'}
+      docs = existing_rows.map{|row| row["doc"]}
+      docs.each{|doc| doc.database = self}
+    end
 
     def create_document(document, validate)
       document.database = self
