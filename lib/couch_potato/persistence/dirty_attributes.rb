@@ -6,7 +6,6 @@ module CouchPotato
       def self.included(base) #:nodoc:
         base.send :include, ActiveModel::Dirty
         base.class_eval do
-          extend ClassMethods
           after_save :reset_dirty_attributes
         end
       end
@@ -41,14 +40,6 @@ module CouchPotato
           Marshal::load(Marshal::dump(value))
         else
           value.clone
-        end
-      end
-
-      module ClassMethods
-        def property(name, *args)
-          undefine_attribute_methods
-          define_attribute_methods property_names + [name]
-          super name, *args
         end
       end
     end

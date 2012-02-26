@@ -70,7 +70,19 @@ module CouchPotato
         #    property :publisher, :type => Publisher
         #  end
         def property(name, options = {})
+          undefine_attribute_methods
+          define_attribute_methods property_names + [name]
           properties << SimpleProperty.new(self, name, options)
+          remove_attribute_accessors_from_activesupport_module
+        end
+
+        def remove_attribute_accessors_from_activesupport_module
+          active_support_module = ancestors[1..-1].find{|m| m.name.nil? && (property_names - m.instance_methods).empty?}
+          if active_support_module
+            property_names.each do |name|
+              active_support_module.send :remove_method, name if active_support_module.instance_methods.include?(name)
+            end
+          end
         end
       end
     end
