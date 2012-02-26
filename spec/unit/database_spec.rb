@@ -45,10 +45,10 @@ describe CouchPotato::Database, 'full_url_to_database' do
 end
 
 describe CouchPotato::Database, 'load' do
-  
+
   let(:couchrest_db) { stub('couchrest db', :info => nil) }
   let(:db) { CouchPotato::Database.new couchrest_db }
-  
+
   it "should raise an exception if nil given" do
     lambda {
       db.load nil
@@ -67,15 +67,15 @@ describe CouchPotato::Database, 'load' do
     couchrest_db.stub(:get).and_return Parent::Child.json_create({JSON.create_id => 'Parent::Child'})
     db.load('1').class.should == Parent::Child
   end
-  
+
   context "when several ids given" do
-    
+
     let(:doc1) { DbTestUser.new }
     let(:doc2) { DbTestUser.new }
     let(:response) do
       {"rows" => [{}, {"doc" => doc1}, {"doc" => doc2}]}
     end
-    
+
     before(:each) do
       couchrest_db.stub(:bulk_load).and_return response
     end
@@ -98,35 +98,41 @@ describe CouchPotato::Database, 'load' do
 end
 
 describe CouchPotato::Database, 'load!' do
-  
-  let(:db) { CouchPotato::Database.new(stub('couchrest db', :info => nil)) }
-  
+
+  let(:db) { CouchPotato::Database.new(stub('couchrest db', :info => nil).as_null_object) }
+
   it "should raise an error if no document found" do
     db.couchrest_database.stub(:get).and_raise(RestClient::ResourceNotFound)
     lambda {
       db.load! '1'
     }.should raise_error(CouchPotato::NotFound)
   end
-  
+
+  it 'returns the found document' do
+    doc = stub(:doc).as_null_object
+    db.couchrest_database.stub(:get) {doc}
+    db.load!('1').should == doc
+  end
+
   context "when several ids given" do
-    
+
     let(:docs) do
       [
         DbTestUser.new(:id => '1'),
         DbTestUser.new(:id => '2')
       ]
     end
-    
+
     before(:each) do
       db.stub(:load).and_return(docs)
     end
-    
+
     it "raises an exception when not all documents could be found" do
       lambda {
         db.load! ['1', '2', '3']
       }.should raise_error(CouchPotato::NotFound, ['3'])
     end
-    
+
     it "raises no exception when all documents are found" do
       docs << DbTestUser.new(:id => '3')
       lambda {

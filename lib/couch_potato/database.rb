@@ -102,7 +102,7 @@ module CouchPotato
     # loads a document by its id(s)
     def load_document(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
-      
+
       if id.is_a?(Array)
         bulk_load id
       else
@@ -122,7 +122,8 @@ module CouchPotato
       if id.is_a?(Array)
         missing_docs = id - doc.map(&:id)
       end
-      raise(CouchPotato::NotFound, missing_docs) if doc.nil? || !missing_docs.empty?
+      raise(CouchPotato::NotFound, missing_docs) if doc.nil? || missing_docs.try(:any?)
+      doc
     end
 
     def inspect #:nodoc:
@@ -135,7 +136,7 @@ module CouchPotato
     end
 
     private
-    
+
     def bulk_load(ids)
       response = couchrest_database.bulk_load ids
       existing_rows = response['rows'].select{|row| row.key? 'doc'}
