@@ -9,6 +9,119 @@ module CouchPotato
     # in addition you can pass in conditions as a javascript string
     #   view :my_view_only_completed, :key => :name, :conditions => 'doc.completed = true'
     class ModelViewSpec < BaseViewSpec
+      class ErlangGenerator
+        def initialize(options, klass)
+          @options = options
+          @klass = klass
+        end
+
+        def map_function
+          raise NotImplementedError.new("conditions in Erlang not implemented") if @options[:conditions]
+            raise NotImplementedError.new("emit_value in Erlang not implemented") if @options[:emit_value]
+            <<-ERL
+            fun({Doc}) ->
+               case proplists:get_value(<<"#{JSON.create_id}">>, Doc) of
+               <<"#{@klass.name}">> ->
+                 #{formatted_key},
+                 Emit(#{composite_key_brackets emit_key}, 1);
+               _ ->
+                 ok
+               end
+             end.
+            ERL
+        end
+
+        private
+
+        def composite_key_brackets(key)
+          if key.include?(',')
+            "[#{key}]"
+          else
+            key
+          end
+        end
+
+        def formatted_key(_key = nil)
+          _key ||= key
+          if _key.is_a? Array
+            parts = []
+            _key.each_with_index{|k, i|
+              parts << "Key_#{i} = proplists:get_value(<<\"#{k}\">>, Doc, null)"
+            }
+            parts.join(",\n")
+          else
+            "Key = proplists:get_value(<<\"#{_key}\">>, Doc, null)"
+          end
+        end
+
+        def emit_key
+          if key.is_a?(Array)
+            parts = []
+            key.each_with_index{|k, i|
+              parts << "Key_#{i}"
+            }
+            parts.join(', ')
+          else
+            'Key'
+          end
+        end
+
+        def key
+          @options[:key]
+        end
+      end
+
+      class JavascriptGenerator
+        def initialize(options, klass)
+          @options = options
+          @klass = klass
+        end
+
+        def map_body(&block)
+          <<-JS
+          function(doc) {
+            if(doc.#{JSON.create_id} && doc.#{JSON.create_id} == '#{@klass.name}'#{conditions}) {
+              #{yield}
+            }
+          }
+          JS
+        end
+
+        def map_function
+          map_body do
+            "emit(#{formatted_key}, #{emit_value});"
+          end
+        end
+
+        def formatted_key(_key = nil)
+          _key ||= @options[:key]
+          if _key.is_a? Array
+            '[' + _key.map{|key_part| formatted_key(key_part)}.join(', ') + ']'
+          else
+            "doc['#{_key}']"
+          end
+        end
+
+        private
+
+        # Allow custom emit values. Raise when the specified argument is not recognized
+        def emit_value
+          case @options[:emit_value]
+          when Symbol then "doc['#{@options[:emit_value]}']"
+          when String then @options[:emit_value]
+          when Numeric then @options[:emit_value]
+          when NilClass then 1
+          else
+            raise "The emit value specified is not recognized"
+          end
+        end
+
+        def conditions
+          " && (#{@options[:conditions]})" if @options[:conditions]
+        end
+      end
+
+      delegate :map_function, :map_body, :formatted_key, :to => :generator
 
       def view_parameters
         _super = super
@@ -16,32 +129,6 @@ module CouchPotato
           _super
         else
           {:include_docs => true, :reduce => false}.merge(_super)
-        end
-      end
-
-      def map_function
-        map_body do
-          case language
-          when :javascript
-            "emit(#{formatted_key}, #{emit_value});"
-          when :erlang
-            "#{formatted_key},
-            Emit(#{composite_key_brackets emit_key}, 1);"
-          else
-            invalid_language
-          end
-        end
-      end
-
-      # Allow custom emit values. Raise when the specified argument is not recognized
-      def emit_value
-        case options[:emit_value]
-        when Symbol then "doc['#{options[:emit_value]}']"
-        when String then options[:emit_value]
-        when Numeric then options[:emit_value]
-        when NilClass then 1
-        else
-          raise "The emit value specified is not recognized"
         end
       end
 
@@ -59,86 +146,19 @@ module CouchPotato
 
       private
 
-      def map_body(&block)
+      def generator
         case language
         when :javascript
-          "function(doc) {
-             if(doc.#{JSON.create_id} && doc.#{JSON.create_id} == '#{@klass.name}'#{conditions}) {
-               " + yield + "
-             }
-           }"
+          @generator ||= JavascriptGenerator.new(@options, @klass)
         when :erlang
-          raise NotImplementedError.new("conditions in #{language} not implemented") if options[:conditions]
-          raise NotImplementedError.new("emit_value in #{language} not implemented") if options[:emit_value]
-          <<-ERL
-          fun({Doc}) ->
-             case proplists:get_value(<<"#{JSON.create_id}">>, Doc) of
-             <<"#{@klass.name}">> ->
-               #{yield}
-             _ ->
-               ok
-             end
-           end.
-          ERL
+          @generator ||= ErlangGenerator.new(@options, @klass)
         else
           invalid_language
         end
-      end
-
-      def composite_key_brackets(key)
-        if key.include?(',')
-          "[#{key}]"
-        else
-          key
-        end
-      end
-
-      def emit_key
-        if key.is_a?(Array)
-          parts = []
-          key.each_with_index{|k, i|
-            parts << "Key_#{i}"
-          }
-          parts.join(', ')
-        else
-          'Key'
-        end
-      end
-
-      def conditions
-        " && (#{options[:conditions]})" if options[:conditions]
       end
 
       def count?
         view_parameters[:reduce]
-      end
-
-      def key
-        options[:key]
-      end
-
-      def formatted_key(_key = nil)
-        _key ||= key
-        case language
-        when :javascript
-          if _key.is_a? Array
-            '[' + _key.map{|key_part| formatted_key(key_part)}.join(', ') + ']'
-          else
-            "doc['#{_key}']"
-          end
-        when :erlang
-          if _key.is_a? Array
-            parts = []
-            _key.each_with_index{|k, i|
-              parts << "Key_#{i} = proplists:get_value(<<\"#{k}\">>, Doc, null)"
-            }
-            parts.join(",\n")
-          else
-            "Key = proplists:get_value(<<\"#{_key}\">>, Doc, null)"
-          end
-        else
-          invalid_language
-        end
       end
 
       def invalid_language
