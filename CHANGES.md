@@ -1,5 +1,17 @@
 ## Changes
 
+### 0.7.0
+
+* ActiveSupport/Rails 3.2 compatibility  (Alexander Lang)
+* removed Object#try, String#blank? as they are part of ActiveSupport - ActiveSupport's try behaves differently than the couch potato implementation so this change might break your app (now calling a non-existant method on a non-nil raises a NoMethodError, before it did not)  (Alexander Lang)
+* bulk document loading (Matthias Jakel)
+* multi db support (Peter Schröder)
+* hash-style access to attributes (Peter Schröder)
+* support for properties of type Array, e.g. :type => [User] (Peter Schröder)
+* improve compatibility with state_machine (Alexander Lang)
+* allow false as default value for properties (Matthias Jakel)
+* support for Erlang views (Alexander Lang)
+
 ### 0.6.0
 
 * ActiveSupport/Rails 3.1 compatibility (Maximilian Mack)
