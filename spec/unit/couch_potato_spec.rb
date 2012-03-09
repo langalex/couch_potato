@@ -19,6 +19,13 @@ describe CouchPotato, 'full_url_to_database' do
   end
 end
 
+describe CouchPotato, 'use' do
+  it 'should return the db object' do
+    db = CouchPotato.use("testdb")
+    db.couchrest_database.root.should == 'http://127.0.0.1:5984/testdb'
+  end
+end
+
 describe CouchPotato, '.models' do
   it "returns all classes that have implemented CouchPotato::Persistence" do
     clazz = Class.new

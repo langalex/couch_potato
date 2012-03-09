@@ -31,6 +31,13 @@ module CouchPotato
     @@__couchrest_database ||= CouchRest.database(full_url_to_database)
   end
 
+  # Returns a specific database instance
+  def self.use(database_name)
+    @@__databases ||= {}
+    @@__databases["#{database_name}"] = Database.new(couchrest_database_for_name!(database_name)) unless @@__databases["#{database_name}"]
+    @@__databases["#{database_name}"]
+  end
+
   # Executes a block of code and yields a datbase with the given name.
   #
   # example:
@@ -44,9 +51,14 @@ module CouchPotato
     yield(@@__databases["#{database_name}"])
   end
 
-  # Creates a CouchRest-Database for directly accessing that functionality.
+  # Returns a CouchRest-Database for directly accessing that functionality.
   def self.couchrest_database_for_name(database_name)
     CouchRest.database(full_url_to_database(database_name))
+  end
+
+  # Creates a CouchRest-Database for directly accessing that functionality.
+  def self.couchrest_database_for_name!(database_name)
+    CouchRest.database!(full_url_to_database(database_name))
   end
 
   private
