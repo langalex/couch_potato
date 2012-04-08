@@ -1,6 +1,5 @@
 *.gem
 .bundle
-couch_potato_js_runner.js
 pkg
 .rvmrc
 *.swp

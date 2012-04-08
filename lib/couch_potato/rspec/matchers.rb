@@ -1,12 +1,13 @@
+require 'v8'
+
 module CouchPotato
   module RSpec
     module RunJS
       private
-  
+
       def run_js(js)
-        path = 'couch_potato_js_runner.js'
-        File.open(path, 'w') {|f| f << js}
-        `js #{path}`
+        cxt = V8::Context.new
+        cxt.eval(js)
       end
     end
   end
@@ -22,15 +23,15 @@ module RSpec
     def map(document)
       CouchPotato::RSpec::MapToProxy.new(document)
     end
-    
+
     def reduce(docs, keys)
       CouchPotato::RSpec::ReduceToProxy.new(docs, keys)
     end
-    
+
     def rereduce(docs, keys)
       CouchPotato::RSpec::ReduceToProxy.new(docs, keys, true)
     end
-    
+
     def list(results)
       CouchPotato::RSpec::ListAsProxy.new(results)
     end
