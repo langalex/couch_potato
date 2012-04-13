@@ -86,37 +86,42 @@ describe "attributes" do
     end
 
     describe "fixnum" do
-      it "should convert a string into a fixnum" do
+      it 'rounds a float to a fixnum' do
+        @plant.typed_leaf_count = 4.5
+        @plant.typed_leaf_count.should == 5
+      end
+
+      it "converts a string into a fixnum" do
         @plant.typed_leaf_count = '4'
         @plant.typed_leaf_count.should == 4
       end
 
-      it "should convert a string into a negative fixnum" do
+      it "converts a string into a negative fixnum" do
         @plant.typed_leaf_count = '-4'
         @plant.typed_leaf_count.should == -4
       end
 
-      it "should leave a fixnum as is" do
+      it "leaves a fixnum as is" do
         @plant.typed_leaf_count = 4
         @plant.typed_leaf_count.should == 4
       end
 
-      it "should leave nil as is" do
+      it "leaves nil as is" do
         @plant.typed_leaf_count = nil
         @plant.typed_leaf_count.should be_nil
       end
 
-      it "should set the attributes to zero if a string given" do
+      it "sets the attributes to zero if a string given" do
         @plant.typed_leaf_count = 'x'
         @plant.typed_leaf_count.should == 0
       end
 
-      it "should parse numbers out of a string" do
+      it "parses numbers out of a string" do
         @plant.typed_leaf_count = 'x123'
         @plant.typed_leaf_count.should == 123
       end
 
-      it "should set the attributes to nil if given a blank string" do
+      it "set the attributes to nil if given a blank string" do
         @plant.typed_leaf_count = ''
         @plant.typed_leaf_count.should be_nil
       end
