@@ -2,6 +2,8 @@
 
 ... is a persistence layer written in ruby for CouchDB.
 
+[![Build Status](https://secure.travis-ci.org/langalex/couch_potato.png?branch=master)](http://travis-ci.org/langalex/couch_potato)
+
 ### Mission
 
 The goal of Couch Potato is to create a minimal framework in order to store and retrieve Ruby objects to/from CouchDB and create and query views.
@@ -156,7 +158,7 @@ Now you can save your objects. All database operations are encapsulated in the C
 You can of course also retrieve your instance:
 
     CouchPotato.database.load_document "id_of_the_user_document" # => <#User 0x3075>
-    
+
 #### Operations on multiple documents
 
 You can also load a bunch of documents with one request.
