@@ -129,8 +129,8 @@ describe CouchPotato::Database, 'load!' do
 
     it "raises an exception when not all documents could be found" do
       lambda {
-        db.load! ['1', '2', '3']
-      }.should raise_error(CouchPotato::NotFound, ['3'])
+        db.load! ['1', '2', '3', '4']
+      }.should raise_error(CouchPotato::NotFound, '3, 4')
     end
 
     it "raises no exception when all documents are found" do

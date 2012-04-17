@@ -100,6 +100,10 @@ module CouchPotato
     alias_method :destroy, :destroy_document
 
     # loads a document by its id(s)
+    # id - either a single id or an array of ids
+    # returns either a single document or an array of documents (if an array of ids was passed).
+    # returns nil if the single document could not be found. when passing an array and some documents
+    # could not be found these are omitted from the returned array
     def load_document(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
 
@@ -117,12 +121,14 @@ module CouchPotato
     end
     alias_method :load, :load_document
 
+    # loads one or more documents by its id(s)
+    # behaves like #load except it raises a CouchPotato::NotFound if any of the documents could not be found
     def load!(id)
       doc = load(id)
       if id.is_a?(Array)
         missing_docs = id - doc.map(&:id)
       end
-      raise(CouchPotato::NotFound, missing_docs) if doc.nil? || missing_docs.try(:any?)
+      raise(CouchPotato::NotFound, missing_docs.try(:join, ', ')) if doc.nil? || missing_docs.try(:any?)
       doc
     end
 
