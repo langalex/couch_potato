@@ -64,6 +64,7 @@ module CouchPotato
 
     # returns the first result from a #view query or nil
     def first(spec)
+      spec.view_parameters = spec.view_parameters.merge({:limit => 1})
       view(spec).first
     end
 
