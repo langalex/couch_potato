@@ -3,13 +3,18 @@ require 'erb'
 
 module CouchPotato
   def self.rails_init
-    config = YAML::load(ERB.new(File.read(Rails.root.join('config/couchdb.yml'))).result)[Rails.env]
-    if config.is_a?(String)
-      CouchPotato::Config.database_name = config
+    path = Rails.root.join('config/couchdb.yml')
+    if File.exist?(path)
+      config = YAML::load(ERB.new(File.read(path)).result)[Rails.env]
+      if config.is_a?(String)
+        CouchPotato::Config.database_name = config
+      else
+        CouchPotato::Config.database_name = config['database']
+        CouchPotato::Config.split_design_documents_per_view = config['split_design_documents_per_view'] if config['split_design_documents_per_view']
+        CouchPotato::Config.default_language = config['default_language'] if config['default_language']
+      end
     else
-      CouchPotato::Config.database_name = config['database']
-      CouchPotato::Config.split_design_documents_per_view = config['split_design_documents_per_view'] if config['split_design_documents_per_view']
-      CouchPotato::Config.default_language = config['default_language'] if config['default_language']
+      Rails.logger.warn "Rails.root/config/couchdb.yml does not exist. Not configuring a database."
     end
   end
 

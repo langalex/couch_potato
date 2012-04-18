@@ -6,6 +6,7 @@ module Rails
   def self.env
     'test'
   end
+
   class Railtie
     def self.initializer(*args)
     end
@@ -13,6 +14,10 @@ module Rails
 
   def self.root
     RSpec::Mocks::Mock.new :join => ''
+  end
+
+  def self.logger
+    RSpec::Mocks::Mock.new :warn => nil
   end
 end
 
@@ -27,6 +32,22 @@ describe "railtie" do
   after(:all) do
     CouchPotato::Config.database_name = @database_name
     CouchPotato::Config.default_language = @default_language
+  end
+
+  before(:each) do
+    File.stub(exist?: true)
+  end
+
+  context 'when the yml file does not exist' do
+    before(:each) do
+      File.stub(exist?: false)
+    end
+
+    it 'does not configure the database' do
+      CouchPotato::Config.should_not_receive(:database_name=)
+
+      CouchPotato.rails_init
+    end
   end
 
   context 'yaml file contains only database names' do

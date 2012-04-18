@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    couch_potato (0.6.0)
+    couch_potato (0.7.0.pre.1)
       activemodel
       couchrest (>= 1.0.1)
       json (~> 1.6.0)
@@ -21,10 +21,10 @@ GEM
       rest-client (~> 1.6.1)
     diff-lcs (1.1.2)
     i18n (0.5.0)
-    json (1.6.1)
+    json (1.6.5)
     libv8 (3.3.10.4)
-    mime-types (1.16)
-    multi_json (1.0.3)
+    mime-types (1.17.2)
+    multi_json (1.0.4)
     rake (0.8.7)
     rest-client (1.6.7)
       mime-types (>= 1.16)

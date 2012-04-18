@@ -11,6 +11,8 @@
 * improve compatibility with state_machine (Alexander Lang)
 * allow false as default value for properties (Matthias Jakel)
 * support for Erlang views (Alexander Lang)
+* don't crash, only warn if couchdb.yml is missing (Alexander Lang)
+* use the therubyracer gem to run view specs instead of relying on a `js` executable (Alexander Lang)
 
 ### 0.6.0
 
