@@ -5,14 +5,15 @@ PATH
       activemodel
       couchrest (>= 1.0.1)
       json (~> 1.6.0)
+      therubyracer
 
 GEM
   remote: http://rubygems.org/
   specs:
-    activemodel (3.2.1)
-      activesupport (= 3.2.1)
+    activemodel (3.2.3)
+      activesupport (= 3.2.3)
       builder (~> 3.0.0)
-    activesupport (3.2.1)
+    activesupport (3.2.3)
       i18n (~> 0.6)
       multi_json (~> 1.0)
     builder (3.0.0)
@@ -24,8 +25,8 @@ GEM
     i18n (0.6.0)
     json (1.6.5)
     libv8 (3.3.10.4)
-    mime-types (1.17.2)
-    multi_json (1.0.4)
+    mime-types (1.18)
+    multi_json (1.0.3)
     rake (0.9.2)
     rest-client (1.6.7)
       mime-types (>= 1.16)
@@ -49,6 +50,5 @@ DEPENDENCIES
   couch_potato!
   rake
   rspec (>= 2.0)
-  therubyracer
   timecop
   tzinfo
