@@ -146,8 +146,7 @@ module CouchPotato
 
     def bulk_load(ids)
       response = couchrest_database.bulk_load ids
-      existing_rows = response['rows'].select{|row| row.key? 'doc'}
-      docs = existing_rows.map{|row| row["doc"]}
+      docs = response['rows'].map{|row| row['doc']}.compact
       docs.each{|doc| doc.database = self}
     end
 
