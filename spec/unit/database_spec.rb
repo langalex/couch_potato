@@ -73,7 +73,13 @@ describe CouchPotato::Database, 'load' do
     let(:doc1) { DbTestUser.new }
     let(:doc2) { DbTestUser.new }
     let(:response) do
-      {"rows" => [{}, {"doc" => doc1}, {"doc" => doc2}]}
+      {
+        "rows" => [
+          {"doc" => nil, "value" => {"rev" => "10-df5a4021129ebb70f4a111eea1e881ca", "deleted"=> true}},
+          {"doc" => doc1},
+          {"doc" => doc2}
+        ]
+      }
     end
 
     before(:each) do
