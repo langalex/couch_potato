@@ -121,7 +121,7 @@ module CouchPotato
     end
 
     def ==(other) #:nodoc:
-      other.class == self.class && self.to_json == other.to_json
+      super || (self.class == other.class && self._id.present? && self._id == other._id)
     end
 
     def eql?(other)
