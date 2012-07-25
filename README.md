@@ -22,7 +22,7 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Supported Environments
 
-* Ruby 1.8.7, 1.9.2
+* Ruby 1.9.2
 * CouchDB 1.1.0
 
 (Supported means I run the specs against those before releasing a new gem.)
