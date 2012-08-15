@@ -4,6 +4,8 @@
 
 [![Build Status](https://secure.travis-ci.org/langalex/couch_potato.png?branch=master)](http://travis-ci.org/langalex/couch_potato)
 
+[![Dependencies](https://gemnasium.com/langalex/couch_potato.png)](https://gemnasium.com/langalex/couch_potato)
+
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/langalex/couch_potato)
 
 
