@@ -1,5 +1,9 @@
 ## Changes
 
+### 0.7.1
+
+* fixes a bug when trying to bulk-load non-existant documents
+
 ### 0.7.0
 
 * ActiveSupport/Rails 3.2 compatibility  (Alexander Lang)
