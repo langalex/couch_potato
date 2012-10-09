@@ -132,6 +132,11 @@ module CouchPotato
       _id.hash * (_id.hash.to_s.size ** 10) + _rev.hash
     end
 
+    # Returns a reloaded instance. Does not touch the original instance.
+    def reload
+      database.load id
+    end
+
     def inspect
       attributes_as_string = attributes.map {|attribute, value| "#{attribute}: #{value.inspect}"}.join(", ")
       %Q{#<#{self.class} _id: "#{_id}", _rev: "#{_rev}", #{attributes_as_string}>}

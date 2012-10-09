@@ -1,5 +1,9 @@
 ## Changes
 
+### Current
+
+* adds `reload` method (Alexander Lang)
+
 ### 0.7.1
 
 * fixes a bug when trying to bulk-load non-existant documents
