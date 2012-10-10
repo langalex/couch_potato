@@ -98,6 +98,7 @@ Add to your _Gemfile_:
     gem 'actionmailer'
     gem 'activemodel'
     gem "couch_potato"
+    gem 'tzinfo'
 
 Note: please make sure that when you run `Date.today.as_json` in the Rails console it returns something like `2010/12/10` and not `2010-12-10` - if it does another gem has overwritten Couch Potato's Date patches - in this case move Couch Potato further down in your Gemfile or whereever you load it.
 
