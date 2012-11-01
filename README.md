@@ -224,6 +224,49 @@ You can also force a dirty state:
     user.name_changed? # => false
     CouchPotato.database.save_document user # does nothing as no attributes are dirty
 
+#### Optional Deep Dirty Tracking
+
+In addition to standard dirty tracking, you can opt-in to more advanced dirty tracking for deeply structured documents by including the ```CouchPotato::DeepDirtyAttributes``` module in your models. This provides two benefits:
+
+1. Dirty checking for array and embedded document properties is more reliable, such that modifying elements in an array (by any means) or changing a property of an embedded document will make the root document be ```changed?```. With standard dirty checking, the ```#{property}=``` method must be called on the root document for it to be ```changed?```.
+2. It gives more useful and detailed change tracking for embedded documents, arrays of simple values, and arrays of embedded documents.
+
+The ```#{property}_changed?``` and ```#{property}_was``` methods work the same as basic dirty checking, and the ```_was``` values are always deep clones of the original/previous value. The ```#{property}_change``` and ```changes``` methods differ from basic dirty checking for embedded documents and arrays, giving richer details of the changes instead of just the previous and current values. This makes generating detailed, human friendly audit trails of documents easy.
+
+Tracking changes in embedded documents gives easy access to the changes in that document:
+
+    book = Book.new(:cover => Cover.new(:color => "red"))
+    book.cover.color = "blue"
+    book.cover_changed? # => true
+    book.cover_was # => <deep clone of original state of book.cover>
+    book.cover_change # => [<deep clone of original state of book.cover>, {:color => ["red", "blue"]}]
+
+Tracking changes in arrays of simple properties gives easy access to added and removed items:
+
+    book = Book.new(:authors => ["Sarah", "Jane"])
+    book.authors.delete "Jane"
+    book.authors << "Sue"
+    book.authors_changed? # => true
+    book.authors_was # => ["Sarah", "Jane"]
+    book.authors_change # => [["Sarah", "Jane"], {:added => ["Sue"], :removed => ["Jane"]}]
+
+Tracking changes in an array of embedded documents also gives changed items:
+
+    book = Book.new(:pages => [Page.new(:number => 1), Page.new(:number => 2)]
+    book.pages[0].title = "New title"
+    book.pages.delete_at 1
+    book.pages << Page.new(:number => 3)
+    book.pages_changed? # => true
+    book.pages_was # => <deep clone of original pages array>
+    book.pages_change[0] # => <deep clone of original pages array>
+    book.pages_change[1] # => {:added => [<page 3>], :removed => [<page 2>], :changed => [[<deep clone of original page 1>, {:title => [nil, "New title"]}]]}
+
+For change tracking in nested documents and document arrays to work, the embedded documents **must** have unique ```_id``` values. This can be accomplished easily in your embedded CouchPotato models by overriding ```initialize```:
+
+    def initialize(*args)
+      self._id = SecureRandom.uuid
+      super
+    end
 
 #### Object validations
 

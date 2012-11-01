@@ -42,13 +42,17 @@ module CouchPotato
 
       private
 
-      def accessors_module_for(clazz)
-        module_name = "#{clazz.name.to_s.gsub('::', '__')}AccessorMethods"
+      def module_for(clazz, module_name)
+        module_name = "#{clazz.name.to_s.gsub('::', '__')}#{module_name}"
         unless clazz.const_defined?(module_name)
           accessors_module = clazz.const_set(module_name, Module.new)
           clazz.send(:include, accessors_module)
         end
         clazz.const_get(module_name)
+      end
+
+      def accessors_module_for(clazz)
+        module_for(clazz, "AccessorMethods")
       end
 
       def define_accessors(base, name, options)

@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/simple_property'
+require File.dirname(__FILE__) + '/deep_tracked_property'
 
 module CouchPotato
   module Persistence
