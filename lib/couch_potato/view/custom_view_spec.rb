@@ -8,35 +8,35 @@ module CouchPotato
       def map_function
         options[:map]
       end
-      
+
       def reduce_function
         options[:reduce]
       end
-      
+
       def view_parameters
         {:include_docs => options[:include_docs] || false}.merge(super)
       end
-      
+
       def process_results(results)
         if count?
           results['rows'].first.try(:[], 'value') || 0
-        else  
+        else
           results['rows'].map do |row|
             if row['doc'].instance_of?(klass)
               row['doc']
             else
-              klass.json_create row['doc'] || row['value'].merge(:_id => row['id'] || row['key'])
+              result = row['doc'] || (row['value'].merge(:_id => row['id'] || row['key']) unless view_parameters[:include_docs])
+              klass.json_create result if result
             end
-          end
+          end.compact
         end
       end
-      
-      private 
-      
+
+      private
+
       def count?
         view_parameters[:reduce]
       end
-      
     end
   end
 end

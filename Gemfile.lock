@@ -48,7 +48,7 @@ PLATFORMS
 DEPENDENCIES
   couch_potato!
   rake
-  rspec (>= 2.0)
+  rspec (~> 2.11.0)
   therubyracer
   timecop
   tzinfo

@@ -278,4 +278,15 @@ describe 'views' do
       @db.view(Coworker.all(:list => :append_doe)).first.name.should == 'joe doe'
     end
   end
+
+  describe 'with stale views' do
+    it 'does not return deleted documents' do
+      build = Build.new
+      @db.save_document! build
+      @db.view(Build.timeline)
+      @db.destroy build
+
+      expect(@db.view(Build.timeline(:stale => 'ok'))).to be_empty
+    end
+  end
 end

@@ -140,7 +140,9 @@ module CouchPotato
         if count?
           results['rows'].first.try(:[], 'value') || 0
         else
-          results['rows'].map { |row| row['doc'] || row['id'] }
+          results['rows'].map {|row|
+            row['doc'] || (row['id'] unless view_parameters[:include_docs])
+          }.compact
         end
       end
 

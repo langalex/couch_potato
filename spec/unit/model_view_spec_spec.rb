@@ -1,6 +1,29 @@
 require 'spec_helper'
 
-describe CouchPotato::View::ModelViewSpec, 'map_function' do
+describe CouchPotato::View::ModelViewSpec, '#process_results' do
+  it 'returns the documents' do
+    spec = CouchPotato::View::ModelViewSpec.new(Object, 'all', {}, {})
+    processed_results = spec.process_results('rows' => [{'doc' => 'doc-1'}])
+
+    expect(processed_results).to eql(['doc-1'])
+  end
+
+  it 'returns ids where there are no documents' do
+    spec = CouchPotato::View::ModelViewSpec.new(Object, 'all', {}, {:include_docs => false})
+    processed_results = spec.process_results('rows' => [{'id' => 'doc-1'}])
+
+    expect(processed_results).to eql(['doc-1'])
+  end
+
+  it 'filters out rows without documents when include_docs=true (i.e. doc has been deleted)' do
+    spec = CouchPotato::View::ModelViewSpec.new(Object, 'all', {}, {:include_docs => true})
+    processed_results = spec.process_results('rows' => [{'id' => 'doc-1'}])
+
+    expect(processed_results).to be_empty
+  end
+end
+
+describe CouchPotato::View::ModelViewSpec, '#map_function' do
   it "should include conditions" do
     spec = CouchPotato::View::ModelViewSpec.new Object, 'all', {:conditions => 'doc.closed = true'}, {}
     spec.map_function.should include('if(doc.ruby_class && doc.ruby_class == \'Object\' && (doc.closed = true))')
