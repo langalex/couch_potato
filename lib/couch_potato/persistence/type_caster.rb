@@ -32,6 +32,8 @@ module CouchPotato
             BigDecimal.new(value.to_s.scan(NUMBER_REGEX).join).round unless value.blank?
           elsif type == Float
             value.to_s.scan(NUMBER_REGEX).join.to_f unless value.blank?
+          elsif type == BigDecimal
+            BigDecimal.new(value.to_s) unless value.blank?
           else
             type.json_create value unless value.blank?
           end
