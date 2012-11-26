@@ -57,6 +57,14 @@ describe 'properties' do
     c.title.should == 3
   end
 
+  it "should persist a big decimal" do
+    require 'bigdecimal'
+    c = BigDecimalContainer.new :number => BigDecimal.new( '42.42' )
+    CouchPotato.database.save_document! c
+    c = CouchPotato.database.load_document c.id
+    c.number.should == BigDecimal.new( '42.42' )
+  end
+
   it "should persist a hash" do
     c = Comment.new :title => {'key' => 'value'}
     CouchPotato.database.save_document! c
