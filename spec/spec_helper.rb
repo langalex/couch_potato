@@ -31,6 +31,12 @@ class Comment
   property :title
 end
 
+class BigDecimalContainer
+  include CouchPotato::Persistence
+
+  property :number, :type => BigDecimal
+end
+
 def recreate_db
   CouchPotato.couchrest_database.recreate!
 end
