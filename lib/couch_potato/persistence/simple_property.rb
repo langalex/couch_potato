@@ -56,7 +56,11 @@ module CouchPotato
             load_attribute_from_document(name) unless instance_variable_defined?("@#{name}")
             value = instance_variable_get("@#{name}")
             if value.nil? && !options[:default].nil?
-              default = clone_attribute(options[:default])
+              default = if options[:default].respond_to?(:call)
+                options[:default].call
+              else
+                clone_attribute(options[:default])
+              end
               self.instance_variable_set("@#{name}", default)
               default
             else
