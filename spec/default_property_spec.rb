@@ -6,6 +6,7 @@ class Test
   property :test, :default => 'Test value'
   property :complex, :default => [1, 2, 3]
   property :false_value, :default => false
+  property :proc, :default => Proc.new { 1 + 2 }
 end
 
 describe 'default properties' do
@@ -40,5 +41,10 @@ describe 'default properties' do
   it "uses the default value also if the default is false" do
     t = Test.new
     t.false_value.should == false
+  end
+
+  it "uses the return value of a Proc given as the default" do
+    t = Test.new
+    t.proc.should == 3
   end
 end
