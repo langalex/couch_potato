@@ -18,18 +18,19 @@ module CouchPotato
       end
 
       def process_results(results)
-        if count?
-          results['rows'].first.try(:[], 'value') || 0
-        else
-          results['rows'].map do |row|
-            if row['doc'].instance_of?(klass)
-              row['doc']
-            else
-              result = row['doc'] || (row['value'].merge(:_id => row['id'] || row['key']) unless view_parameters[:include_docs])
-              klass.json_create result if result
-            end
-          end.compact
-        end
+        processed = if count?
+                      results['rows'].first.try(:[], 'value') || 0
+                    else
+                      results['rows'].map do |row|
+                        if row['doc'].instance_of?(klass)
+                          row['doc']
+                        else
+                          result = row['doc'] || (row['value'].merge(:_id => row['id'] || row['key']) unless view_parameters[:include_docs])
+                          klass.json_create result if result
+                        end
+                      end.compact
+                    end
+        super processed
       end
 
       private

@@ -3,7 +3,7 @@ module CouchPotato
     class BaseViewSpec
       attr_reader :reduce_function, :list_name, :list_function, :design_document, :view_name, :klass, :options, :language
       attr_accessor :view_parameters
-      
+
       private :klass, :options
 
       def initialize(klass, view_name, options, view_parameters)
@@ -27,7 +27,11 @@ module CouchPotato
       end
 
       def process_results(results)
-        results
+        if (filter = options[:results_filter])
+          filter.call results
+        else
+          results
+        end
       end
 
       private

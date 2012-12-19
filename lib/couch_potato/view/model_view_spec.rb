@@ -8,6 +8,8 @@ module CouchPotato
     #
     # in addition you can pass in conditions as a javascript string
     #   view :my_view_only_completed, :key => :name, :conditions => 'doc.completed = true'
+    # and also a results filter (the results will be run through the given proc):
+    #   view :my_view, :key => :name, :results_filter => lambda{|results| results.size}
     class ModelViewSpec < BaseViewSpec
       class ErlangGenerator
         def initialize(options, klass)
@@ -137,13 +139,14 @@ module CouchPotato
       end
 
       def process_results(results)
-        if count?
-          results['rows'].first.try(:[], 'value') || 0
-        else
-          results['rows'].map {|row|
-            row['doc'] || (row['id'] unless view_parameters[:include_docs])
-          }.compact
-        end
+        processed = if count?
+                      results['rows'].first.try(:[], 'value') || 0
+                    else
+                      results['rows'].map {|row|
+                        row['doc'] || (row['id'] unless view_parameters[:include_docs])
+                      }.compact
+                    end
+        super processed
       end
 
       private

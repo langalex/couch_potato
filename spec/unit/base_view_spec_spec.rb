@@ -11,13 +11,13 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       CouchPotato::Config.default_language = @default_language
     end
 
-    it "should raise an error when passing invalid view parameters" do
+    it "raises an error when passing invalid view parameters" do
       lambda {
         CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {:start_key => '1'}
       }.should raise_error(ArgumentError, "invalid view parameter: start_key")
     end
 
-    it "should not raise an error when passing valid view parameters" do
+    it "does not raise an error when passing valid view parameters" do
       lambda {
         CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {
           :key => 'keyvalue',
@@ -38,66 +38,66 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       }.should_not raise_error
     end
 
-    it "should remove stale when it's nil" do
+    it "removes stale when it's nil" do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {:stale => nil}
       spec.view_parameters.should == {}
     end
 
-    it "should convert a range passed as key into startkey and endkey" do
+    it "converts a range passed as key into startkey and endkey" do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {:key => '1'..'2'}
       spec.view_parameters.should == {:startkey => '1', :endkey => '2'}
     end
 
-    it "should convert a plain value to a hash with a key" do
+    it "converts a plain value to a hash with a key" do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, '2'
       spec.view_parameters.should == {:key => '2'}
     end
 
-    it "should generate the design document path by snake_casing the class name but keeping double colons" do
+    it "generates the design document path by snake_casing the class name but keeping double colons" do
       spec = CouchPotato::View::BaseViewSpec.new 'Foo::BarBaz', '', {}, ''
       spec.design_document.should == 'foo::bar_baz'
     end
 
-    it "should generate the design document independent of the view name by default" do
+    it "generates the design document independent of the view name by default" do
       CouchPotato::Config.split_design_documents_per_view = false
       spec = CouchPotato::View::BaseViewSpec.new 'User', 'by_login_and_email', {}, ''
       spec.design_document.should == 'user'
     end
 
-    it "should generate the design document per view if configured to" do
+    it "generates the design document per view if configured to" do
       CouchPotato::Config.split_design_documents_per_view = true
       spec = CouchPotato::View::BaseViewSpec.new 'User', 'by_login_and_email', {}, ''
       spec.design_document.should == 'user_view_by_login_and_email'
     end
 
-    it "should generate the design document independent of the list name by default" do
+    it "generates the design document independent of the list name by default" do
       CouchPotato::Config.split_design_documents_per_view = false
       spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil, :to_s => 'User'), '', {:list => 'test_list'}, {}
       spec.design_document.should == 'user'
     end
 
-    it "should generate the design document per view if configured to" do
+    it "generates the design document per view if configured to" do
       CouchPotato::Config.split_design_documents_per_view = true
       spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil, :to_s => 'User'), '', {:list => :test_list}, {}
       spec.design_document.should == 'user_list_test_list'
     end
 
-    it "should extract the list name from the options" do
+    it "extracts the list name from the options" do
       spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => :test_list}, {}
       spec.list_name.should == :test_list
     end
 
-    it "should extract the list from the view parameters" do
+    it "extracts the list from the view parameters" do
       spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {}, {:list => :test_list}
       spec.list_name.should == :test_list
     end
 
-    it "should prefer the list name from the view parameters over the one from the options" do
+    it "prefers the list name from the view parameters over the one from the options" do
       spec = CouchPotato::View::BaseViewSpec.new stub(:lists => nil), 'all', {:list => 'my_list'}, {:list => :test_list}
       spec.list_name.should == :test_list
     end
 
-    it "should return the list function" do
+    it "returns the list function" do
       klass = stub 'class'
       klass.stub(:lists).with('test_list').and_return('<list_code>')
       spec = CouchPotato::View::BaseViewSpec.new klass, 'all', {:list => 'test_list'}, {}
@@ -113,6 +113,13 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
     it 'sets the language to the given language' do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {:language => :erlang}, {}
       spec.language.should == :erlang
+    end
+
+    it 'post-processes the results' do
+      filter = lambda{ |results| results.map{|r| r.to_i} }
+      spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {:results_filter => filter}, {}
+
+      expect(spec.process_results(['1'])).to eql([1])
     end
   end
 end

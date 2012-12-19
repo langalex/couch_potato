@@ -12,11 +12,7 @@ module CouchPotato
       def map_function
         options[:map]
       end
-      
-      def process_results(results)
-        options[:results_filter] ? options[:results_filter].call(results) : results
-      end
-      
+
       def reduce_function
         options[:reduce]
       end

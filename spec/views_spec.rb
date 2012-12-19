@@ -125,19 +125,19 @@ describe 'views' do
   end
 
   describe "properties defined" do
-    it "should assign the configured properties" do
+    it "assigns the configured properties" do
       CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => 'Build')
-      @db.view(Build.minimal_timeline).first.state.should == 'success'
+      @db.view(Build.minimal_timeline).first.state.should eql('success')
     end
 
-    it "should not assign the properties not configured" do
+    it "does not assign the properties not configured" do
       CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => 'Build')
       @db.view(Build.minimal_timeline).first.time.should be_nil
     end
 
-    it "should assign the id even if it is not configured" do
+    it "assigns the id even if it is not configured" do
       id = CouchPotato.couchrest_database.save_doc(:state => 'success', :time => '2008-01-01', JSON.create_id.to_sym => 'Build')['id']
-      @db.view(Build.minimal_timeline).first._id.should == id
+      @db.view(Build.minimal_timeline).first._id.should eql(id)
     end
   end
 
