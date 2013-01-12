@@ -14,7 +14,6 @@ module CouchPotato
 
     # executes a view and return the results. you pass in a view spec
     # which is usually a result of a SomePersistentClass.some_view call.
-    # also return the total_rows returned by CouchDB as an accessor on the results.
     #
     # Example:
     #
@@ -26,7 +25,6 @@ module CouchPotato
     #   db = CouchPotato.database
     #
     #   db.view(User.all) # => [user1, user2]
-    #   db.view(User.all).total_rows # => 2
     #
     # You can pass the usual parameters you can pass to a couchdb view to the view:
     #
@@ -55,7 +53,6 @@ module CouchPotato
         spec.language
       ).query_view!(spec.view_parameters)
       processed_results = spec.process_results results
-      processed_results.instance_eval "def total_rows; #{results['total_rows']}; end" if results['total_rows']
       processed_results.each do |document|
         document.database = self if document.respond_to?(:database=)
       end if processed_results.respond_to?(:each)

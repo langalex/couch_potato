@@ -105,11 +105,6 @@ describe 'views' do
     @db.view(Build.count(:reduce => true)).should == 0
   end
 
-  it "should return the total_rows" do
-    @db.save_document! Build.new(:state => 'success', :time => '2008-01-01')
-    @db.view(Build.count(:reduce => false)).total_rows.should == 1
-  end
-
   describe "with multiple keys" do
     it "should return the documents with matching keys" do
       build = Build.new(:state => 'success', :time => '2008-01-01')

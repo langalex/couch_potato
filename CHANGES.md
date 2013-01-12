@@ -3,6 +3,7 @@
 ### Current
 
 * adds `reload` method (Alexander Lang)
+* removes `total_rows` from database results (Alexander Lang)
 
 ### 0.7.1
 
