@@ -81,13 +81,6 @@ Create a config/couchdb.yml:
       <<: *default
       database: <%= ENV['DB_NAME'] %>
 
-#### Rails 2.x
-
-Add to your _config/environment.rb_:
-
-    config.gem 'couch_potato', :source => 'http://gemcutter.org'
-    config.frameworks -= [:active_record] # if you switch completely
-
 #### Rails 3.x
 
 Add to your _Gemfile_:
