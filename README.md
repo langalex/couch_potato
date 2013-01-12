@@ -27,8 +27,8 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Supported Environments
 
-* Ruby 1.9.2
-* CouchDB 1.1.0
+* Ruby 1.9.3
+* CouchDB 1.2.0
 
 (Supported means I run the specs against those before releasing a new gem.)
 
@@ -36,7 +36,7 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 Couch Potato is hosted as a gem which you can install like this:
 
-    (sudo) gem install couch_potato
+    gem install couch_potato
 
 #### Using with your ruby application:
 
