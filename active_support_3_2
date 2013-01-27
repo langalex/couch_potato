@@ -1,8 +1,8 @@
 source :rubygems
 
 gem 'activemodel', '~>3.2'
-if RUBY_PLATFORM=~ /jruby/
-  gem 'therhinoracer'
+if RUBY_PLATFORM =~ /java/
+  gem 'therubyrhino'
 else
    gem 'therubyracer'
 end

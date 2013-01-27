@@ -1,11 +1,10 @@
 source :rubygems
 
 gem 'activemodel', '~>4.0.0.beta', git: 'https://github.com/rails/rails.git'
-if RUBY_PLATFORM=~ /jruby/
-  gem 'therhinoracer'
+if RUBY_PLATFORM =~ /java/
+  gem 'therubyrhino'
 else
    gem 'therubyracer'
 end
-
 
 gemspec
