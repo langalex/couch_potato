@@ -11,5 +11,6 @@ before_script:
   - sudo /etc/init.d/couchdb restart
 matrix:
   allow_failures:
-    - jruby-19mode
-    - rbx-19mode
+    - rvm
+      - jruby-19mode
+      - rbx-19mode
