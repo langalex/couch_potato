@@ -3,3 +3,4 @@
 pkg
 .rvmrc
 *.swp
+*.lock

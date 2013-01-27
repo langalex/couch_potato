@@ -1,4 +1,10 @@
 source :rubygems
 
 gem 'activemodel', '~>3.2'
+if RUBY_PLATFORM=~ /jruby/
+  gem 'therhinoracer'
+else
+   gem 'therubyracer'
+end
+
 gemspec
