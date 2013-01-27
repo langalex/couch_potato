@@ -1,0 +1,6 @@
+source :rubygems
+
+gem 'activemodel', '~>4.0.0.beta', git: 'git@github.com:rails/rails.git'
+gem 'activesupport', '~>4.0.0.beta', git: 'git@github.com:rails/rails.git'
+gem 'therubyracer'
+gemspec

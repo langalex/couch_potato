@@ -29,6 +29,7 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 * Ruby 1.9.3
 * CouchDB 1.2.0
+* ActiveSupport 3.2, 4.0
 
 (Supported means I run the specs against those before releasing a new gem.)
 
