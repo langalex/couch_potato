@@ -3,11 +3,6 @@ Bundler::GemHelper.install_tasks
 
 require 'rake'
 require "rspec/core/rake_task"
-begin
-  require 'rdoc/task'
-rescue LoadError
-  require 'rake/rdoctask'
-end
 
 task :default => :spec
 
@@ -37,15 +32,4 @@ task :spec do
       end
     end
   end
-
-end
-
-desc 'Generate documentation'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'Couch Potato'
-  rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README.md')
-  rdoc.rdoc_files.include('lib/couch_potato.rb')
-  rdoc.rdoc_files.include('lib/couch_potato/**/*.rb')
 end
