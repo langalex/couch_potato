@@ -76,7 +76,9 @@ describe 'properties' do
     c = Comment.new :title => value
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
-    c.title.should == value
+    c.title.to_json.should == value.to_json
+    # no id provided in embedded object, need to check yourself for content equality
+    c.title.should_not == value
   end
 
   it "should persist a child class" do
@@ -117,7 +119,7 @@ describe 'properties' do
     p.ship_address = a
     CouchPotato.database.save_document! p
     p = CouchPotato.database.load_document p.id
-    p.ship_address.should === a
+    p.ship_address.to_json.should === a.to_json
   end
 
   it "should persist null for a null " do
@@ -231,7 +233,7 @@ describe 'properties' do
       w = Watch.new :custom_address => [address]
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
-      w.custom_address.should eql([address])
+      w.custom_address.to_json.should eql([address].to_json)
     end
 
     it "should handle nil values" do
