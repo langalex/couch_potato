@@ -6,7 +6,7 @@
 
 [![Dependencies](https://gemnasium.com/langalex/couch_potato.png)](https://gemnasium.com/langalex/couch_potato)
 
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/langalex/couch_potato)
+[![Code Climate](https://codeclimate.com/github/langalex/couch_potato.png)](https://codeclimate.com/github/langalex/couch_potato)
 
 
 ### Mission
