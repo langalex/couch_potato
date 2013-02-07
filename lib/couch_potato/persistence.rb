@@ -9,6 +9,7 @@ require File.dirname(__FILE__) + '/persistence/dirty_attributes'
 require File.dirname(__FILE__) + '/persistence/ghost_attributes'
 require File.dirname(__FILE__) + '/persistence/attachments'
 require File.dirname(__FILE__) + '/persistence/type_caster'
+require File.dirname(__FILE__) + '/forbidden_attributes_protection'
 require File.dirname(__FILE__) + '/view/custom_views'
 require File.dirname(__FILE__) + '/view/lists'
 require File.dirname(__FILE__) + '/view/view_query'
@@ -20,7 +21,7 @@ module CouchPotato
     def self.included(base) #:nodoc:
       base.send :include, Properties, Callbacks, Json, CouchPotato::View::CustomViews, CouchPotato::View::Lists
       base.send :include, DirtyAttributes, GhostAttributes, Attachments
-      base.send :include, MagicTimestamps, ActiveModelCompliance
+      base.send :include, MagicTimestamps, ActiveModelCompliance, ForbiddenAttributesProtection
       base.send :include, Validation
       base.class_eval do
         attr_accessor :_id, :_rev, :_deleted, :database
@@ -51,9 +52,7 @@ module CouchPotato
     def initialize(attributes = {})
       if attributes
         @skip_dirty_tracking = true
-        attributes.each do |name, value|
-          self.send("#{name}=", value)
-        end
+        self.attributes = attributes
         @skip_dirty_tracking = false
       end
       yield self if block_given?
