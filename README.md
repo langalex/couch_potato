@@ -88,6 +88,7 @@ Add to your _Gemfile_:
 
     # gem 'rails' # we don't want to load activerecord so we can't require rails
     gem 'railties'
+    gem 'activeresource'
     gem 'actionpack'
     gem 'actionmailer'
     gem 'activemodel'
