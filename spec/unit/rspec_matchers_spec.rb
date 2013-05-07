@@ -52,11 +52,11 @@ end
 
 describe CouchPotato::RSpec::ReduceToMatcher do
   before(:each) do
-    @view_spec = stub(:reduce_function => "function(docs, keys, rereduce) {
+    @view_spec = stub(:reduce_function => "function(keys, values, rereduce) {
       if(rereduce) {
-        return(sum(keys) * 2);
+        return(sum(values) * 2);
       } else {
-        return(sum(keys));
+        return(sum(values));
       };
     }")
   end

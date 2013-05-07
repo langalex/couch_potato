@@ -35,12 +35,12 @@ module RSpec
       CouchPotato::RSpec::MapToProxy.new(document)
     end
 
-    def reduce(docs, keys)
-      CouchPotato::RSpec::ReduceToProxy.new(docs, keys)
+    def reduce(keys, values)
+      CouchPotato::RSpec::ReduceToProxy.new(keys, values)
     end
 
-    def rereduce(docs, keys)
-      CouchPotato::RSpec::ReduceToProxy.new(docs, keys, true)
+    def rereduce(keys, values)
+      CouchPotato::RSpec::ReduceToProxy.new(keys, values, true)
     end
 
     def list(results)
