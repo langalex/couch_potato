@@ -23,7 +23,6 @@ module CouchPotato
 
       def matches?(view_spec)
         js = <<-JS
-          #{File.read(File.dirname(__FILE__) + '/print_r.js')}
           var doc = #{@input_ruby.to_json};
           var map = #{view_spec.map_function};
           var result = [];
@@ -31,7 +30,7 @@ module CouchPotato
             result.push([key, value]);
           };
           map(doc);
-          print_r(result);
+          JSON.stringify(result);
         JS
         @actual_ruby = JSON.parse(run_js(js))
         @expected_ruby == @actual_ruby

@@ -30,6 +30,11 @@ describe CouchPotato::RSpec::MapToMatcher do
       @view_spec.should_not map({:name => 'horst', :tags => ['person', 'male']}).to(['horst', 2], ['male', 'person'])
     end
   end
+
+  it "should work with date emit values" do
+    spec = stub(:map_function => "function(doc) { emit(null, new Date(1368802800000)); }")
+    spec.should map({}).to([nil, "2013-05-17T15:00:00.000Z"])
+  end
   
   describe "failing specs" do
     before(:each) do
@@ -67,6 +72,11 @@ describe CouchPotato::RSpec::ReduceToMatcher do
   
   it "should not pass if the given function returns different javascript" do
     @view_spec.should_not reduce([], [1, 2, 3]).to(7)
+  end
+
+  it "should work with date return values" do
+    spec = stub(:reduce_function => "function() { return new Date(1368802800000); }")
+    spec.should reduce([], []).to("2013-05-17T15:00:00.000Z")
   end
   
   describe "rereduce" do
@@ -107,7 +117,12 @@ describe CouchPotato::RSpec::ListAsMatcher do
   it "should not pass if the function does not return the expected json" do
     @view_spec.should_not list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
   end
-  
+
+  it "should work with date values" do
+    spec = stub(:list_function => "function() { send(JSON.stringify([{date: new Date(1368802800000)}])); }")
+    spec.should list({"rows" => [{}]}).as([{"date" => "2013-05-17T15:00:00.000Z"}])
+  end
+
   describe "failing specs" do
     it "should have a nice error message for failing should" do
       lambda {
