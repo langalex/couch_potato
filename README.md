@@ -446,6 +446,9 @@ Couch Potato provides custom RSpec matchers for testing the map and reduce funct
 
       view :by_name, :key => :name
       view :by_age,  :key => :age
+      view :oldest_by_name,
+        :map => "function(doc) { emit(doc.name, doc.age); }",
+        :reduce => "function(keys, values, rereduce) { return Math.max.apply(this, values); }"
     end
 
     #RSpec
@@ -459,9 +462,15 @@ Couch Potato provides custom RSpec matchers for testing the map and reduce funct
       it "should reduce the users to the sum of their age" do
         User.by_age.should reduce([], [23, 22]).to(45)
       end
+
+      it "should map/reduce users to the oldest age by name" do
+        docs = [User.new(:name => "John", :age => 25), User.new(:name => "John", :age => 30), User.new(:name => "Jane", :age => 20)]
+        User.oldest_by_name.should map_reduce(docs).with_options(:group => true).to(
+          {"key" => "John", "value" => 30}, {"key" => "Jane", "value" => 20})
+      end
     end
 
-This will actually run your map/reduce functions in a JavaScript interpreter, passing the arguments as JSON and converting the results back to Ruby. For more examples see the [spec](http://github.com/langalex/couch_potato/blob/master/spec/unit/rspec_matchers_spec.rb).
+This will actually run your map/reduce functions in a JavaScript interpreter, passing the arguments as JSON and converting the results back to Ruby. ```map_reduce``` specs map the input documents, reduce the emitted keys/values, and rereduce the results while also respecting the ```:group``` and ```:group_level``` couchdb options. For more examples see the [spec](http://github.com/langalex/couch_potato/blob/master/spec/unit/rspec_matchers_spec.rb).
 
 In order for this to work you must have the `js` executable in your PATH. This is usually part of the _spidermonkey_ package/port. (On MacPorts that's _spidemonkey_, on Linux it could be one of _libjs_, _libmozjs_ or _libspidermonkey_). When you installed CouchDB via your packet manager Spidermonkey should already be there.
 

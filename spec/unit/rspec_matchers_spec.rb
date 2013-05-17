@@ -52,11 +52,11 @@ end
 
 describe CouchPotato::RSpec::ReduceToMatcher do
   before(:each) do
-    @view_spec = stub(:reduce_function => "function(docs, keys, rereduce) {
+    @view_spec = stub(:reduce_function => "function(keys, values, rereduce) {
       if(rereduce) {
-        return(sum(keys) * 2);
+        return(sum(values) * 2);
       } else {
-        return(sum(keys));
+        return(sum(values));
       };
     }")
   end
@@ -91,6 +91,112 @@ describe CouchPotato::RSpec::ReduceToMatcher do
       lambda {
         @view_spec.should_not reduce([], [1, 2, 3]).to(6)
       }.should raise_error('Expected not to reduce to 6 but did.')
+    end
+  end
+end
+
+describe CouchPotato::RSpec::MapReduceToMatcher do
+  before(:each) do
+    @view_spec = stub(
+      :map_function => "function(doc) {
+          for (var i in doc.numbers)
+            emit([doc.age, doc.name], doc.numbers[i]);
+        }",
+      :reduce_function => "function (keys, values, rereduce) {
+          return Math.max.apply(this, values);
+        }")
+    @docs = [
+      {:name => "a", :age => 25, :numbers => [1, 2]},
+      {:name => "b", :age => 25, :numbers => [3, 4]},
+      {:name => "c", :age => 26, :numbers => [5, 6]},
+      {:name => "d", :age => 27, :numbers => [7, 8]}]
+  end
+
+  it "should handle date return values" do
+    spec = stub(:map_function => "function() { emit(null, null); }",
+      :reduce_function => "function() { return new Date(1368802800000); }")
+    spec.should map_reduce({}).to({"key" => nil, "value" => "2013-05-17T15:00:00.000Z"})
+  end
+
+  context "without grouping" do
+    it "should not group by key by default" do
+      @view_spec.should map_reduce(@docs).to({"key" => nil, "value" => 8})
+    end
+
+    it "should group by key with :group => false" do
+      @view_spec.should map_reduce(@docs).with_options(:group => false).to({"key" => nil, "value" => 8})
+    end
+  end
+
+  context "with grouping" do
+    [true, "exact"].each do |group_value|
+      it "should group by the full key with option :group => #{group_value}" do
+        @view_spec.should map_reduce(@docs).with_options(:group => group_value).to(
+          {"key" => [25, "a"], "value" => 2},
+          {"key" => [25, "b"], "value" => 4},
+          {"key" => [26, "c"], "value" => 6},
+          {"key" => [27, "d"], "value" => 8})
+      end
+    end
+
+    it "should group by parts of the keys based on the :group_level option" do
+      @view_spec.should map_reduce(@docs).with_options(:group_level => 1).to(
+        {"key" => [25], "value" => 4},
+        {"key" => [26], "value" => 6},
+        {"key" => [27], "value" => 8})
+    end
+  end
+
+  describe "rereducing" do
+    before :each do
+      @view_spec = stub(:map_function => "function(doc) {
+          emit(doc.name, doc.number);
+        }",
+        :reduce_function => "function (keys, values, rereduce) {
+          if (rereduce) {
+            var result = {rereduce_values: []};
+            for (var v in values) {
+              result.rereduce_values.push(values[v].reduce_values);
+            }
+            return result;
+          }
+          return {reduce_values: values};
+        }")
+    end
+
+    it "should reduce and rereduce for a single emit" do
+      @view_spec.should map_reduce({:name => "a", :number => 1}).to({"key" => nil, "value" => {"rereduce_values" => [[1]]}})
+    end
+
+    it "should split and reduce each half of emitted values separately and rereduce the results" do
+      docs = [
+        {:name => "a", :number => 1},
+        {:name => "a", :number => 2},
+        {:name => "a", :number => 3},
+        {:name => "a", :number => 4}]
+      @view_spec.should map_reduce(docs).to({"key" => nil, "value" => {"rereduce_values" => [[1, 2], [3, 4]]}})
+    end
+
+    it "should correctly split and rereduce with an odd number of emits" do
+      docs = [
+        {:name => "a", :number => 1},
+        {:name => "a", :number => 2},
+        {:name => "a", :number => 3}]
+      @view_spec.should map_reduce(docs).to({"key" => nil, "value" => {"rereduce_values" => [[1], [2, 3]]}})
+    end
+  end
+
+  describe "failing specs" do
+    it "should have a nice error message for failing should" do
+      lambda {
+        @view_spec.should map_reduce(@docs).with_options(:group => false).to({"key" => nil, "value" => 9})
+      }.should raise_error('Expected to map/reduce to [{"key"=>nil, "value"=>9}] but got [{"key"=>nil, "value"=>8}].')
+    end
+
+    it "should have a nice error message for failing should not" do
+      lambda {
+        @view_spec.should_not map_reduce(@docs).with_options(:group => false).to({"key" => nil, "value" => 8})
+      }.should raise_error('Expected not to map/reduce to [{"key"=>nil, "value"=>8}] but did.')
     end
   end
 end

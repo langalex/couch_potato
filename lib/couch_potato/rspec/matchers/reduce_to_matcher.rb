@@ -1,20 +1,20 @@
 module CouchPotato
   module RSpec
     class ReduceToProxy
-      def initialize(docs, keys, rereduce = false)
-        @docs, @keys, @rereduce = docs, keys, rereduce
+      def initialize(keys, values, rereduce = false)
+        @keys, @values, @rereduce = keys, values, rereduce
       end
 
       def to(expected_ruby)
-        ReduceToMatcher.new(expected_ruby, @docs, @keys, @rereduce)
+        ReduceToMatcher.new(expected_ruby, @keys, @values, @rereduce)
       end
     end
 
     class ReduceToMatcher
       include RunJS
 
-      def initialize(expected_ruby, docs, keys, rereduce = false)
-        @expected_ruby, @docs, @keys, @rereduce = expected_ruby, docs, keys, rereduce
+      def initialize(expected_ruby, keys, values, rereduce = false)
+        @expected_ruby, @keys, @values, @rereduce = expected_ruby, keys, values, rereduce
       end
 
       def matches?(view_spec)
@@ -29,10 +29,10 @@ module CouchPotato
             return rv;
           };
 
-          var docs = #{@docs.to_json};
           var keys = #{@keys.to_json};
+          var values = #{@values.to_json};
           var reduce = #{view_spec.reduce_function};
-          print_r({result: reduce(docs, keys, #{@rereduce})});
+          print_r({result: reduce(keys, values, #{@rereduce})});
         JS
         @actual_ruby = JSON.parse(run_js(js))['result']
         @expected_ruby == @actual_ruby
