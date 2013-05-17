@@ -20,7 +20,6 @@ module CouchPotato
 
       def matches?(view_spec)
         js = <<-JS
-          #{File.read(File.dirname(__FILE__) + '/print_r.js')}
           #{File.read(File.dirname(__FILE__) + '/json2.js')}
           var results = #{@results_ruby.to_json};
           var listed = '';
@@ -33,7 +32,7 @@ module CouchPotato
             listed = listed + text;
           };
           list();
-          print_r(JSON.parse(listed));
+          JSON.stringify(JSON.parse(listed));
         JS
 
         @actual_ruby = JSON.parse(run_js(js))
