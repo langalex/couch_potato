@@ -112,6 +112,12 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
       {:name => "d", :age => 27, :numbers => [7, 8]}]
   end
 
+  it "should handle date return values" do
+    spec = stub(:map_function => "function() { emit(null, null); }",
+      :reduce_function => "function() { return new Date(1368802800000); }")
+    spec.should map_reduce({}).to({"key" => nil, "value" => "2013-05-17T15:00:00.000Z"})
+  end
+
   context "without grouping" do
     it "should not group by key by default" do
       @view_spec.should map_reduce(@docs).to({"key" => nil, "value" => 8})

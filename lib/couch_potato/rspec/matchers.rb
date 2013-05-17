@@ -48,7 +48,7 @@ module RSpec
       CouchPotato::RSpec::ListAsProxy.new(results)
     end
 
-    def map_reduce(docs)
+    def map_reduce(*docs)
       CouchPotato::RSpec::MapReduceToProxy.new(docs)
     end
   end
