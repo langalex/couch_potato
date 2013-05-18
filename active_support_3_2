@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
 gem 'activemodel', '~>3.2'
 if RUBY_PLATFORM =~ /java/
