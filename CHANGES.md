@@ -1,10 +1,18 @@
 ## Changes
 
-### Current
+### 1.0.0
 
 * adds `reload` method (Alexander Lang)
 * removes `total_rows` from database results (Alexander Lang)
 * changes `==` to use ids instead of comparing all attributes (orders of magnitude faster) ([Jochen Kramer](https://github.com/freetwix))
+* fixes decoding JSON objects for newer versions of the JSON gem (Alexander Lang)
+* adds support for testing map/reduce/rereduce (Andy Morris)
+* fixes serializing dates in map/reduce specs (Andy Morris)
+* adds support for Rails4 forbidden attributes protection (Alexander Lang)
+* adds Rails4, drops 3.0/3.1 support (Alexander Lang)
+* adds property default values returned by Procs (Andy Morris)
+* adds suppot for BigDecimal properties (Fredrik Rubensson)
+* adds support for JRuby, Rubinius, drops Ruby 1.8, 1.9.2
 
 ### 0.7.1
 
