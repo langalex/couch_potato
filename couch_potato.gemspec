@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
 
   s.add_dependency 'json', '~> 1.6'
-  s.add_dependency 'couchrest', '>=1.0.1'
+  s.add_dependency 'couchrest', '~>1.2.0'
   s.add_dependency 'activemodel'
 
   s.add_development_dependency 'rspec', '~>2.11.0'
