@@ -12,7 +12,7 @@
 * adds Rails4, drops 3.0/3.1 support (Alexander Lang)
 * adds property default values returned by Procs (Andy Morris)
 * adds suppot for BigDecimal properties (Fredrik Rubensson)
-* adds support for Rubinius, 1.9.3, drops Ruby 1.8, 1.9.2
+* adds support for 2.0, Rubinius, 1.9.3, drops Ruby 1.8, 1.9.2
 
 ### 0.7.1
 
