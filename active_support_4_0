@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'activemodel', '~>4.0.0.beta', git: 'https://github.com/rails/rails.git'
-gem 'rails', '~>4.0.0.beta', git: 'https://github.com/rails/rails.git'
+gem 'activemodel', '~>4.0.0.rc1'
+gem 'rails', '~>4.0.0.rc1'
 if RUBY_PLATFORM =~ /java/
   gem 'therubyrhino'
 else

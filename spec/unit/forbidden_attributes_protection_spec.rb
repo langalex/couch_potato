@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 begin
+  require 'rack/test'
   require 'active_model/forbidden_attributes_protection'
   require 'action_controller/metal/strong_parameters'
 
