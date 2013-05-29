@@ -27,7 +27,7 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Supported Environments
 
-* Ruby 1.9.3
+* Ruby 1.9.3, 2.0, Rubinius
 * CouchDB 1.2.0
 * ActiveSupport 3.2, 4.0
 
