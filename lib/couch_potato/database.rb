@@ -144,7 +144,9 @@ module CouchPotato
     def bulk_load(ids)
       response = couchrest_database.bulk_load ids
       docs = response['rows'].map{|row| row["doc"]}.compact
-      docs.each{|doc| doc.database = self}
+      docs.each{|doc|
+        doc.database = self if doc.respond_to?(:database=)
+      }
     end
 
     def create_document(document, validate)

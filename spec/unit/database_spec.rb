@@ -46,7 +46,7 @@ end
 
 describe CouchPotato::Database, 'load' do
 
-  let(:couchrest_db) { stub('couchrest db', :info => nil) }
+  let(:couchrest_db) { stub('couchrest db', :info => nil).as_null_object }
   let(:db) { CouchPotato::Database.new couchrest_db }
 
   it "should raise an exception if nil given" do
@@ -69,7 +69,6 @@ describe CouchPotato::Database, 'load' do
   end
 
   context "when several ids given" do
-
     let(:doc1) { DbTestUser.new }
     let(:doc2) { DbTestUser.new }
     let(:response) do
@@ -77,7 +76,7 @@ describe CouchPotato::Database, 'load' do
     end
 
     before(:each) do
-      couchrest_db.stub(:bulk_load).and_return response
+      couchrest_db.stub(:bulk_load) { response }
     end
 
     it "requests the couchrest bulk method" do
@@ -93,6 +92,18 @@ describe CouchPotato::Database, 'load' do
       db.load(['1', '2', '3']).each do |doc|
         doc.database.should eql(db)
       end
+    end
+
+    it 'does not write itself to a document that has no database= method' do
+      doc1 = stub(:doc1)
+      doc1.stub(:respond_to?).with(:database=) { false }
+      couchrest_db.stub(:bulk_load) do
+        {"rows" => [{'doc' => doc1}]}
+      end
+
+      doc1.should_not_receive(:database=)
+
+      db.load(['1'])
     end
   end
 end
