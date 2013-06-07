@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.0.1
+
+* fixes error when bulk loaded document does not respond to database= (Alexander Lang)
+
 ### 1.0.0
 
 * adds `reload` method (Alexander Lang)
