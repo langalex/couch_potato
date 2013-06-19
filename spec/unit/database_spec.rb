@@ -342,32 +342,69 @@ describe CouchPotato::Database, 'view' do
     CouchPotato::View::ViewQuery.stub(:new => stub('view query', :query_view! => {'rows' => [@result]}))
   end
 
-  it "initialzes a view query with map/reduce/list funtions" do
+  it "initialzes a view query with map/reduce/list/lib funtions" do
     @spec.stub(:design_document => 'design_doc', :view_name => 'my_view',
       :map_function => '<map_code>', :reduce_function => '<reduce_code>',
+      :lib_function => {:test => '<test_code>'},
       :list_name => 'my_list', :list_function => '<list_code>', :language => 'javascript')
     CouchPotato::View::ViewQuery.should_receive(:new).with(
       @couchrest_db,
       'design_doc',
       {'my_view' => {
         :map => '<map_code>',
-        :reduce => '<reduce_code>'
+        :reduce => '<reduce_code>',
+        :lib => {:test => '<test_code>'}
       }},
       {'my_list' => '<list_code>'},
       'javascript')
     @db.view(@spec)
   end
 
-  it "initialzes a view query with only map/reduce functions" do
+  it "initialzes a view query with map/reduce/list funtions" do
     @spec.stub(:design_document => 'design_doc', :view_name => 'my_view',
       :map_function => '<map_code>', :reduce_function => '<reduce_code>',
-      :list_name => nil, :list_function => nil).as_null_object
+      :lib_function => nil, :list_name => 'my_list', :list_function => '<list_code>',
+      :language => 'javascript')
     CouchPotato::View::ViewQuery.should_receive(:new).with(
       @couchrest_db,
       'design_doc',
       {'my_view' => {
         :map => '<map_code>',
-        :reduce => '<reduce_code>'
+        :reduce => '<reduce_code>',
+        :lib => nil
+      }},
+      {'my_list' => '<list_code>'},
+      'javascript')
+    @db.view(@spec)
+  end
+
+  it "initialzes a view query with only map/reduce/lib functions" do
+    @spec.stub(:design_document => 'design_doc', :view_name => 'my_view',
+      :map_function => '<map_code>', :reduce_function => '<reduce_code>',
+      :list_name => nil, :list_function => nil,
+      :lib_function => {:test => '<test_code>'}).as_null_object
+    CouchPotato::View::ViewQuery.should_receive(:new).with(
+      @couchrest_db,
+      'design_doc',
+      {'my_view' => {
+        :map => '<map_code>',
+        :reduce => '<reduce_code>',
+        :lib => {:test => '<test_code>'}
+      }}, nil, anything)
+    @db.view(@spec)
+  end
+
+  it "initialzes a view query with only map/reduce functions" do
+    @spec.stub(:design_document => 'design_doc', :view_name => 'my_view',
+      :map_function => '<map_code>', :reduce_function => '<reduce_code>',
+      :lib_function => nil, :list_name => nil, :list_function => nil).as_null_object
+    CouchPotato::View::ViewQuery.should_receive(:new).with(
+      @couchrest_db,
+      'design_doc',
+      {'my_view' => {
+        :map => '<map_code>',
+        :reduce => '<reduce_code>',
+        :lib => nil
       }}, nil, anything)
     @db.view(@spec)
   end

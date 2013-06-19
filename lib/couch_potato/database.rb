@@ -47,7 +47,9 @@ module CouchPotato
         spec.design_document,
         {spec.view_name => {
           :map => spec.map_function,
-          :reduce => spec.reduce_function}
+          :reduce => spec.reduce_function,
+          :lib => spec.lib_function
+        }
         },
         ({spec.list_name => spec.list_function} unless spec.list_name.nil?),
         spec.language

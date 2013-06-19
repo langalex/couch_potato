@@ -293,10 +293,10 @@ If you want Rails to automatically show a 404 page when `CouchPotato::NotFound` 
       render(:file => 'public/404.html', :status => :not_found, :layout => false)
     end
 
-You can also pass in custom map/reduce functions with the custom view spec:
+You can also pass in custom map/reduce functions and CommonJS modules with the custom view spec:
 
     class User
-      view :all, :map => "function(doc) { emit(doc.created_at, null)}", :include_docs => true, :type => :custom
+      view :all, :map => "function(doc) { emit(doc.created_at, null)}", :lib => {:test => "exports.test = 'test';"}, :include_docs => true, :type => :custom
     end
 
 If you don't want the results to be converted into models the raw view is your friend:

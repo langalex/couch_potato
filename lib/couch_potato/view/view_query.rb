@@ -8,6 +8,7 @@ module CouchPotato
         @view_name = view.keys[0]
         @map_function = view.values[0][:map]
         @reduce_function = view.values[0][:reduce]
+        @lib_function = view.values[0][:lib]
         @language = language
         if list
           @list_function = list.values[0]
@@ -42,11 +43,10 @@ module CouchPotato
       end
 
       def view_functions
-        if @reduce_function
-          {'map' => @map_function, 'reduce' => @reduce_function}
-        else
-          {'map' => @map_function}
-        end
+        view = {'map' => @map_function}
+        view['reduce'] = @reduce_function if @reduce_function
+        view['lib'] = @lib_function if @lib_function
+        view
       end
 
       def empty_design_document
