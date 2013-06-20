@@ -13,7 +13,7 @@ module CouchPotato
         options[:reduce]
       end
 
-      def lib_function
+      def lib
         options[:lib]
       end
 

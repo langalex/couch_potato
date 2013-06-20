@@ -35,7 +35,15 @@ describe CouchPotato::RSpec::MapToMatcher do
     spec = stub(:map_function => "function(doc) { emit(null, new Date(1368802800000)); }")
     spec.should map({}).to([nil, "2013-05-17T15:00:00.000Z"])
   end
-  
+
+  it "should work with commonJS modules" do
+    spec = stub(
+      :map_function => "function(doc) { var test = require('lib/test'); emit(null, test.test); }",
+      :lib => {:test => "exports.test = 'test';"}
+    )
+    spec.should map({}).to([nil, "test"])
+  end
+
   describe "failing specs" do
     before(:each) do
       @view_spec = stub(:map_function => "function(doc) {emit(doc.name, null)}")
@@ -114,7 +122,8 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
         }",
       :reduce_function => "function (keys, values, rereduce) {
           return Math.max.apply(this, values);
-        }")
+        }"
+    )
     @docs = [
       {:name => "a", :age => 25, :numbers => [1, 2]},
       {:name => "b", :age => 25, :numbers => [3, 4]},
@@ -126,6 +135,14 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     spec = stub(:map_function => "function() { emit(null, null); }",
       :reduce_function => "function() { return new Date(1368802800000); }")
     spec.should map_reduce({}).to({"key" => nil, "value" => "2013-05-17T15:00:00.000Z"})
+  end
+
+  it "should handle date return values" do
+    spec = stub(
+      :map_function => "function() { var test = require('lib/test'); emit(null, test.test); }",
+      :reduce_function => "function(keys, values) { return 'test' }",
+      :lib => {:test => "exports.test = 'test'"})
+    spec.should map_reduce({}).to({"key" => nil, "value" => "test"})
   end
 
   context "without grouping" do

@@ -32,8 +32,20 @@ module CouchPotato
           var options = #{@options.to_json};
           var map = #{view_spec.map_function};
           var reduce = #{view_spec.reduce_function};
+          var lib = #{view_spec.respond_to?(:lib) && view_spec.lib.to_json};
 
           // Map the input docs
+          var require = function(modulePath) {
+            var exports = {};
+            var pathArray = modulePath.split("/").slice(1);
+            var result = lib;
+            for (var i in pathArray) {
+              result = result[pathArray[i]]
+            }
+            eval(result);
+            return exports;
+          }
+
           var mapResults = [];
           var emit = function(key, value) {
             mapResults.push({key: key, value: value});
@@ -108,7 +120,7 @@ module CouchPotato
 
       def failure_message_for_should_not
         "Expected not to map/reduce to #{@actual_ruby.inspect} but did."
-      end      
+      end
     end
   end
 end

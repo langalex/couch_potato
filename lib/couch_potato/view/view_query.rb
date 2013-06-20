@@ -8,7 +8,7 @@ module CouchPotato
         @view_name = view.keys[0]
         @map_function = view.values[0][:map]
         @reduce_function = view.values[0][:reduce]
-        @lib_function = view.values[0][:lib]
+        @lib = view.values[0][:lib]
         @language = language
         if list
           @list_function = list.values[0]
@@ -34,7 +34,7 @@ module CouchPotato
         original_lists = design_doc && design_doc['lists'] && design_doc['lists'].dup
         view_updated unless design_doc.nil?
         design_doc ||= empty_design_document
-        design_doc['views'][@view_name.to_s] = view_functions
+        design_doc['views'][@view_name.to_s] = view_contents
         if @list_function
           design_doc['lists'] ||= {}
           design_doc['lists'][@list_name.to_s] = @list_function
@@ -42,10 +42,10 @@ module CouchPotato
         @database.save_doc(design_doc) if original_views != design_doc['views'] || original_lists != design_doc['lists']
       end
 
-      def view_functions
+      def view_contents
         view = {'map' => @map_function}
         view['reduce'] = @reduce_function if @reduce_function
-        view['lib'] = @lib_function if @lib_function
+        view['lib'] = @lib if @lib
         view
       end
 

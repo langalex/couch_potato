@@ -48,7 +48,7 @@ module CouchPotato
         {spec.view_name => {
           :map => spec.map_function,
           :reduce => spec.reduce_function,
-          :lib => spec.lib_function
+          :lib => spec.lib
         }
         },
         ({spec.list_name => spec.list_function} unless spec.list_name.nil?),

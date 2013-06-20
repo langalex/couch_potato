@@ -33,7 +33,7 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
       nil, :erlang).query_view!
   end
 
-  it "does not update a view when the map/reduce functions haven't changed" do
+  it "does not update a view when the views object haven't changed" do
     db = mock 'db', :get => {'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>', 'lib' => {'test' => '<lib_code>'}}}}, :view => nil
     db.should_not_receive(:save_doc)
     CouchPotato::View::ViewQuery.new(db, 'design', :view => {:map => '<map_code>', :reduce => '<reduce_code>', :lib => {'test' => "<lib_code>"}}).query_view!
@@ -63,7 +63,7 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
     CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, :lib => {'test' => "<lib_code>"}).query_view!
   end
 
-  it "does not pass in a reduce or lib keys if there is no reduce function" do
+  it "does not pass in reduce or lib keys if there is no lib or reduce object" do
     db = mock 'db', :get => {'views' => {}}, :view => nil
     db.should_receive(:save_doc).with('views' => {'view4' => {'map' => '<map code>'}})
     CouchPotato::View::ViewQuery.new(db, 'design', :view4 => {:map => '<map code>', :reduce => nil}).query_view!
