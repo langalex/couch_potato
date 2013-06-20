@@ -352,10 +352,10 @@ describe CouchPotato::Database, 'view' do
       'design_doc',
       {'my_view' => {
         :map => '<map_code>',
-        :reduce => '<reduce_code>',
-        :lib => {:test => '<test_code>'}
+        :reduce => '<reduce_code>'
       }},
       {'my_list' => '<list_code>'},
+      {:test => '<test_code>'},
       'javascript')
     @db.view(@spec)
   end
@@ -370,10 +370,10 @@ describe CouchPotato::Database, 'view' do
       'design_doc',
       {'my_view' => {
         :map => '<map_code>',
-        :reduce => '<reduce_code>',
-        :lib => nil
+        :reduce => '<reduce_code>'
       }},
       {'my_list' => '<list_code>'},
+      nil,
       'javascript')
     @db.view(@spec)
   end
@@ -388,9 +388,8 @@ describe CouchPotato::Database, 'view' do
       'design_doc',
       {'my_view' => {
         :map => '<map_code>',
-        :reduce => '<reduce_code>',
-        :lib => {:test => '<test_code>'}
-      }}, nil, anything)
+        :reduce => '<reduce_code>'
+      }}, nil, {:test => '<test_code>'}, anything)
     @db.view(@spec)
   end
 
@@ -403,9 +402,8 @@ describe CouchPotato::Database, 'view' do
       'design_doc',
       {'my_view' => {
         :map => '<map_code>',
-        :reduce => '<reduce_code>',
-        :lib => nil
-      }}, nil, anything)
+        :reduce => '<reduce_code>'
+      }}, nil, nil, anything)
     @db.view(@spec)
   end
 

@@ -15,10 +15,10 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
     db = mock 'db', :get => nil, :view => nil
 
     db.should_receive(:save_doc).with(
-      'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>', 'lib' => {'test' => '<lib_code>'}}},
+      'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}, 'lib' => {'test' => '<lib_code>'}},
       'lists' => {}, "_id" => "_design/design", "language" => "javascript")
 
-    CouchPotato::View::ViewQuery.new(db, 'design', :view => {:map => '<map_code>', :reduce => '<reduce_code>', :lib => {'test' => "<lib_code>"}}).query_view!
+    CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, nil, {'test' => "<lib_code>"}).query_view!
   end
 
   it 'updates a view in erlang if it does not exist' do
@@ -30,13 +30,13 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
 
     CouchPotato::View::ViewQuery.new(db, 'design',
       {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}},
-      nil, :erlang).query_view!
+      nil, nil, :erlang).query_view!
   end
 
   it "does not update a view when the views object haven't changed" do
-    db = mock 'db', :get => {'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>', 'lib' => {'test' => '<lib_code>'}}}}, :view => nil
+    db = mock 'db', :get => {'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}, 'lib' => {'test' => '<lib_code>'}}}, :view => nil
     db.should_not_receive(:save_doc)
-    CouchPotato::View::ViewQuery.new(db, 'design', :view => {:map => '<map_code>', :reduce => '<reduce_code>', :lib => {'test' => "<lib_code>"}}).query_view!
+    CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, nil, {'test' => "<lib_code>"}).query_view!
   end
 
   it "does not update a view when the list function hasn't changed" do
@@ -60,7 +60,7 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
   it "does not update a view when the lib function hasn't changed" do
     db = mock 'db', :get => {'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}}, 'lib' => {'test' => '<lib_code>'}}, :view => nil
     db.should_not_receive(:save_doc)
-    CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, :lib => {'test' => "<lib_code>"}).query_view!
+    CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, nil, {'test' => "<lib_code>"}).query_view!
   end
 
   it "does not pass in reduce or lib keys if there is no lib or reduce object" do

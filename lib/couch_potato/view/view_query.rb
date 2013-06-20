@@ -2,13 +2,13 @@ module CouchPotato
   module View
     # Used to query views (and create them if they don't exist). Usually you won't have to use this class directly. Instead it is used internally by the CouchPotato::Database.view method.
     class ViewQuery
-      def initialize(couchrest_database, design_document_name, view, list = nil, language = :javascript)
+      def initialize(couchrest_database, design_document_name, view, list = nil, lib = nil, language = :javascript)
         @database = couchrest_database
         @design_document_name = design_document_name
         @view_name = view.keys[0]
         @map_function = view.values[0][:map]
         @reduce_function = view.values[0][:reduce]
-        @lib = view.values[0][:lib]
+        @lib = lib
         @language = language
         if list
           @list_function = list.values[0]
@@ -32,21 +32,24 @@ module CouchPotato
         design_doc = @database.get "_design/#{@design_document_name}" rescue nil
         original_views = design_doc && design_doc['views'].dup
         original_lists = design_doc && design_doc['lists'] && design_doc['lists'].dup
+        original_libs = design_doc && design_doc['lib'] && design_doc['lib'].dup
         view_updated unless design_doc.nil?
         design_doc ||= empty_design_document
-        design_doc['views'][@view_name.to_s] = view_contents
+        design_doc['views'][@view_name.to_s] = view_functions
+        design_doc['views']['lib'] = @lib if @lib
         if @list_function
           design_doc['lists'] ||= {}
           design_doc['lists'][@list_name.to_s] = @list_function
         end
-        @database.save_doc(design_doc) if original_views != design_doc['views'] || original_lists != design_doc['lists']
+        @database.save_doc(design_doc) if original_views != design_doc['views'] || original_lists != design_doc['lists'] || original_libs != design_doc['lib']
       end
 
-      def view_contents
-        view = {'map' => @map_function}
-        view['reduce'] = @reduce_function if @reduce_function
-        view['lib'] = @lib if @lib
-        view
+      def view_functions
+        if @reduce_function
+          {'map' => @map_function, 'reduce' => @reduce_function}
+        else
+          {'map' => @map_function}
+        end
       end
 
       def empty_design_document
