@@ -16,7 +16,10 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
 
     db.should_receive(:save_doc).with(
       'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}, 'lib' => {'test' => '<lib_code>'}},
-      'lists' => {}, "_id" => "_design/design", "language" => "javascript")
+      'lists' => {},
+      "_id" => "_design/design",
+      "language" => "javascript"
+    )
 
     CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, nil, {'test' => "<lib_code>"}).query_view!
   end
