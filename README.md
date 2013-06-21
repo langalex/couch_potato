@@ -299,6 +299,12 @@ You can also pass in custom map/reduce functions with the custom view spec:
       view :all, :map => "function(doc) { emit(doc.created_at, null)}", :include_docs => true, :type => :custom
     end
 
+commonJS modules can also be used in custom views:
+
+    class User
+      view :all, :map => "function(doc) { emit(null, require("lib/test").test)}", :lib => {:test => "exports.test = 'test'"}, :include_docs => true, :type => :custom
+    end
+
 If you don't want the results to be converted into models the raw view is your friend:
 
     class User
