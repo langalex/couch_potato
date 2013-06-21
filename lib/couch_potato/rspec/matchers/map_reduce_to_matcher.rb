@@ -37,7 +37,7 @@ module CouchPotato
           // Map the input docs
           var require = function(modulePath) {
             var exports = {};
-            var pathArray = modulePath.split("/").slice(1);
+            var pathArray = modulePath.split("/").slice(2);
             var result = lib;
             for (var i in pathArray) {
               result = result[pathArray[i]]
