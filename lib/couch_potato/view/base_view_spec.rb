@@ -1,7 +1,7 @@
 module CouchPotato
   module View
     class BaseViewSpec
-      attr_reader :reduce_function, :list_name, :list_function, :design_document, :view_name, :klass, :options, :language
+      attr_reader :reduce_function, :lib, :list_name, :list_function, :design_document, :view_name, :klass, :options, :language
       attr_accessor :view_parameters
 
       private :klass, :options

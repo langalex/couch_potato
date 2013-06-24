@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'couch_potato/rspec'
 
 describe CouchPotato::RSpec::MapToMatcher do
-  
+
   describe "basic map function" do
     before(:each) do
       @view_spec = stub(:map_function => "function(doc) {emit(doc.name, doc.tags.length);}")
@@ -16,16 +16,16 @@ describe CouchPotato::RSpec::MapToMatcher do
       @view_spec.should_not map({:name => 'horst', :tags => ['person', 'male']}).to(['horst', 3])
     end
   end
-  
+
   describe "functions emitting multiple times" do
     before(:each) do
       @view_spec = stub(:map_function => "function(doc) {emit(doc.name, doc.tags.length); emit(doc.tags[0], doc.tags[1])};")
     end
-    
+
     it "should pass if the given function emits the expected javascript" do
       @view_spec.should map({:name => 'horst', :tags => ['person', 'male']}).to(['horst', 2], ['person', 'male'])
     end
-  
+
     it "should return false if the given function emits different javascript" do
       @view_spec.should_not map({:name => 'horst', :tags => ['person', 'male']}).to(['horst', 2], ['male', 'person'])
     end
@@ -35,18 +35,26 @@ describe CouchPotato::RSpec::MapToMatcher do
     spec = stub(:map_function => "function(doc) { emit(null, new Date(1368802800000)); }")
     spec.should map({}).to([nil, "2013-05-17T15:00:00.000Z"])
   end
-  
+
+  it "should work with commonJS modules" do
+    spec = stub(
+      :map_function => "function(doc) { var test = require('views/lib/test'); emit(null, test.test); }",
+      :lib => {:test => "exports.test = 'test';"}
+    )
+    spec.should map({}).to([nil, "test"])
+  end
+
   describe "failing specs" do
     before(:each) do
       @view_spec = stub(:map_function => "function(doc) {emit(doc.name, null)}")
     end
-    
+
     it "should have a nice error message for failing should" do
       lambda {
         @view_spec.should map({:name => 'bill'}).to(['linus', nil])
       }.should raise_error('Expected to map to [["linus", nil]] but got [["bill", nil]].')
     end
-    
+
     it "should have a nice error message for failing should not" do
       lambda {
         @view_spec.should_not map({:name => 'bill'}).to(['bill', nil])
@@ -65,11 +73,11 @@ describe CouchPotato::RSpec::ReduceToMatcher do
       };
     }")
   end
-  
+
   it "should pass if the given function return the expected javascript" do
     @view_spec.should reduce([], [1, 2, 3]).to(6)
   end
-  
+
   it "should not pass if the given function returns different javascript" do
     @view_spec.should_not reduce([], [1, 2, 3]).to(7)
   end
@@ -78,25 +86,25 @@ describe CouchPotato::RSpec::ReduceToMatcher do
     spec = stub(:reduce_function => "function() { return new Date(1368802800000); }")
     spec.should reduce([], []).to("2013-05-17T15:00:00.000Z")
   end
-  
+
   describe "rereduce" do
     it "should pass if the given function return the expected javascript" do
       @view_spec.should rereduce([], [1, 2, 3]).to(12)
     end
-    
+
     it "should not pass if the given function returns different javascript" do
       @view_spec.should_not rereduce([], [1, 2, 3]).to(13)
     end
   end
-  
+
   describe 'failing specs' do
-    
+
     it "should have a nice error message for failing should" do
       lambda {
         @view_spec.should reduce([], [1, 2, 3]).to(7)
       }.should raise_error('Expected to reduce to 7 but got 6.')
     end
-    
+
     it "should have a nice error message for failing should not" do
       lambda {
         @view_spec.should_not reduce([], [1, 2, 3]).to(6)
@@ -114,7 +122,8 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
         }",
       :reduce_function => "function (keys, values, rereduce) {
           return Math.max.apply(this, values);
-        }")
+        }"
+    )
     @docs = [
       {:name => "a", :age => 25, :numbers => [1, 2]},
       {:name => "b", :age => 25, :numbers => [3, 4]},
@@ -126,6 +135,14 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     spec = stub(:map_function => "function() { emit(null, null); }",
       :reduce_function => "function() { return new Date(1368802800000); }")
     spec.should map_reduce({}).to({"key" => nil, "value" => "2013-05-17T15:00:00.000Z"})
+  end
+
+  it "should handle date return values" do
+    spec = stub(
+      :map_function => "function() { var test = require('views/lib/test'); emit(null, test.test); }",
+      :reduce_function => "function(keys, values) { return 'test' }",
+      :lib => {:test => "exports.test = 'test'"})
+    spec.should map_reduce({}).to({"key" => nil, "value" => "test"})
   end
 
   context "without grouping" do
@@ -215,11 +232,11 @@ describe CouchPotato::RSpec::ListAsMatcher do
   before(:each) do
     @view_spec = stub(:list_function => "function() {var row = getRow(); send(JSON.stringify([{text: row.text + ' world'}]));}")
   end
-  
+
   it "should pass if the function return the expected json" do
     @view_spec.should list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello world'}])
   end
-  
+
   it "should not pass if the function does not return the expected json" do
     @view_spec.should_not list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
   end
@@ -235,7 +252,7 @@ describe CouchPotato::RSpec::ListAsMatcher do
         @view_spec.should list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
       }.should raise_error('Expected to list as [{"text"=>"hello there"}] but got [{"text"=>"hello world"}].')
     end
-    
+
     it "should have a nice error message for failing should not" do
       lambda {
         @view_spec.should_not list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello world'}])
