@@ -72,6 +72,13 @@ describe 'properties' do
     c.title.should == {'key' => 'value'}
   end
 
+  it "should persist a HashWithIndifferentAccess" do
+    c = Person.new :information => HashWithIndifferentAccess.new({"key" => "value"})
+    CouchPotato.database.save_document! c
+    c = CouchPotato.database.load_document c.id
+    c.information.should == {'key' => 'value'}
+  end
+
   def it_should_persist value
     c = Comment.new :title => value
     CouchPotato.database.save_document! c
