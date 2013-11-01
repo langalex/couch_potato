@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.1.0
+
+* adds conflict handling for Database#save/destroy (Alexander Lang)
+
 ### 1.0.1
 
 * fixes error when bulk loaded document does not respond to database= (Alexander Lang)
