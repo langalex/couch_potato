@@ -13,6 +13,7 @@ module CouchPotato
   Config.default_language = :javascript
 
   class NotFound < StandardError; end
+  class Conflict < StandardError; end
 
   # returns all the classes that implement the CouchPotato::Persistence module
   def self.models

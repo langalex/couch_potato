@@ -160,6 +160,16 @@ You can of course also retrieve your instance:
 
     CouchPotato.database.load_document "id_of_the_user_document" # => <#User 0x3075>
 
+#### Handling conflicts
+
+CouchDB uses MVCC to detect write conflicts. If a conflict occurs when trying to update a document CouchDB returns an error. To handle conflicts easily you can save documents like this:
+
+    CouchPotato.database.save_document user do |user|
+      user.name = 'joe'
+    end
+
+When a conflict occurs Couch Potato automatically reloads the document, runs the block and tries to save it again. Note that the block is also run before initally saving the document.
+
 #### Operations on multiple documents
 
 You can also load a bunch of documents with one request.

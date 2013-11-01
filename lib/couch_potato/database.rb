@@ -72,13 +72,27 @@ module CouchPotato
       first(spec) || raise(CouchPotato::NotFound)
     end
 
-    # saves a document. returns true on success, false on failure
-    def save_document(document, validate = true)
-      return true unless document.dirty? || document.new?
-      if document.new?
-        create_document(document, validate)
-      else
-        update_document(document, validate)
+    # saves a document. returns true on success, false on failure.
+    # if passed a block will:
+    # * yield the object to be saved to the block and run if once before saving
+    # * on conflict: reload the document, run the block again and retry saving
+    def save_document(document, validate = true, &block)
+      retries = 0
+      begin
+        block.call document if block
+        save_document_without_conflict_handling(document, validate)
+      rescue RestClient::Conflict => e
+        if block
+          document = document.reload
+          if retries == 5
+            raise CouchPotato::Conflict.new
+          else
+            retries += 1
+            retry
+          end
+        else
+          raise e
+        end
       end
     end
     alias_method :save, :save_document
@@ -90,12 +104,12 @@ module CouchPotato
     alias_method :save!, :save_document!
 
     def destroy_document(document)
-      document.run_callbacks :destroy do
-        document._deleted = true
-        couchrest_database.delete_doc document.to_hash
+      begin
+        destroy_document_without_conflict_handling document
+      rescue RestClient::Conflict
+        document = document.reload
+        retry
       end
-      document._id = nil
-      document._rev = nil
     end
     alias_method :destroy, :destroy_document
 
@@ -142,6 +156,24 @@ module CouchPotato
     end
 
     private
+
+    def destroy_document_without_conflict_handling(document)
+      document.run_callbacks :destroy do
+        document._deleted = true
+        couchrest_database.delete_doc document.to_hash
+      end
+      document._id = nil
+      document._rev = nil
+    end
+
+    def save_document_without_conflict_handling(document, validate = true)
+      return true unless document.dirty? || document.new?
+      if document.new?
+        create_document(document, validate)
+      else
+        update_document(document, validate)
+      end
+    end
 
     def bulk_load(ids)
       response = couchrest_database.bulk_load ids
