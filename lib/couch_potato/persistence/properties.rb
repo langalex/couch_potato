@@ -21,6 +21,11 @@ module CouchPotato
           @list << property
         end
 
+        # XXX
+        def inspect
+          list.map(&:name).inspect
+        end
+
         def inherited_properties
           superclazz = @clazz.superclass
           properties = []
@@ -38,6 +43,7 @@ module CouchPotato
           def self.properties
             @properties ||= {}
             @properties[name] ||= PropertyList.new(self)
+            @properties[name]
           end
         end
       end

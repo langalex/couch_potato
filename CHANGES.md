@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.1.1
+
+* fixes properties were leaked to sibling classes (Alexander Lang)
+
 ### 1.1.0
 
 * adds conflict handling for Database#save/destroy (Alexander Lang)

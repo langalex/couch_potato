@@ -26,9 +26,25 @@ class CuckooClock < Watch
   property :cuckoo
 end
 
+class SportsWatch < Watch
+  property :bpm
+end
+
 describe 'properties' do
   before(:all) do
     recreate_db
+  end
+
+  context 'inheritance' do
+    it 'has access to superclass properties' do
+      expect(CuckooClock.new.cuckoo).to be_nil
+    end
+
+    it "does not have access to properties of 'sibling classes'" do
+      expect {
+        CuckooClock.new.bpm
+      }.to raise_error(NoMethodError)
+    end
   end
 
   it "should allow me to overwrite read accessor and call super" do
