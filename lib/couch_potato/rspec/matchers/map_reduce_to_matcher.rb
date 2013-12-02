@@ -50,6 +50,9 @@ module CouchPotato
           var emit = function(key, value) {
             mapResults.push({key: key, value: value});
           };
+          var sum = function(values) {
+            return values.reduce(function(memo, value) { return memo + value; });
+          };
           for (var i in docs) {
             map(docs[i]);
           }
