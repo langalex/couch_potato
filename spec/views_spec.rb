@@ -5,6 +5,7 @@ class Build
 
   property :state
   property :time
+  property :type, :type => String, :default => 'Build'
 
   view :timeline, :key => :time
   view :count, :key => :time, :reduce => true
@@ -17,9 +18,11 @@ class Build
   view :raw, :type => :raw, :map => "function(doc) {emit(doc._id, doc.state)}"
   view :filtered_raw, :type => :raw, :map => "function(doc) {emit(doc._id, doc.state)}", :results_filter => lambda{|res| res['rows'].map{|row| row['value']}}
   view :with_view_options, :group => true, :key => :time
+  view :all, :map => "function(doc) { if (doc && doc.type == 'Build') emit(doc._id, 1); }", :include_docs => true, :type => :custom
 end
 
 class CustomBuild < Build
+  property :server
 end
 
 class ErlangBuild
@@ -238,6 +241,13 @@ describe 'views' do
       @db.save_document CustomBuild.new(:state => 'success', :time => '2008-01-01')
       @db.view(CustomBuild.timeline).size.should == 1
       @db.view(CustomBuild.timeline).first.should be_kind_of(CustomBuild)
+    end
+
+    it "should return instances of subclasses as well if a special view exists" do
+      @db.save_document Build.new(:state => 'success', :time => '2008-01-01')
+      @db.save_document CustomBuild.new(:state => 'success', :time => '2008-01-01', :server => 'Jenkins')
+      results = @db.view(Build.all)
+      results.map(&:class).should == [CustomBuild, Build]
     end
   end
 
