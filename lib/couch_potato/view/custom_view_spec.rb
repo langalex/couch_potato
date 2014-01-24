@@ -26,7 +26,7 @@ module CouchPotato
                       results['rows'].first.try(:[], 'value') || 0
                     else
                       results['rows'].map do |row|
-                        if row['doc'].instance_of?(klass)
+                        if row['doc'].kind_of?(klass)
                           row['doc']
                         else
                           result = row['doc'] || (row['value'].merge(:_id => row['id'] || row['key']) unless view_parameters[:include_docs])
