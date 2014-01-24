@@ -1,7 +1,7 @@
 module CouchPotato
   module Persistence
     class TypeCaster #:nodoc:
-      NUMBER_REGEX = /-?\d+\.?\d*/
+      NUMBER_REGEX = /-?\d*\.?\d*/
 
       def cast(value, type)
         if type == :boolean

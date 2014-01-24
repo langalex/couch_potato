@@ -12,6 +12,7 @@ class Watch
   property :custom_address, :type => [Address]
   property :overwritten_read
   property :overwritten_write
+  property :diameter, :type => Float
 
   def overwritten_read
     super.to_s
@@ -71,6 +72,20 @@ describe 'properties' do
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
     c.title.should == 3
+  end
+
+  it "should persist a float with leading digits" do
+    w = Watch.new :diameter => "46.5"
+    CouchPotato.database.save_document! w
+    w = CouchPotato.database.load_document w.id
+    w.diameter.should == 46.5
+  end
+
+  it "should persist a float with no leading digits" do
+    w = Watch.new :diameter => ".465"
+    CouchPotato.database.save_document! w
+    w = CouchPotato.database.load_document w.id
+    w.diameter.should == 0.465
   end
 
   it "should persist a big decimal" do
