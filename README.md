@@ -414,6 +414,11 @@ Couch Potato supports accessing multiple CouchDBs:
 
 Unless configured otherwise this would save the customer model to _http://127.0.0.1:5984/couch_customer_.
 
+You can also first retrieve the database instance:
+
+    db = CouchPotato.use('couch_customer')
+    db.save @customer
+
 #### Testing
 
 To make testing easier and faster database logic has been put into its own class, which you can replace and stub out in whatever way you want:
