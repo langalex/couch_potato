@@ -145,6 +145,13 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     spec.should map_reduce({}).to({"key" => nil, "value" => "test"})
   end
 
+  it "should handle sum function" do
+    spec = stub(
+      :map_function => "function(doc) { emit(null, doc.age); }",
+      :reduce_function => "function(keys, values) { return sum(values); }")
+    spec.should map_reduce(@docs).to({"key" => nil, "value" => 103})
+  end
+
   context "without grouping" do
     it "should not group by key by default" do
       @view_spec.should map_reduce(@docs).to({"key" => nil, "value" => 8})
