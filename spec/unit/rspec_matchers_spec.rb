@@ -267,3 +267,59 @@ describe CouchPotato::RSpec::ListAsMatcher do
     end
   end
 end
+
+class HavePropertyMatcherTest
+  include CouchPotato::Persistence
+
+  property :foo, type: :boolean
+  property :bar, default: "hello world"
+end
+
+describe CouchPotato::RSpec::HavePropertyMatcher do
+  subject { HavePropertyMatcherTest }
+
+  it "accepts an existing property" do
+    expect(subject).to have_property(:foo)
+  end
+
+  it "rejects a nonexisting property" do
+    expect(subject).not_to have_property(:faz)
+  end
+
+  it "should have a nice error message" do
+    lambda {
+      expect(subject).to have_property(:baz)
+    }.should raise_error("Expected HavePropertyMatcherTest to have a property named `baz'")
+  end
+
+  it "should have a helpful error message" do
+    lambda {
+      expect(subject).to have_property(:foo).of_type(:fixnum)
+    }.should raise_error("Expected HavePropertyMatcherTest to have a property " +
+      "named `foo' of type fixnum (HavePropertyMatcherTest has a property " +
+      "named `foo' of type boolean, not fixnum)")
+  end
+
+  describe "#of_type" do
+    it "accepts a property of the correct data type" do
+      expect(subject).to have_property(:foo).of_type(:boolean)
+    end
+
+    it "rejects a property of the incorrect data type" do
+      expect(subject).not_to have_property(:foo).of_type(:fixnum)
+    end
+  end
+
+  context "#with_options" do
+    describe "default" do
+      it "accepts a property with the correct default" do
+        expect(subject).to have_property(:bar).with_options(default: "hello world")
+      end
+
+      it "rejects a property with an incorrect default" do
+        expect(subject).not_to have_property(:bar).with_options(default: 123)
+      end
+    end
+  end
+
+end

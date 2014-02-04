@@ -29,6 +29,7 @@ require 'couch_potato/rspec/matchers/map_to_matcher'
 require 'couch_potato/rspec/matchers/reduce_to_matcher'
 require 'couch_potato/rspec/matchers/map_reduce_to_matcher'
 require 'couch_potato/rspec/matchers/list_as_matcher'
+require 'couch_potato/rspec/matchers/have_property_matcher'
 
 module RSpec
   module Matchers
@@ -50,6 +51,10 @@ module RSpec
 
     def map_reduce(*docs)
       CouchPotato::RSpec::MapReduceToProxy.new(docs)
+    end
+
+    def have_property(name)
+      CouchPotato::RSpec::HavePropertyMatcher.new(name)
     end
   end
 end
