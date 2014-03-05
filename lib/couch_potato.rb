@@ -16,7 +16,7 @@ module CouchPotato
   class NotFound < StandardError; end
   class Conflict < StandardError; end
 
-  # returns all the classes that implement the CouchPotato::Persistence module
+  # returns all the classes that include the CouchPotato::Persistence module
   def self.models
     @models ||= []
     @models

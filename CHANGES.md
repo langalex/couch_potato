@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.1.2
+
+* fixes `CouchPotato.models` did not include subclasses
+
 ### 1.1.1
 
 * fixes properties were leaked to sibling classes (Alexander Lang)

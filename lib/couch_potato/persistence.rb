@@ -27,10 +27,16 @@ module CouchPotato
         attr_accessor :_id, :_rev, :_deleted, :database
         alias_method :id, :_id
         alias_method :id=, :_id=
+
+        def self.inherited(child)
+          super
+          CouchPotato.models << child
+        end
       end
 
       CouchPotato.models << base
     end
+
 
     # initialize a new instance of the model optionally passing it a hash of attributes.
     # the attributes have to be declared using the #property method.
