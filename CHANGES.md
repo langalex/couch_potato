@@ -3,6 +3,10 @@
 ### 1.1.2
 
 * fixes `CouchPotato.models` did not include subclasses
+* adds `CouchPotato.use` (Daniel Lohse)
+* fixes MapReduceToMatcher when reduce uses `sum` (Daniel Lohse)
+* adds `CouchPotato::Config.database_host` for using multiple databases in a project (Daniel Lohse)
+* makes `cast_native` cast floats with no leading digits (wrshawn)
 
 ### 1.1.1
 
