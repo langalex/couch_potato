@@ -11,14 +11,6 @@ module Parent
   end
 end
 
-describe CouchPotato::Database, 'new' do
-  it "should raise an exception if the database doesn't exist" do
-    lambda {
-      CouchPotato::Database.new CouchRest.database('couch_potato_invalid')
-    }.should raise_error('Database \'couch_potato_invalid\' does not exist.')
-  end
-end
-
 describe CouchPotato::Database, 'full_url_to_database' do
   before(:all) do
     @database_url = CouchPotato::Config.database_name

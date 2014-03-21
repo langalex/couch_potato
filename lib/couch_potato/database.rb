@@ -5,11 +5,6 @@ module CouchPotato
 
     def initialize(couchrest_database)
       @couchrest_database = couchrest_database
-      begin
-        couchrest_database.info
-      rescue RestClient::ResourceNotFound
-        raise "Database '#{couchrest_database.name}' does not exist."
-      end
     end
 
     # executes a view and return the results. you pass in a view spec
