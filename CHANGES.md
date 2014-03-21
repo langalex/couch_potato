@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.1.3
+
+* removes check if database exists to avoid lots of additional requests (Alexander Lang)
+
 ### 1.1.2
 
 * fixes `CouchPotato.models` did not include subclasses
