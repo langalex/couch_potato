@@ -1,6 +1,5 @@
 require 'couchrest'
 require 'json'
-require 'json/add/core'
 
 require 'ostruct'
 
