@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.1.4
+
+* Removes the dependency to json/add/core (cstettner)
+
 ### 1.1.3
 
 * removes check if database exists to avoid lots of additional requests (Alexander Lang)
