@@ -40,7 +40,7 @@ module CouchPotato::RSpec
 
   module StubDb
     def stub_db(options = {})
-      db = stub('db', options)
+      db = double('db', options)
       db.extend CouchPotato::RSpec::StubView
       CouchPotato.stub(:database => db)
       db
