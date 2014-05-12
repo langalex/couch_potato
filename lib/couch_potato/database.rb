@@ -102,8 +102,7 @@ module CouchPotato
       begin
         destroy_document_without_conflict_handling document
       rescue RestClient::Conflict
-        document = document.reload
-        retry
+        retry if document = document.reload
       end
     end
     alias_method :destroy, :destroy_document

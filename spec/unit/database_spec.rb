@@ -419,3 +419,17 @@ describe CouchPotato::Database, 'view' do
     @db.view(@spec)
   end
 end
+
+describe CouchPotato::Database, '#destroy' do
+  it 'does not try to delete an already deleted document' do
+    couchrest_db = double(:couchrest_db)
+    couchrest_db.stub(:delete_doc).and_raise(RestClient::Conflict)
+    db = CouchPotato::Database.new couchrest_db
+    document = double(:document, reload: nil).as_null_object
+    document.stub(:run_callbacks).and_yield
+
+    expect {
+      db.destroy document
+    }.to_not raise_error
+  end
+end
