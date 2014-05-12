@@ -1,5 +1,10 @@
 ## Changes
 
+### 1.2.0
+
+* adds optional deep dirty tracking (andymorris)
+* fixes an exception when deleting an already deleted document (Alexander Lang)
+
 ### 1.1.4
 
 * Removes the dependency to json/add/core (cstettner)
