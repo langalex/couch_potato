@@ -3,6 +3,7 @@ require 'spec_helper'
 describe CouchPotato::View::ViewQuery, 'query_view!' do
   before(:each) do
     CouchRest.stub(:get => nil)
+    CouchPotato::View::ViewQuery.clear_cache
   end
 
   it "does not pass a key if conditions are empty" do
@@ -15,13 +16,36 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
     db = mock 'db', :get => nil, :view => nil
 
     db.should_receive(:save_doc).with(
-      'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}, 'lib' => {'test' => '<lib_code>'}},
+      'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}},
+      'lib' => {'test' => '<lib_code>'},
       'lists' => {},
       "_id" => "_design/design",
       "language" => "javascript"
     )
 
     CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, nil, {'test' => "<lib_code>"}).query_view!
+  end
+
+  it 'only updates a view once' do
+    db = double :db, view: nil
+    db.stub(:get).and_return({'views' => {}}, {'views' => {}, x: 1}) # return something different on the second call otherwise it would never try to update the views twice
+    query = CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}})
+
+    db.should_receive(:save_doc).once
+
+    2.times { query.query_view! }
+  end
+
+  it 'updates a view again after clearing the view cache' do
+    db = double :db, view: nil
+    db.stub(:get).and_return({'views' => {}}, {'views' => {}, x: 1}) # return something different on the second call otherwise it would never try to update the views twice
+    query = CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}})
+
+    db.should_receive(:save_doc).twice
+
+    query.query_view!
+    CouchPotato::View::ViewQuery.clear_cache
+    query.query_view!
   end
 
   it 'updates a view in erlang if it does not exist' do
@@ -50,7 +74,9 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
 
   it "does not update a view when the lib function hasn't changed" do
     db = mock 'db', :get => {'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}}, 'lib' => {'test' => '<lib_code>'}}, :view => nil
+
     db.should_not_receive(:save_doc)
+
     CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, nil, {'test' => "<lib_code>"}).query_view!
   end
 
@@ -67,30 +93,34 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
   end
 
   it "updates a view when the lib hash has changed" do
-    db = mock 'db', :get => {'views' => {'view4' => {'map' => '<map_code>'}}, 'lib' => {'test' => "<test_lib>"}}, :view => nil
+    db = mock 'db', :get => {'views' => {'view4' => {'map' => '<map_code>'}}}, 'lib' => {'test' => "<test_lib>"}, :view => nil
+
     db.should_receive(:save_doc)
+
     CouchPotato::View::ViewQuery.new(db, 'design', {:view4 => {:map => '<map_code>'}}, nil, {:test => "<test_lib>"}).query_view!
   end
 
   it "doesn't override libs with different names" do
-    db = mock 'db', :get => {'views' => {'view5' => {'map' => '<map_code>'}, 'lib' => {'test' => "<test_lib>"}}}, :view => nil
+    db = mock 'db', :get => {'views' => {'view5' => {'map' => '<map_code>'}}, 'lib' => {'test' => "<test_lib>"}}, :view => nil
     db.should_receive(:save_doc).with({
       'views' => {
          'view5' => {'map' => '<map_code>'},
-         'lib' => {'test' => '<test_lib>', 'test1' => '<test1_lib>'}
-      }
+      },
+      'lib' => {'test' => '<test_lib>', 'test1' => '<test1_lib>'}
     })
     CouchPotato::View::ViewQuery.new(db, 'design', {:view5 => {:map => '<map_code>'}}, nil, {'test1' => '<test1_lib>'}).query_view!
   end
 
   it "overrides libs with the same name" do
-    db = mock 'db', :get => {'views' => {'view6' => {'map' => '<map_code>'}, 'lib' => {'test' => "<test_lib>"}}}, :view => nil
+    db = mock 'db', :get => {'views' => {'view6' => {'map' => '<map_code>'}}, 'lib' => {'test' => "<test_lib>"}}, :view => nil
+
     db.should_receive(:save_doc).with({
       'views' => {
-         'view6' => {'map' => '<map_code>'},
-         'lib' => {'test' => '<test1_lib>'}
-      }
+         'view6' => {'map' => '<map_code>'}
+      },
+      'lib' => {'test' => '<test1_lib>'}
     })
+
     CouchPotato::View::ViewQuery.new(db, 'design', {:view6 => {:map => '<map_code>'}}, nil, {'test' => '<test1_lib>'}).query_view!
   end
 

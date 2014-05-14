@@ -26,23 +26,36 @@ module CouchPotato
         end
       end
 
+      # mainly useful for testing where you drop the database between tests.
+      # only after clearing the cache design docs will be updated/re-created.
+      def self.clear_cache
+        __updated_views.clear
+      end
+
+      def self.__updated_views
+        @updated_views ||= {}
+        @updated_views
+      end
+
       private
 
       def update_view
         design_doc = @database.get "_design/#{@design_document_name}" rescue nil
         original_views = design_doc && design_doc['views'].dup
         original_lists = design_doc && design_doc['lists'] && design_doc['lists'].dup
+        original_lib = design_doc && design_doc['lib'] && design_doc['lib'].dup
         view_updated unless design_doc.nil?
         design_doc ||= empty_design_document
         design_doc['views'][@view_name.to_s] = view_functions
         if @lib
-          design_doc['views']['lib'] = (design_doc['views']['lib'] || {}).merge(@lib)
+          design_doc['lib'] = (design_doc['lib'] || {}).merge(@lib)
         end
         if @list_function
           design_doc['lists'] ||= {}
           design_doc['lists'][@list_name.to_s] = @list_function
         end
-        @database.save_doc(design_doc) if original_views != design_doc['views'] || original_lists != design_doc['lists']
+        @database.save_doc(design_doc) if original_views != design_doc['views'] ||
+          original_lists != design_doc['lists'] || original_lib != design_doc['lib']
       end
 
       def view_functions
@@ -66,8 +79,7 @@ module CouchPotato
       end
 
       def updated_views
-        @@updated_views ||= {}
-        @@updated_views
+        self.class.__updated_views
       end
 
       def query_view(parameters)
