@@ -28,6 +28,45 @@ module CouchPotato
 
       def matches?(view_spec)
         js = <<-JS
+          var sum = function(values) {
+            return values.reduce(function(memo, value) { return memo + value; });
+          };
+          // Equivalents of couchdb built-in reduce functions whose names can be
+          // given as the reduce function in the view_spec:
+          var _sum = function(keys, values, rereduce) {
+            return sum(values);
+          }
+          var _count = function(keys, values, rereduce) {
+            if (rereduce) {
+              return sum(values);
+            } else {
+              return values.length;
+            }
+          }
+          var _stats = function(keys, values, rereduce) {
+            var result = {sum: 0, count: 0, min: Number.MAX_VALUE, max: Number.MIN_VALUE, sumsqr: 0};
+            if (rereduce) {
+              for (var i in values) {
+                var value = values[i];
+                result.sum += value.sum;
+                result.count += value.count;
+                result.min = Math.min(result.min, value.min);
+                result.max = Math.max(result.max, value.max);
+                result.sumsqr += value.sumsqr;
+              }
+            } else {
+              for (var i in values) {
+                var value = values[i];
+                result.sum += value;
+                result.count += 1;
+                result.min = Math.min(result.min, value);
+                result.max = Math.max(result.max, value);
+                result.sumsqr += Math.pow(value, 2);
+              }
+            }
+            return result;
+          }
+
           var docs = #{@input_ruby.to_json};
           var options = #{@options.to_json};
           var map = #{view_spec.map_function};
@@ -49,9 +88,6 @@ module CouchPotato
           var mapResults = [];
           var emit = function(key, value) {
             mapResults.push({key: key, value: value});
-          };
-          var sum = function(values) {
-            return values.reduce(function(memo, value) { return memo + value; });
           };
           for (var i in docs) {
             map(docs[i]);
