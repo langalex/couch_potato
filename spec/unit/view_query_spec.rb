@@ -16,8 +16,7 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
     db = mock 'db', :get => nil, :view => nil
 
     db.should_receive(:save_doc).with(
-      'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}},
-      'lib' => {'test' => '<lib_code>'},
+      'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}, 'lib' => {'test' => '<lib_code>'}},
       'lists' => {},
       "_id" => "_design/design",
       "language" => "javascript"
@@ -73,7 +72,7 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
   end
 
   it "does not update a view when the lib function hasn't changed" do
-    db = mock 'db', :get => {'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}}, 'lib' => {'test' => '<lib_code>'}}, :view => nil
+    db = mock 'db', :get => {'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}, 'lib' => {'test' => '<lib_code>'}}}, :view => nil
 
     db.should_not_receive(:save_doc)
 
@@ -101,24 +100,24 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
   end
 
   it "doesn't override libs with different names" do
-    db = mock 'db', :get => {'views' => {'view5' => {'map' => '<map_code>'}}, 'lib' => {'test' => "<test_lib>"}}, :view => nil
+    db = mock 'db', :get => {'views' => {'view5' => {'map' => '<map_code>'}, 'lib' => {'test' => "<test_lib>"}}}, :view => nil
     db.should_receive(:save_doc).with({
       'views' => {
-         'view5' => {'map' => '<map_code>'},
-      },
-      'lib' => {'test' => '<test_lib>', 'test1' => '<test1_lib>'}
+        'view5' => {'map' => '<map_code>'},
+        'lib' => {'test' => '<test_lib>', 'test1' => '<test1_lib>'}
+      }
     })
     CouchPotato::View::ViewQuery.new(db, 'design', {:view5 => {:map => '<map_code>'}}, nil, {'test1' => '<test1_lib>'}).query_view!
   end
 
   it "overrides libs with the same name" do
-    db = mock 'db', :get => {'views' => {'view6' => {'map' => '<map_code>'}}, 'lib' => {'test' => "<test_lib>"}}, :view => nil
+    db = mock 'db', :get => {'views' => {'view6' => {'map' => '<map_code>'}, 'lib' => {'test' => "<test_lib>"}}}, :view => nil
 
     db.should_receive(:save_doc).with({
       'views' => {
-         'view6' => {'map' => '<map_code>'}
+        'view6' => {'map' => '<map_code>'},
+        'lib' => {'test' => '<test1_lib>'}
       },
-      'lib' => {'test' => '<test1_lib>'}
     })
 
     CouchPotato::View::ViewQuery.new(db, 'design', {:view6 => {:map => '<map_code>'}}, nil, {'test' => '<test1_lib>'}).query_view!
