@@ -137,7 +137,7 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     spec.should map_reduce({}).to({"key" => nil, "value" => "2013-05-17T15:00:00.000Z"})
   end
 
-  it "should handle date return values" do
+  it "should handle CommonJS requires" do
     spec = stub(
       :map_function => "function() { var test = require('views/lib/test'); emit(null, test.test); }",
       :reduce_function => "function(keys, values) { return 'test' }",
@@ -231,6 +231,38 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
       lambda {
         @view_spec.should_not map_reduce(@docs).with_options(:group => false).to({"key" => nil, "value" => 8})
       }.should raise_error('Expected not to map/reduce to [{"key"=>nil, "value"=>8}] but did.')
+    end
+  end
+
+  describe "couchdb built-in reduce functions" do
+    describe "_sum" do
+      it "should return the sum of emitted values" do
+        spec = stub(:map_function => @view_spec.map_function, :reduce_function => "_sum")
+        spec.should map_reduce(@docs).to({"key" => nil, "value" => 36})
+      end
+    end
+
+    describe "_count" do
+      it "should return the count of emitted values" do
+        spec = stub(:map_function => @view_spec.map_function, :reduce_function => "_count")
+        spec.should map_reduce(@docs).to({"key" => nil, "value" => 8})
+      end
+    end
+
+    describe "_stats" do
+      it "should return the numerical statistics of emitted values" do
+        spec = stub(:map_function => @view_spec.map_function, :reduce_function => "_stats")
+        spec.should map_reduce(@docs).to({
+            "key" => nil,
+            "value" => {
+              "sum" => 36,
+              "count" => 8,
+              "min" => 1,
+              "max" => 8,
+              "sumsqr" => 204
+            }
+          })
+      end
     end
   end
 end
