@@ -28,14 +28,15 @@ module CouchPotato
           var lib = #{view_spec.respond_to?(:lib) && view_spec.lib.to_json};
           var result = [];
           var require = function(modulePath) {
-            var exports = {};
+            var module = {exports: {}};
+            var exports = module.exports;
             var pathArray = modulePath.split("/").slice(2);
             var result = lib;
             for (var i in pathArray) {
-              result = result[pathArray[i]]
+              result = result[pathArray[i]];
             }
             eval(result);
-            return exports;
+            return module.exports;
           }
 
           var emit = function(key, value) {

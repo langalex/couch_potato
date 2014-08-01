@@ -36,10 +36,18 @@ describe CouchPotato::RSpec::MapToMatcher do
     spec.should map({}).to([nil, "2013-05-17T15:00:00.000Z"])
   end
 
-  it "should work with commonJS modules" do
+  it "should work with commonJS modules that use 'exports'" do
     spec = stub(
       :map_function => "function(doc) { var test = require('views/lib/test'); emit(null, test.test); }",
       :lib => {:test => "exports.test = 'test';"}
+    )
+    spec.should map({}).to([nil, "test"])
+  end
+
+  it "should work with commonJS modules that use 'module.exports'" do
+    spec = stub(
+      :map_function => "function(doc) { var test = require('views/lib/test'); emit(null, test.test); }",
+      :lib => {:test => "module.exports.test = 'test';"}
     )
     spec.should map({}).to([nil, "test"])
   end
@@ -137,11 +145,19 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     spec.should map_reduce({}).to({"key" => nil, "value" => "2013-05-17T15:00:00.000Z"})
   end
 
-  it "should handle CommonJS requires" do
+  it "should handle CommonJS requires for modules that use 'exports'" do
     spec = stub(
       :map_function => "function() { var test = require('views/lib/test'); emit(null, test.test); }",
       :reduce_function => "function(keys, values) { return 'test' }",
       :lib => {:test => "exports.test = 'test'"})
+    spec.should map_reduce({}).to({"key" => nil, "value" => "test"})
+  end
+
+  it "should handle CommonJS requires for modules that use 'module.exports'" do
+    spec = stub(
+      :map_function => "function() { var test = require('views/lib/test'); emit(null, test.test); }",
+      :reduce_function => "function(keys, values) { return 'test' }",
+      :lib => {:test => "module.exports.test = 'test'"})
     spec.should map_reduce({}).to({"key" => nil, "value" => "test"})
   end
 
