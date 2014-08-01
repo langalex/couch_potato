@@ -27,7 +27,7 @@ module CouchPotato
       end
 
       def cast_native(value, type)
-        if type && !value.instance_of?(type)
+        if type && !value.is_a?(type)
           if type == Fixnum
             BigDecimal.new(value.to_s.scan(NUMBER_REGEX).join).round unless value.blank?
           elsif type == Float

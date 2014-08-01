@@ -23,6 +23,9 @@ class Watch
   end
 end
 
+class Address2 < Address
+end
+
 class CuckooClock < Watch
   property :cuckoo
 end
@@ -108,6 +111,13 @@ describe 'properties' do
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
     c.information.should == {'key' => 'value'}
+  end
+
+  it "should persist subclasses of the specified type" do
+    w = Watch.new(:custom_address => [Address2.new])
+    CouchPotato.database.save_document! w
+    w = CouchPotato.database.load_document w.id
+    w.custom_address[0].should be_an_instance_of Address2
   end
 
   def it_should_persist value
