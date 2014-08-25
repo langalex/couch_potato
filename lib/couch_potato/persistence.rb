@@ -75,7 +75,7 @@ module CouchPotato
     #     property :year
     #   end
     #   book = Book.new
-    #   book.attributes = {:title => 'Time to Relax', :year => 2009}
+    #   book.attributes = {'title' => 'Time to Relax', 'year' => 2009}
     #   book.title # => 'Time to Relax'
     #   book.year # => 2009
     def attributes=(hash)
@@ -93,9 +93,9 @@ module CouchPotato
     #     property :year
     #   end
     #   book = Book.new :year => 2009
-    #   book.attributes # => {:title => nil, :year => 2009}
+    #   book.attributes # => {'title' => nil, 'year' => 2009}
     def attributes
-      self.class.properties.inject({}) do |res, property|
+      self.class.properties.inject(ActiveSupport::HashWithIndifferentAccess.new) do |res, property|
         property.value(res, self)
         res
       end

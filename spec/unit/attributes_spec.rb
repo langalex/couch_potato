@@ -34,14 +34,20 @@ describe "attributes" do
   context "attributes" do
     it "should return the attributes" do
       plant = Plant.new(:leaf_count => 1)
-      plant.attributes.should == {:leaf_count => 1, :created_at => nil, :updated_at => nil,
-                                  :typed_leaf_count => nil, :typed_leaf_size => nil, :branch => nil}
+      plant.attributes.should == {'leaf_count' => 1, 'created_at' => nil, 'updated_at' => nil,
+                                  'typed_leaf_count' => nil, 'typed_leaf_size' => nil, 'branch' => nil}
     end
 
-    it "should return the attributes via []" do
+    it "should return the attributes via [symbol]" do
       plant = Plant.new(:leaf_count => 1)
       plant.attributes[:leaf_count].should eql(plant[:leaf_count])
       plant.attributes[:leaf_count].should eql(1)
+    end
+
+    it "should return the attributes via [string]" do
+      plant = Plant.new(:leaf_count => 1)
+      plant.attributes["leaf_count"].should eql(plant[:leaf_count])
+      plant.attributes["leaf_count"].should eql(1)
     end
   end
 
