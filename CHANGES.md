@@ -1,5 +1,11 @@
 ## Changes
 
+### 1.3.0
+
+* Add support for built-in couchdb reduce functions in map reduce specs (Andy Morris)
+* Make specs handle CommonJS modules via module.exports as well as exports (Andy Morris)
+* Changed #attributes to return a HashWithIndifferentAccess (Owen Davies)
+
 ### 1.2.0
 
 * adds optional deep dirty tracking (andymorris)
