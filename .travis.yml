@@ -3,7 +3,7 @@ rvm:
   - 2.0.0
   - 2.1.2
   - jruby-19mode
-  - rbx-2.1.1
+  - rbx-2.2.10
 gemfile:
   - active_support_3_2
   - active_support_4_0
