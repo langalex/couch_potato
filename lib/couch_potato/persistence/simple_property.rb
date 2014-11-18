@@ -62,7 +62,11 @@ module CouchPotato
             value = instance_variable_get("@#{name}")
             if value.nil? && !options[:default].nil?
               default = if options[:default].respond_to?(:call)
-                options[:default].call
+                if options[:default].arity == 1
+                  options[:default].call self
+                else
+                  options[:default].call
+                end
               else
                 clone_attribute(options[:default])
               end

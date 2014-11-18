@@ -74,7 +74,9 @@ module CouchPotato
         #  class Book
         #    property :title
         #    property :year
-        #    property :publisher, :type => Publisher
+        #    property :publisher, type: Publisher
+        #    property :published_at, default: -> { Date.current }
+        #    property :next_year, default: ->(book) { book.year + 1 }
         #  end
         def property(name, options = {})
           undefine_attribute_methods

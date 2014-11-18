@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.4.0
+
+* Added support for passing the model to blocks for computing the default value of a property (Alexander Lang)
+
 ### 1.3.0
 
 * Add support for built-in couchdb reduce functions in map reduce specs (Andy Morris)
