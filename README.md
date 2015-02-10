@@ -33,28 +33,13 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 (Supported means I run the specs against those before releasing a new gem.)
 
+When using an older version than Ruby 2.0 please use CouchPotato 1.4.0
+
 ### Installation
 
 Couch Potato is hosted as a gem which you can install like this:
 
     gem install couch_potato
-
-### Now using Ruby refinements
-
-As you can see in the section "Supported Environments", support for Ruby versions lower than 2.0 is dropped. The reason is the usage of refinements for changing the format of the JSON-representation for Date and Time. 
-
-When you run a project with an older Ruby version, you can still use the Date and Time patches by following these steps:
-
-1) remove these lines from `lib/couch_potato.rb`:
-
-    require 'refinements/time'  
-    require 'refinements/date'  
-    using CouchPotatoRefinements  
-
-2.) add these lines at the end of `lib/couch_potato.rb` before `require 'couch_potato/validation'`:
- 
-    require 'core_ext/time'
-    require 'core_ext/date'
 
 #### Using with your ruby application:
 
