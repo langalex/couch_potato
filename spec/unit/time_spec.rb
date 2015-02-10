@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+using CouchPotatoRefinements
+
 describe Time, 'to_json' do
   it "should convert to utc and format the time in a way that i can use it for sorting in couchdb" do
     time = Time.parse('2009-01-01 11:12:23 +0200')

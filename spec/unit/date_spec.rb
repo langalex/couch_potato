@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+using CouchPotatoRefinements
+
 describe Date, 'to_json' do
   it "should format the date in a way that i can use it for sorting in couchdb" do
     date = Date.parse('2009-01-01')
