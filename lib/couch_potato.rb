@@ -3,10 +3,15 @@ require 'json'
 
 require 'ostruct'
 
+require 'refinements/time'
+require 'refinements/date'
+
 JSON.create_id = 'ruby_class'
 CouchRest.decode_json_objects = true
 
 module CouchPotato
+  using CouchPotatoRefinements
+
   Config = Struct.new(:database_host, :database_name, :split_design_documents_per_view, :default_language).new
   Config.split_design_documents_per_view = false
   Config.default_language = :javascript
@@ -75,8 +80,6 @@ end
 
 $LOAD_PATH << File.dirname(__FILE__)
 
-require 'core_ext/time'
-require 'core_ext/date'
 require 'couch_potato/validation'
 require 'couch_potato/persistence'
 require 'couch_potato/railtie' if defined?(Rails)
