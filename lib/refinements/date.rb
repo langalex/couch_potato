@@ -5,7 +5,6 @@ class Date
   end
 end
 
-
 module CouchPotatoRefinements
   refine Date do
     def to_json(*a)

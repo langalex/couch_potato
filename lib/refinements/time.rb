@@ -1,5 +1,3 @@
-require 'active_support/time'
-
 class Time
   def self.json_create string
     return nil if string.nil?
@@ -11,19 +9,11 @@ end
 module CouchPotatoRefinements
   refine Time do
     def to_json(*a)
-    %("#{as_json}")
+      %("#{as_json}")
     end
 
     def as_json(*args)
       getutc.strftime("%Y/%m/%d %H:%M:%S +0000")
     end
-  end
-end
-
-ActiveSupport::TimeWithZone.class_eval do
-  using CouchPotatoRefinements
-
-  def as_json(*args)
-    utc.as_json
   end
 end
