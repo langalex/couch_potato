@@ -12,6 +12,10 @@ begin
       end
     end
 
+    def assert_equal(one, other)
+      expect(one).to equal(other)
+    end
+
     class ActiveComment
       include CouchPotato::Persistence
       property :name
@@ -98,7 +102,3 @@ begin
 rescue LoadError
   STDERR.puts "WARNING: active_model gem not installed. Not running ActiveModel specs."
 end
-
-
-
-

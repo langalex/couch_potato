@@ -8,8 +8,9 @@ rvm:
 services:
   - couchdb
 gemfile:
-  - active_support_3_2
   - active_support_4_0
+  - active_support_4_1
+  - active_support_4_2
 before_script:
   - sudo sh -c 'echo "[native_query_servers]" >> /etc/couchdb/local.ini'
   - sudo sh -c 'echo "erlang = {couch_native_process, start_link, []}" >> /etc/couchdb/local.ini'
