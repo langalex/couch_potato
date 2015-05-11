@@ -5,6 +5,7 @@ module CouchPotato
   def self.rails_init
     path = Rails.root.join('config/couchdb.yml')
     if File.exist?(path)
+      require 'yaml'
       config = YAML::load(ERB.new(File.read(path)).result)[Rails.env]
       if config.is_a?(String)
         CouchPotato::Config.database_name = config
