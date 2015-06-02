@@ -71,22 +71,15 @@ module CouchPotato
     # if passed a block will:
     # * yield the object to be saved to the block and run if once before saving
     # * on conflict: reload the document, run the block again and retry saving
-    def save_document(document, validate = true, &block)
-      retries = 0
+    def save_document(document, validate = true, retries = 0, &block)
       begin
         block.call document if block
         save_document_without_conflict_handling(document, validate)
       rescue RestClient::Conflict => e
         if block
-          document = document.reload
-          if retries == 5
-            raise CouchPotato::Conflict.new
-          else
-            retries += 1
-            retry
-          end
+          handle_write_conflict document, validate, retries, &block
         else
-          raise e
+          raise CouchPotato::Conflict.new
         end
       end
     end
@@ -150,6 +143,15 @@ module CouchPotato
     end
 
     private
+
+    def handle_write_conflict(document, validate, retries, &block)
+      document = document.reload
+      if retries == 5
+        raise CouchPotato::Conflict.new
+      else
+        save_document document, validate, retries + 1, &block
+      end
+    end
 
     def destroy_document_without_conflict_handling(document)
       document.run_callbacks :destroy do
