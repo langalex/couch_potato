@@ -1,10 +1,5 @@
 module CouchPotato
   class Database
-    class << self
-      attr_accessor :max_conflict_retries, :max_conflict_sleep_time
-    end
-    self.max_conflict_retries = 5
-    self.max_conflict_sleep_time = 0
 
     class ValidationsFailedError < ::StandardError; end
 
@@ -84,11 +79,10 @@ module CouchPotato
       rescue RestClient::Conflict => e
         if block
           document = document.reload
-          if retries == self.class.max_conflict_retries
+          if retries == 5
             raise CouchPotato::Conflict.new
           else
             retries += 1
-            sleep rand * self.class.max_conflict_sleep_time if self.class.max_conflict_sleep_time > 0
             retry
           end
         else
