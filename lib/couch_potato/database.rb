@@ -163,7 +163,6 @@ module CouchPotato
     end
 
     def save_document_without_conflict_handling(document, validate = true)
-      return true unless document.dirty? || document.new?
       if document.new?
         create_document(document, validate)
       else
@@ -213,8 +212,10 @@ module CouchPotato
 
       return false if false == document.run_callbacks(:save) do
         return false if false == document.run_callbacks(:update) do
-          res = couchrest_database.save_doc document.to_hash
-          document._rev = res['rev']
+          if document.dirty?
+            res = couchrest_database.save_doc document.to_hash
+            document._rev = res['rev']
+          end
         end
       end
       true
