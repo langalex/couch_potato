@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.5.0
+
+* Moved RSpec matchers into couch_potato-rspec gem. This way, people not using RSpec don't need to install the helpers, plus we can release separate matchers for RSpec 2 and 3.
+
 ### 1.4.0
 
 * Added support for passing the model to blocks for computing the default value of a property (Alexander Lang)

@@ -1,14 +1,13 @@
-# -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
-require "couch_potato/version"
+$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+require 'couch_potato/version'
 
 Gem::Specification.new do |s|
-  s.name = "couch_potato"
-  s.summary = %Q{Ruby persistence layer for CouchDB}
-  s.email = "alex@upstre.am"
-  s.homepage = "http://github.com/langalex/couch_potato"
-  s.description = "Ruby persistence layer for CouchDB"
-  s.authors = ["Alexander Lang"]
+  s.name = 'couch_potato'
+  s.summary = 'Ruby persistence layer for CouchDB'
+  s.email = 'alex@upstre.am'
+  s.homepage = 'http://github.com/langalex/couch_potato'
+  s.description = 'Ruby persistence layer for CouchDB'
+  s.authors = ['Alexander Lang']
   s.version     = CouchPotato::VERSION
   s.platform    = Gem::Platform::RUBY
 
@@ -21,8 +20,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'tzinfo'
   s.add_development_dependency 'rake'
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.require_paths = ["lib"]
+  s.files         = `git ls-files | grep -v "lib/couch_potato/rspec"`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/* | grep -v rspec_matchers`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map {|f| File.basename(f) }
+  s.require_paths = ['lib']
 end
