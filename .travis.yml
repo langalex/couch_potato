@@ -15,6 +15,7 @@ before_script:
   - sudo sh -c 'echo "[native_query_servers]" >> /etc/couchdb/local.ini'
   - sudo sh -c 'echo "erlang = {couch_native_process, start_link, []}" >> /etc/couchdb/local.ini'
   - sudo /etc/init.d/couchdb restart
+  - bundle
 script: bundle exec rake
 matrix:
   allow_failures:
