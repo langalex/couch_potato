@@ -6,7 +6,7 @@ describe CouchPotato::View::Lists, '.list' do
     clazz.send :include, CouchPotato::View::Lists
     clazz.list 'my_list', '<list_code>'
     
-    clazz.lists('my_list').should == '<list_code>'
+    expect(clazz.lists('my_list')).to eq('<list_code>')
   end
   
   it "should make the list available to subclasses" do
@@ -15,6 +15,6 @@ describe CouchPotato::View::Lists, '.list' do
     clazz.list 'my_list', '<list_code>'
     sub_clazz = Class.new clazz
     
-    sub_clazz.lists('my_list').should == '<list_code>'
+    expect(sub_clazz.lists('my_list')).to eq('<list_code>')
   end
 end

@@ -592,7 +592,7 @@ end
 
 By creating you own instances of `CouchPotato::Database` and passing them a fake CouchRest database instance you can completely disconnect your unit tests/spec from the database.
 
-For stubbing out the database couch potato offers some helpers via the `couch_potato-rspec` gem:
+For stubbing out the database couch potato offers some helpers via the `couch_potato-rspec` gem. Use version 2.x of the gem, you you are on RSpec 2, use 3.x for RSpec 3.
 
 ```ruby
 class Comment

@@ -10,19 +10,19 @@ describe CouchPotato, 'full_url_to_database' do
 
   it "should add the default localhost and port if only a name is set" do
     CouchPotato::Config.database_name = 'test'
-    CouchPotato.full_url_to_database.should == 'http://127.0.0.1:5984/test'
+    expect(CouchPotato.full_url_to_database).to eq('http://127.0.0.1:5984/test')
   end
 
   it "should return the set url" do
     CouchPotato::Config.database_name = 'http://db.local/test'
-    CouchPotato.full_url_to_database.should == 'http://db.local/test'
+    expect(CouchPotato.full_url_to_database).to eq('http://db.local/test')
   end
 end
 
 describe CouchPotato, 'use' do
   it 'should return the db object' do
     db = CouchPotato.use("testdb")
-    db.couchrest_database.root.should == 'http://127.0.0.1:5984/testdb'
+    expect(db.couchrest_database.root).to eq('http://127.0.0.1:5984/testdb')
   end
 end
 

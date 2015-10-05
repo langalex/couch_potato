@@ -9,7 +9,7 @@ describe CouchPotato::View::CustomViews do
   end
   
   it "should use a custom viewspec class" do
-    MyViewSpec.should_receive(:new)
+    expect(MyViewSpec).to receive(:new)
     ModelWithView.all
   end
 end

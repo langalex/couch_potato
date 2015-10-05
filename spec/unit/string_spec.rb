@@ -2,6 +2,6 @@ require 'spec_helper'
 
 describe String, 'camelize' do
   it "should camelize a string" do
-    'my_string'.camelize.should == 'MyString'
+    expect('my_string'.camelize).to eq('MyString')
   end
 end

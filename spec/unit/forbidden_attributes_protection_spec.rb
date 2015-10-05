@@ -16,13 +16,13 @@ begin
       it 'raises no error when passing permitted attributes' do
         expect {
           Child.new ActionController::Parameters.new(:text => 'xx').permit!
-        }.to_not raise_error(ActiveModel::ForbiddenAttributesError)
+        }.to_not raise_error
       end
 
       it "raises no error when passing attributes that don't respond to permitted?" do
         expect {
           Child.new :text => 'xx'
-        }.to_not raise_error(ActiveModel::ForbiddenAttributesError)
+        }.to_not raise_error
       end
     end
 
@@ -38,13 +38,13 @@ begin
       it 'raises no error when passing permitted attributes' do
         expect {
           subject.attributes = ActionController::Parameters.new(:text => 'xx').permit!
-        }.to_not raise_error(ActiveModel::ForbiddenAttributesError)
+        }.to_not raise_error
       end
 
       it "raises no error when passing attributes that don't respond to permitted?" do
         expect {
           subject.attributes = {:text => 'xx'}
-        }.to_not raise_error(ActiveModel::ForbiddenAttributesError)
+        }.to_not raise_error
       end
     end
   end

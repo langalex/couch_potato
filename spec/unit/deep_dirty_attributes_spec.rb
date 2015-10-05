@@ -43,8 +43,8 @@ describe "deep dirty attribute tracking" do
       it "should return true if only root simple properties have changed" do
         book = Book.new(:title => "A")
         book.title = "B"
-        book.should be_title_changed
-        book.should be_changed
+        expect(book).to be_title_changed
+        expect(book).to be_changed
       end
     end
 
@@ -52,8 +52,8 @@ describe "deep dirty attribute tracking" do
       it "gives access to old values of simple root properties" do
         book = Book.new(:title => "A")
         book.title = "B"
-        book.title_was.should == "A"
-        book.title_change.should == ["A", "B"]
+        expect(book.title_was).to eq("A")
+        expect(book.title_change).to eq(["A", "B"])
       end
     end
 
@@ -61,7 +61,7 @@ describe "deep dirty attribute tracking" do
       it "returns standard _change" do
         book = Book.new(:title => "A")
         book.title = "B"
-        book.title_change.should == ["A", "B"]
+        expect(book.title_change).to eq(["A", "B"])
       end
     end
   end
@@ -71,35 +71,35 @@ describe "deep dirty attribute tracking" do
       it "should return true if a nested attribute has changed" do
         book = Book.new(:cover => Cover.new(:color => "red"))
         book.cover.color = "blue"
-        book.should be_cover_changed
-        book.should be_changed
+        expect(book).to be_cover_changed
+        expect(book).to be_changed
       end
 
       it "should return true if changed to a different document" do
         book = Book.new(:cover => Cover.new(:color => "red"))
         book.cover = Cover.new(:color => "blue")
-        book.should be_cover_changed
-        book.should be_changed
+        expect(book).to be_cover_changed
+        expect(book).to be_changed
       end
 
       it "should return false if changed to a clone of the original document" do
         book = Book.new(:cover => Cover.new(:color => "red"))
         book.cover = book.cover.clone
-        book.should_not be_cover_changed
-        book.should_not be_changed
+        expect(book).not_to be_cover_changed
+        expect(book).not_to be_changed
       end
 
       it "should return false if set to nil and unchanged" do
         book = Book.new
-        book.should_not be_cover_changed
-        book.should_not be_changed
+        expect(book).not_to be_cover_changed
+        expect(book).not_to be_changed
       end
 
       it "should return true when reassigned with changes but the same _id" do
         book = Book.new(:cover => Cover.new(:_id => "cid", :color => "red"))
         book.cover = Cover.new(:_id => "cid", :color => "blue")
-        book.should be_cover_changed
-        book.should be_changed
+        expect(book).to be_cover_changed
+        expect(book).to be_changed
       end
     end
 
@@ -107,7 +107,7 @@ describe "deep dirty attribute tracking" do
       it "gives access to the old value" do
         book = Book.new(:cover => Cover.new(:color => "red"))
         book.cover.color = "blue"
-        book.cover_was.color.should == "red"
+        expect(book.cover_was.color).to eq("red")
       end
     end
 
@@ -115,41 +115,41 @@ describe "deep dirty attribute tracking" do
       it "should return the standard changes when a nested document is reassigned" do
         book = Book.new(:cover => Cover.new(:color => "red"))
         book.cover = Cover.new(:color => "blue")
-        book.cover_change[0].should be_a Cover
-        book.cover_change[0].color.should == "red"
-        book.cover_change[1].should be_a Cover
-        book.cover_change[1].color.should == "blue"
+        expect(book.cover_change[0]).to be_a Cover
+        expect(book.cover_change[0].color).to eq("red")
+        expect(book.cover_change[1]).to be_a Cover
+        expect(book.cover_change[1].color).to eq("blue")
       end
 
       it "should return the standard changes when a nested document is reassigned from nil" do
         book = Book.new
         book.cover = Cover.new
-        book.cover_change[0].should == nil
-        book.cover_change[1].should == book.cover
+        expect(book.cover_change[0]).to eq(nil)
+        expect(book.cover_change[1]).to eq(book.cover)
       end
 
       it "should return the standard changes when a nested document is reassigned to nil" do
         cover = Cover.new
         book = Book.new(:cover => cover)
         book.cover = nil
-        book.cover_change[0].should == cover
-        book.cover_change[1].should == nil
+        expect(book.cover_change[0]).to eq(cover)
+        expect(book.cover_change[1]).to eq(nil)
       end
 
       it "should return the nested changes when a nested document is changed" do
         book = Book.new(:cover => Cover.new(:color => "red"))
         book.cover.color = "blue"
-        book.cover_change[0].should be_a Cover
-        book.cover_change[0].color.should == "red"
-        book.cover_change[1].should == book.cover.changes
+        expect(book.cover_change[0]).to be_a Cover
+        expect(book.cover_change[0].color).to eq("red")
+        expect(book.cover_change[1]).to eq(book.cover.changes)
       end
 
       it "should return the nested changes when reassigned with changes but the same _id" do
         book = Book.new(:cover => Cover.new(:_id => "cid", :color => "red"))
         book.cover = Cover.new(:_id => "cid", :color => "blue")
-        book.cover_change[0].should be_a Cover
-        book.cover_change[0].color.should == "red"
-        book.cover_change[1].should == {"color" => ["red", "blue"]}
+        expect(book.cover_change[0]).to be_a Cover
+        expect(book.cover_change[0].color).to eq("red")
+        expect(book.cover_change[1]).to eq({"color" => ["red", "blue"]})
       end
     end
   end
@@ -159,28 +159,28 @@ describe "deep dirty attribute tracking" do
       it "returns true if the array is reassigned" do
         book = Book.new(:authors => ["Sarah"])
         book.authors = ["Jane"]
-        book.should be_authors_changed
+        expect(book).to be_authors_changed
       end
 
       it "returns true if an item is added" do
         book = Book.new(:authors => ["Jane"])
         book.authors << "Sue"
-        book.should be_authors_changed
-        book.should be_changed
+        expect(book).to be_authors_changed
+        expect(book).to be_changed
       end
 
       it "returns true if an item is removed" do
         book = Book.new(:authors => ["Sue"])
         book.authors.delete "Sue"
-        book.should be_authors_changed
-        book.should be_changed
+        expect(book).to be_authors_changed
+        expect(book).to be_changed
       end
 
       it "returns false if an empty array is unchanged" do
         book = Book.new(:authors => [])
         book.authors = []
-        book.should_not be_authors_changed
-        book.should_not be_changed
+        expect(book).not_to be_authors_changed
+        expect(book).not_to be_changed
       end
     end
 
@@ -188,7 +188,7 @@ describe "deep dirty attribute tracking" do
       it "gives access to the old values" do
         book = Book.new(:authors => ["Jane"])
         book.authors << "Sue"
-        book.authors_was.should == ["Jane"]
+        expect(book.authors_was).to eq(["Jane"])
       end
     end
 
@@ -197,37 +197,37 @@ describe "deep dirty attribute tracking" do
         book = Book.new(:authors => ["Jane"])
         book.authors << "Sue"
         book.authors.delete "Jane"
-        book.authors_change[0].should == ["Jane"]
-        book.authors_change[1].should be_a HashWithIndifferentAccess
-        book.authors_change[1][:added].should == ["Sue"]
-        book.authors_change[1][:removed].should == ["Jane"]
+        expect(book.authors_change[0]).to eq(["Jane"])
+        expect(book.authors_change[1]).to be_a HashWithIndifferentAccess
+        expect(book.authors_change[1][:added]).to eq(["Sue"])
+        expect(book.authors_change[1][:removed]).to eq(["Jane"])
       end
 
       it "returns a hash of added and removed items when the array is reassigned" do
         book = Book.new(:authors => ["Jane"])
         book.authors = ["Sue"]
-        book.authors_change[0].should == ["Jane"]
-        book.authors_change[1].should be_a HashWithIndifferentAccess
-        book.authors_change[1][:added].should == ["Sue"]
-        book.authors_change[1][:removed].should == ["Jane"]
+        expect(book.authors_change[0]).to eq(["Jane"])
+        expect(book.authors_change[1]).to be_a HashWithIndifferentAccess
+        expect(book.authors_change[1][:added]).to eq(["Sue"])
+        expect(book.authors_change[1][:removed]).to eq(["Jane"])
       end
 
       it "returns a hash of added items when the value is changed from nil to an array" do
         book = Book.new
         book.authors = ["Sue"]
-        book.authors_change[0].should == []
-        book.authors_change[1].should be_a HashWithIndifferentAccess
-        book.authors_change[1][:added].should == ["Sue"]
-        book.authors_change[1][:removed].should == []
+        expect(book.authors_change[0]).to eq([])
+        expect(book.authors_change[1]).to be_a HashWithIndifferentAccess
+        expect(book.authors_change[1][:added]).to eq(["Sue"])
+        expect(book.authors_change[1][:removed]).to eq([])
       end
 
       it "returns a hash of removed items when the value is changed from an array to nil" do
         book = Book.new(:authors => ["Jane"])
         book.authors = nil
-        book.authors_change[0].should == ["Jane"]
-        book.authors_change[1].should be_a HashWithIndifferentAccess
-        book.authors_change[1][:added].should == []
-        book.authors_change[1][:removed].should == ["Jane"]
+        expect(book.authors_change[0]).to eq(["Jane"])
+        expect(book.authors_change[1]).to be_a HashWithIndifferentAccess
+        expect(book.authors_change[1][:added]).to eq([])
+        expect(book.authors_change[1][:removed]).to eq(["Jane"])
       end
     end
   end
@@ -237,50 +237,50 @@ describe "deep dirty attribute tracking" do
       it "returns true if an item is changed" do
         book = Book.new(:pages => [Page.new(:number => 1)])
         book.pages[0].number = 2
-        book.should be_pages_changed
-        book.should be_changed
+        expect(book).to be_pages_changed
+        expect(book).to be_changed
       end
 
       it "returns true if an item is added" do
         book = Book.new(:pages => [Page.new(:number => 1)])
         book.pages << Page.new(:number => 2)
-        book.should be_pages_changed
-        book.should be_changed
+        expect(book).to be_pages_changed
+        expect(book).to be_changed
       end
 
       it "returns true if an items is removed" do
         book = Book.new(:pages => [Page.new(:number => 1)])
         book.pages.delete_at 0
-        book.should be_pages_changed
-        book.should be_changed
+        expect(book).to be_pages_changed
+        expect(book).to be_changed
       end
 
       it "returns true if an item is replaced" do
         book = Book.new(:pages => [Page.new(:number => 1)])
         book.pages[0] = Page.new(:number => 2)
-        book.should be_pages_changed
-        book.should be_changed
+        expect(book).to be_pages_changed
+        expect(book).to be_changed
       end
 
       it "returns false if an item is replaced with a clone" do
         book = Book.new(:pages => [Page.new(:number => 1)])
         book.pages[0] = book.pages[0].clone
-        book.should_not be_pages_changed
-        book.should_not be_changed
+        expect(book).not_to be_pages_changed
+        expect(book).not_to be_changed
       end
 
       it "returns true if an item is replaced with changes but the same _id" do
         book = Book.new(:pages => [Page.new(:_id => "pid", :number => 1)])
         book.pages[0] = Page.new(:_id => "pid", :number => 2)
-        book.should be_pages_changed
-        book.should be_changed
+        expect(book).to be_pages_changed
+        expect(book).to be_changed
       end
 
       it "returns false if an empty array is unchanged" do
         book = Book.new(:pages => [])
         book.pages = []
-        book.should_not be_authors_changed
-        book.should_not be_changed
+        expect(book).not_to be_authors_changed
+        expect(book).not_to be_changed
       end
     end
 
@@ -288,7 +288,7 @@ describe "deep dirty attribute tracking" do
       it "gives access to the old values" do
         book = Book.new(:pages => [Page.new(:number => 1)])
         book.pages[0].number = 2
-        book.pages_was[0].number.should == 1
+        expect(book.pages_was[0].number).to eq(1)
       end
     end
 
@@ -302,13 +302,13 @@ describe "deep dirty attribute tracking" do
         book.pages = [p2]
         p2.headline = "B"
         book.pages << p3
-        book.pages_change[0].should == pages
-        book.pages_change[1].should be_a HashWithIndifferentAccess
-        book.pages_change[1][:added].should == [p3]
-        book.pages_change[1][:removed].should == [p1]
-        book.pages_change[1][:changed][0][0].should be_a Page
-        book.pages_change[1][:changed][0][0].headline.should == "A"
-        book.pages_change[1][:changed][0][1].should == p2.changes
+        expect(book.pages_change[0]).to eq(pages)
+        expect(book.pages_change[1]).to be_a HashWithIndifferentAccess
+        expect(book.pages_change[1][:added]).to eq([p3])
+        expect(book.pages_change[1][:removed]).to eq([p1])
+        expect(book.pages_change[1][:changed][0][0]).to be_a Page
+        expect(book.pages_change[1][:changed][0][0].headline).to eq("A")
+        expect(book.pages_change[1][:changed][0][1]).to eq(p2.changes)
       end
 
       it "returns added items when changing from nil to an array" do
@@ -316,28 +316,28 @@ describe "deep dirty attribute tracking" do
         p2 = Page.new(:headline => "A")
         book = Book.new
         book.pages = [p1, p2]
-        book.pages_change[0].should == []
-        book.pages_change[1].should be_a HashWithIndifferentAccess
-        book.pages_change[1][:added].should == [p1, p2]
-        book.pages_change[1][:removed].should == []
-        book.pages_change[1][:changed].should == []
+        expect(book.pages_change[0]).to eq([])
+        expect(book.pages_change[1]).to be_a HashWithIndifferentAccess
+        expect(book.pages_change[1][:added]).to eq([p1, p2])
+        expect(book.pages_change[1][:removed]).to eq([])
+        expect(book.pages_change[1][:changed]).to eq([])
       end
 
       it "does not return unchanged cloned items as changes" do
         book = Book.new(:pages => [Page.new(:number => 1)])
         book.pages[0] = book.pages[0].clone
-        book.pages_change.should be_nil
+        expect(book.pages_change).to be_nil
       end
 
       it "returns changes if an item is replaced with changes but the same _id" do
         book = Book.new(:pages => [Page.new(:_id => "pid", :number => 1)])
         pages = book.pages.clone
         book.pages[0] = Page.new(:_id => "pid", :number => 2)
-        book.pages_change[0].should == pages
-        book.pages_change[1].should be_a HashWithIndifferentAccess
-        book.pages_change[1][:added].should == []
-        book.pages_change[1][:removed].should == []
-        book.pages_change[1][:changed].should == [[pages[0], {"number" => [1, 2]}]]
+        expect(book.pages_change[0]).to eq(pages)
+        expect(book.pages_change[1]).to be_a HashWithIndifferentAccess
+        expect(book.pages_change[1][:added]).to eq([])
+        expect(book.pages_change[1][:removed]).to eq([])
+        expect(book.pages_change[1][:changed]).to eq([[pages[0], {"number" => [1, 2]}]])
       end
     end
   end
@@ -346,48 +346,48 @@ describe "deep dirty attribute tracking" do
     it "includes simple property changes" do
       book = Book.new(:title => "Title A")
       book.title = "Title B"
-      book.changes[:title].should == book.title_change
+      expect(book.changes[:title]).to eq(book.title_change)
     end
 
     it "includes embedded document changes" do
       book = Book.new(:cover => Cover.new(:color => "red"))
       cover = book.cover.clone
       book.cover.color = "blue"
-      book.changes[:cover].should == book.cover_change
+      expect(book.changes[:cover]).to eq(book.cover_change)
     end
 
     it "does not include unchanged embedded documents" do
       book = Book.new(:cover => Cover.new(:color => "red"))
-      book.changes.should_not have_key :cover
+      expect(book.changes).not_to have_key :cover
     end
 
     it "includes simple array changes" do
       book = Book.new(:authors => ["Sarah"])
       book.authors = ["Jane"]
-      book.changes[:authors].should == book.authors_change
+      expect(book.changes[:authors]).to eq(book.authors_change)
     end
 
     it "does not include unchanged simple arrays" do
       book = Book.new(:authors => ["Sarah"])
-      book.changes.should_not have_key :authors
+      expect(book.changes).not_to have_key :authors
     end
 
     it "includes document array changes" do
       book = Book.new(:pages => [Page.new(:number => 1)])
       book.pages = [Page.new(:number => 2)]
-      book.changes[:pages].should == book.pages_change
+      expect(book.changes[:pages]).to eq(book.pages_change)
     end
 
     it "does not include unchanged document arrays" do
       book = Book.new(:pages => [Page.new(:number => 1)])
-      book.changes.should_not have_key :pages
+      expect(book.changes).not_to have_key :pages
     end
   end
 
   describe "after save" do
     before :each do
       book = Book.json_create(:_id => "1", :title => "A", :cover => {:color => "red"}, :pages => [{:_id => "p1", :number => 1}, {:_id => "p2", :number => 2}])
-      @couchrest_db = stub('database', :info => nil, :save_doc => {}, :get => book)
+      @couchrest_db = double('database', :info => nil, :save_doc => {}, :get => book)
       @db = CouchPotato::Database.new(@couchrest_db)
       @book = @db.load_document "1"
     end
@@ -396,30 +396,30 @@ describe "deep dirty attribute tracking" do
       @book.title = "B"
       @book.cover.color = "blue"
       @db.save! @book
-      @book.should_not be_dirty
-      @book.cover.should_not be_dirty
+      expect(@book).not_to be_dirty
+      expect(@book.cover).not_to be_dirty
     end
 
     it "should reset all elements in a document array" do
       @book.pages.each(&:is_dirty)
       @db.save! @book
-      @book.should_not be_dirty
+      expect(@book).not_to be_dirty
       @book.pages.each do |page|
-        page.should_not be_dirty
+        expect(page).not_to be_dirty
       end
     end
 
     it "should reset a forced dirty state" do
       @book.is_dirty
       @db.save! @book
-      @book.should_not be_dirty
+      expect(@book).not_to be_dirty
     end
 
     it "clears old values" do
       @book.cover.color = "blue"
       @db.save! @book
-      @book.cover_was.should be_nil
-      @book.cover_change.should be_nil
+      expect(@book.cover_was).to be_nil
+      expect(@book.cover_change).to be_nil
     end
   end
 
@@ -427,8 +427,8 @@ describe "deep dirty attribute tracking" do
     it "still uses deep dirty tracking" do
       book = TextBook.new(:pages => [Page.new(:number => 1)])
       book.pages[0].number = 2
-      book.should be_pages_changed
-      book.should be_changed
+      expect(book).to be_pages_changed
+      expect(book).to be_changed
     end
   end
 end

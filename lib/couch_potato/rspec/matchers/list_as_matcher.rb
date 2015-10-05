@@ -40,11 +40,11 @@ module CouchPotato
         @expected_ruby == @actual_ruby
       end
 
-      def failure_message_for_should
+      def failure_message
         "Expected to list as #{@expected_ruby.inspect} but got #{@actual_ruby.inspect}."
       end
 
-      def failure_message_for_should_not
+      def failure_message_when_negated
         "Expected to not list as #{@expected_ruby.inspect} but did."
       end
 

@@ -9,19 +9,19 @@ describe "create" do
     it "should store the class" do
       @comment = Comment.new :title => 'my_title'
       CouchPotato.database.save_document! @comment
-      CouchPotato.couchrest_database.get(@comment.id).send(JSON.create_id).should == 'Comment'
+      expect(CouchPotato.couchrest_database.get(@comment.id).send(JSON.create_id)).to eq('Comment')
     end
 
     it "should persist a given created_at" do
       @comment = Comment.new :created_at => Time.parse('2010-01-02 12:34:48 +0000'), :title => '-'
       CouchPotato.database.save_document! @comment
-      CouchPotato.couchrest_database.get(@comment.id).created_at.should == Time.parse('2010-01-02 12:34:48 +0000')
+      expect(CouchPotato.couchrest_database.get(@comment.id).created_at).to eq(Time.parse('2010-01-02 12:34:48 +0000'))
     end
 
     it "should persist a given updated_at" do
       @comment = Comment.new :updated_at => Time.parse('2010-01-02 12:34:48 +0000'), :title => '-'
       CouchPotato.database.save_document! @comment
-      CouchPotato.couchrest_database.get(@comment.id).updated_at.should == Time.parse('2010-01-02 12:34:48 +0000')
+      expect(CouchPotato.couchrest_database.get(@comment.id).updated_at).to eq(Time.parse('2010-01-02 12:34:48 +0000'))
     end
   end
 
@@ -29,7 +29,7 @@ describe "create" do
     it "should not store anything" do
       @comment = Comment.new
       CouchPotato.database.save_document @comment
-      CouchPotato.couchrest_database.documents['rows'].should be_empty
+      expect(CouchPotato.couchrest_database.documents['rows']).to be_empty
     end
   end
 
@@ -46,7 +46,7 @@ describe "create" do
         CouchPotato.with_database(db_name) do |couch|
           couch.save_document! @comment
         end
-        CouchPotato.couchrest_database_for_name(db_name).get(@comment.id).send(JSON.create_id).should == 'Comment'
+        expect(CouchPotato.couchrest_database_for_name(db_name).get(@comment.id).send(JSON.create_id)).to eq('Comment')
       end
     end
   end

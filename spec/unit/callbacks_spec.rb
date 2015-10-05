@@ -33,13 +33,13 @@ describe 'callbacks' do
     it "should call the callbacks of the super class" do
       tree = AppleTree.new :leaf_count => 1
       tree.valid?
-      tree.leaf_count.should == 2
+      expect(tree.leaf_count).to eq(2)
     end
 
     it "should call the callbacks of the child class" do
       tree = AppleTree.new :leaf_count => 1
       tree.valid?
-      tree.should be_watered
+      expect(tree).to be_watered
     end
   end
   

@@ -6,7 +6,7 @@ describe 'CouchPotato Validation' do
     it "should description" do
       model_class = Class.new
       model_class.send(:include, CouchPotato::Persistence)
-      model_class.new.errors.should respond_to(:errors)
+      expect(model_class.new.errors).to respond_to(:errors)
     end
   end
 

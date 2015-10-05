@@ -20,25 +20,25 @@ describe CouchPotato::View::PropertiesViewSpec do
   end
 
   it "should map the given properties" do
-    Contract.by_date.should map(
+    expect(Contract.by_date).to map(
       Contract.new(:date => '2010-01-01', :_id => '1')
     ).to(['1', {"date" => "2010-01-01"}])
   end
 
   it "should reduce to the number of documents" do
-    Contract.by_date.should reduce(
+    expect(Contract.by_date).to reduce(
       ['1', {"date" => "2010-01-01"}], ['2', {"date" => "2010-01-02"}]
     ).to(2)
   end
 
   it "should rereduce the number of documents" do
-    Contract.by_date.should rereduce(
+    expect(Contract.by_date).to rereduce(
       nil, [12, 13]
     ).to(25)
   end
 
   it 'always uses javascript' do
     CouchPotato::Config.default_language = :erlang
-    CouchPotato::View::PropertiesViewSpec.new(Contract, 'all', {}, {}).language.should == :javascript
+    expect(CouchPotato::View::PropertiesViewSpec.new(Contract, 'all', {}, {}).language).to eq(:javascript)
   end
 end

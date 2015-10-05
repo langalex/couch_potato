@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'yaml'
-require 'spec/mocks'
 
 module Rails
   def self.env
@@ -13,11 +12,11 @@ module Rails
   end
 
   def self.root
-    RSpec::Mocks::Mock.new :join => ''
+    RSpec::Mocks::Double.new join: ''
   end
 
   def self.logger
-    RSpec::Mocks::Mock.new :warn => nil
+    RSpec::Mocks::Double.new warn: nil
   end
 end
 
@@ -35,16 +34,16 @@ describe "railtie" do
   end
 
   before(:each) do
-    File.stub(exist?: true)
+    allow(File).to receive_messages(exist?: true)
   end
 
   context 'when the yml file does not exist' do
     before(:each) do
-      File.stub(exist?: false)
+      allow(File).to receive_messages(exist?: false)
     end
 
     it 'does not configure the database' do
-      CouchPotato::Config.should_not_receive(:database_name=)
+      expect(CouchPotato::Config).not_to receive(:database_name=)
 
       CouchPotato.rails_init
     end
@@ -52,9 +51,9 @@ describe "railtie" do
 
   context 'yaml file contains only database names' do
     it "should set the database name from the yaml file" do
-      File.stub(:read => "test: test_db")
+      allow(File).to receive_messages(:read => "test: test_db")
 
-      CouchPotato::Config.should_receive(:database_name=).with('test_db')
+      expect(CouchPotato::Config).to receive(:database_name=).with('test_db')
 
       CouchPotato.rails_init
     end
@@ -62,26 +61,26 @@ describe "railtie" do
 
   context 'yaml file contains more configuration' do
     before(:each) do
-      File.stub(:read => "test: \n  database: test_db\n  default_language: :erlang")
+      allow(File).to receive_messages(:read => "test: \n  database: test_db\n  default_language: :erlang")
     end
 
     it "set the database name from the yaml file" do
-      CouchPotato::Config.should_receive(:database_name=).with('test_db')
+      expect(CouchPotato::Config).to receive(:database_name=).with('test_db')
 
       CouchPotato.rails_init
     end
 
     it 'sets the default language from the yaml file' do
-      CouchPotato::Config.should_receive(:default_language=).with(:erlang)
+      expect(CouchPotato::Config).to receive(:default_language=).with(:erlang)
 
       CouchPotato.rails_init
     end
   end
 
   it "should process the yml file with erb" do
-    File.stub(:read => "test: \n  database: <%= 'db' %>")
+    allow(File).to receive_messages(:read => "test: \n  database: <%= 'db' %>")
 
-    CouchPotato::Config.should_receive(:database_name=).with('db')
+    expect(CouchPotato::Config).to receive(:database_name=).with('db')
 
     CouchPotato.rails_init
   end

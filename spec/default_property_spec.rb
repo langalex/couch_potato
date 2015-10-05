@@ -18,7 +18,7 @@ describe 'default properties' do
   it "uses the default value if nothing is supplied" do
     t = Test.new
 
-    t.test.should == 'Test value'
+    expect(t.test).to eq('Test value')
   end
 
   it "persists the default value if nothing is supplied" do
@@ -26,27 +26,27 @@ describe 'default properties' do
     CouchPotato.database.save_document! t
 
     t = CouchPotato.database.load_document t.id
-    t.test.should == 'Test value'
+    expect(t.test).to eq('Test value')
   end
 
   it "does not have the same default for two instances of the object" do
     t = Test.new
     t2 = Test.new
-    t.complex.object_id.should_not == t2.complex.object_id
+    expect(t.complex.object_id).not_to eq(t2.complex.object_id)
   end
 
   it "does not return the default value when the actual value is empty" do
-    t = Test.new(:complex => []).complex.should == []
+    t = expect(Test.new(:complex => []).complex).to eq([])
   end
 
   it "uses the default value also if the default is false" do
     t = Test.new
-    t.false_value.should == false
+    expect(t.false_value).to eq(false)
   end
 
   it "uses the return value of a Proc given as the default" do
     t = Test.new
-    t.proc.should == 3
+    expect(t.proc).to eq(3)
   end
 
   it 'passes the model to a block with arity 1' do

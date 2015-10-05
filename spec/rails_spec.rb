@@ -30,12 +30,12 @@ describe CouchPotato::Database, 'rails specific behavior' do
   context 'load a document' do
     it "should load models whose constants are currently uninitialized (like with rails in development mode)" do
       CouchPotato.couchrest_database.save_doc(JSON.create_id => 'Autoloader::Uninitialized', '_id' => '1')
-      CouchPotato.database.load('1').class.name.should == 'Autoloader::Uninitialized'
+      expect(CouchPotato.database.load('1').class.name).to eq('Autoloader::Uninitialized')
     end
     
     it "should load nested models" do
       CouchPotato.couchrest_database.save_doc(JSON.create_id => 'Autoloader::Nested::Nested2', '_id' => '1')
-      CouchPotato.database.load('1').class.name.should == 'Autoloader::Nested::Nested2'
+      expect(CouchPotato.database.load('1').class.name).to eq('Autoloader::Nested::Nested2')
     end
   end  
   
@@ -43,7 +43,7 @@ describe CouchPotato::Database, 'rails specific behavior' do
     it "should load models from a view whose constants are currently uninitialized" do
       doc = {JSON.create_id => 'WithUnloadedEmbedded', '_id' => '1', 'embedded' => {JSON.create_id => 'WithUnloadedEmbedded::Uninitialized'}}
       CouchPotato.couchrest_database.save_doc(doc)
-      CouchPotato.database.view(WithUnloadedEmbedded.all).first.embedded.class.name.should == 'WithUnloadedEmbedded::Uninitialized'
+      expect(CouchPotato.database.view(WithUnloadedEmbedded.all).first.embedded.class.name).to eq('WithUnloadedEmbedded::Uninitialized')
     end
   end
 end

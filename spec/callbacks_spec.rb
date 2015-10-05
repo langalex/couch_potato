@@ -58,8 +58,8 @@ describe "multiple callbacks at once" do
   it "should run all callback methods given to the callback method call" do
     monkey = Monkey.new
     monkey.run_callbacks :create
-    monkey.eaten_banana.should be_true
-    monkey.eaten_apple.should be_true
+    expect(monkey.eaten_banana).to be_truthy
+    expect(monkey.eaten_apple).to be_truthy
   end
 end
 
@@ -67,7 +67,7 @@ describe 'create callbacks' do
 
   before(:each) do
     @recorder = CallbackRecorder.new
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}, :info => nil
+    couchrest_database = double 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}, :info => nil
     @db = CouchPotato::Database.new(couchrest_database)
   end
 
@@ -78,37 +78,37 @@ describe 'create callbacks' do
 
     it "should call before_validation" do
       @recorder.valid?
-      @recorder.callbacks.should include(:before_validation)
+      expect(@recorder.callbacks).to include(:before_validation)
     end
 
     it "should call before_validation_on_create" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:before_validation_on_create)
+      expect(@recorder.callbacks).to include(:before_validation_on_create)
     end
 
     it "should call before_validation_on_save" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:before_validation_on_save)
+      expect(@recorder.callbacks).to include(:before_validation_on_save)
     end
 
     it "should call before_save" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:before_save)
+      expect(@recorder.callbacks).to include(:before_save)
     end
 
     it "should call after_save" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:after_save)
+      expect(@recorder.callbacks).to include(:after_save)
     end
 
     it "should call before_create" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:before_create)
+      expect(@recorder.callbacks).to include(:before_create)
     end
 
     it "should call after_create" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:after_create)
+      expect(@recorder.callbacks).to include(:after_create)
     end
   end
 
@@ -119,37 +119,37 @@ describe 'create callbacks' do
 
     it "should call before_validation" do
       @recorder.valid?
-      @recorder.callbacks.should include(:before_validation)
+      expect(@recorder.callbacks).to include(:before_validation)
     end
 
     it "should call before_validation_on_create" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:before_validation_on_create)
+      expect(@recorder.callbacks).to include(:before_validation_on_create)
     end
 
     it "should call before_validation_on_save" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:before_validation_on_save)
+      expect(@recorder.callbacks).to include(:before_validation_on_save)
     end
 
     it "should call before_save" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:before_save)
+      expect(@recorder.callbacks).to include(:before_save)
     end
 
     it "should call after_save" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:after_save)
+      expect(@recorder.callbacks).to include(:after_save)
     end
 
     it "should call before_create" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:before_create)
+      expect(@recorder.callbacks).to include(:before_create)
     end
 
     it "should call after_create" do
       @db.save_document! @recorder
-      @recorder.callbacks.should include(:after_create)
+      expect(@recorder.callbacks).to include(:after_create)
     end
 
   end
@@ -158,37 +158,37 @@ describe 'create callbacks' do
 
     it "should call before_validation" do
       @recorder.valid?
-      @recorder.callbacks.should include(:before_validation)
+      expect(@recorder.callbacks).to include(:before_validation)
     end
 
     it "should call before_validation_on_create" do
       @db.save_document @recorder
-      @recorder.callbacks.should include(:before_validation_on_create)
+      expect(@recorder.callbacks).to include(:before_validation_on_create)
     end
 
     it "should call before_validation_on_save" do
       @db.save_document @recorder
-      @recorder.callbacks.should include(:before_validation_on_save)
+      expect(@recorder.callbacks).to include(:before_validation_on_save)
     end
 
     it "should not call before_save" do
       @db.save_document @recorder
-      @recorder.callbacks.should_not include(:before_save)
+      expect(@recorder.callbacks).not_to include(:before_save)
     end
 
     it "should not call after_save" do
       @db.save_document @recorder
-      @recorder.callbacks.should_not include(:after_save)
+      expect(@recorder.callbacks).not_to include(:after_save)
     end
 
     it "should not call before_create" do
       @db.save_document @recorder
-      @recorder.callbacks.should_not include(:before_create)
+      expect(@recorder.callbacks).not_to include(:before_create)
     end
 
     it "should not call after_create" do
       @db.save_document @recorder
-      @recorder.callbacks.should_not include(:after_create)
+      expect(@recorder.callbacks).not_to include(:after_create)
     end
   end
 end
@@ -198,7 +198,7 @@ describe "update callbacks" do
   before(:each) do
     @recorder = CallbackRecorder.new :required_property => 1
 
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}, :info => nil
+    couchrest_database = double 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}, :info => nil
     @db = CouchPotato::Database.new(couchrest_database)
     @db.save_document! @recorder
 
@@ -213,31 +213,31 @@ describe "update callbacks" do
     end
 
     it "should call before_validation" do
-      @recorder.callbacks.should include(:before_validation)
+      expect(@recorder.callbacks).to include(:before_validation)
     end
 
     it "should call before_validation_on_update" do
-      @recorder.callbacks.should include(:before_validation_on_update)
+      expect(@recorder.callbacks).to include(:before_validation_on_update)
     end
 
     it "should call before_validation_on_save" do
-      @recorder.callbacks.should include(:before_validation_on_save)
+      expect(@recorder.callbacks).to include(:before_validation_on_save)
     end
 
     it "should call before_save" do
-      @recorder.callbacks.should include(:before_save)
+      expect(@recorder.callbacks).to include(:before_save)
     end
 
     it "should call after_save" do
-      @recorder.callbacks.should include(:after_save)
+      expect(@recorder.callbacks).to include(:after_save)
     end
 
     it "should call before_update" do
-      @recorder.callbacks.should include(:before_update)
+      expect(@recorder.callbacks).to include(:before_update)
     end
 
     it "should call after_update" do
-      @recorder.callbacks.should include(:after_update)
+      expect(@recorder.callbacks).to include(:after_update)
     end
 
   end
@@ -249,31 +249,31 @@ describe "update callbacks" do
     end
 
     it "should call before_validation" do
-      @recorder.callbacks.should include(:before_validation)
+      expect(@recorder.callbacks).to include(:before_validation)
     end
 
     it "should call before_validation_on_update" do
-      @recorder.callbacks.should include(:before_validation_on_update)
+      expect(@recorder.callbacks).to include(:before_validation_on_update)
     end
 
     it "should call before_validation_on_save" do
-      @recorder.callbacks.should include(:before_validation_on_save)
+      expect(@recorder.callbacks).to include(:before_validation_on_save)
     end
 
     it "should call before_save" do
-      @recorder.callbacks.should include(:before_save)
+      expect(@recorder.callbacks).to include(:before_save)
     end
 
     it "should call after_save" do
-      @recorder.callbacks.should include(:after_save)
+      expect(@recorder.callbacks).to include(:after_save)
     end
 
     it "should call before_update" do
-      @recorder.callbacks.should include(:before_update)
+      expect(@recorder.callbacks).to include(:before_update)
     end
 
     it "should call after_update" do
-      @recorder.callbacks.should include(:after_update)
+      expect(@recorder.callbacks).to include(:after_update)
     end
 
   end
@@ -287,31 +287,31 @@ describe "update callbacks" do
     end
 
     it "should call before_validation" do
-      @recorder.callbacks.should include(:before_validation)
+      expect(@recorder.callbacks).to include(:before_validation)
     end
 
     it "should call before_validation_on_update" do
-      @recorder.callbacks.should include(:before_validation_on_update)
+      expect(@recorder.callbacks).to include(:before_validation_on_update)
     end
 
     it "should call before_validation_on_save" do
-      @recorder.callbacks.should include(:before_validation_on_save)
+      expect(@recorder.callbacks).to include(:before_validation_on_save)
     end
 
     it "should not call before_save" do
-      @recorder.callbacks.should_not include(:before_save)
+      expect(@recorder.callbacks).not_to include(:before_save)
     end
 
     it "should not call after_save" do
-      @recorder.callbacks.should_not include(:after_save)
+      expect(@recorder.callbacks).not_to include(:after_save)
     end
 
     it "should not call before_update" do
-      @recorder.callbacks.should_not include(:before_update)
+      expect(@recorder.callbacks).not_to include(:before_update)
     end
 
     it "should not call after_update" do
-      @recorder.callbacks.should_not include(:after_update)
+      expect(@recorder.callbacks).not_to include(:after_update)
     end
 
   end
@@ -322,7 +322,7 @@ describe "destroy callbacks" do
 
   before(:each) do
     @recorder = CallbackRecorder.new :required_property => 1
-    couchrest_database = stub 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :delete_doc => nil, :view => {'rows' => []}, :info => nil
+    couchrest_database = double 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :delete_doc => nil, :view => {'rows' => []}, :info => nil
     @db = CouchPotato::Database.new(couchrest_database)
     @db.save_document! @recorder
 
@@ -331,12 +331,12 @@ describe "destroy callbacks" do
 
   it "should call before_destroy" do
     @db.destroy_document @recorder
-    @recorder.callbacks.should include(:before_destroy)
+    expect(@recorder.callbacks).to include(:before_destroy)
   end
 
   it "should call after_destroy" do
     @db.destroy_document @recorder
-    @recorder.callbacks.should include(:after_destroy)
+    expect(@recorder.callbacks).to include(:after_destroy)
   end
 end
 
@@ -355,24 +355,24 @@ describe "validation callbacks" do
 
   it "should keep error messages set in custom before_validation filters" do
     user = ValidatedUser.new(:name => "john")
-    user.valid?.should == false
-    user.errors[:name].should == ["should be Paul"]
+    expect(user.valid?).to eq(false)
+    expect(user.errors[:name]).to eq(["should be Paul"])
   end
 
   it "should combine the errors from validations and callbacks" do
     user = ValidatedUser.new(:name => nil)
-    user.valid?.should == false
-    user.errors[:name].any? {|msg| msg =~ /can't be (empty|blank)/ }.should == true
-    user.errors[:name].any? {|msg| msg == "should be Paul" }.should == true
-    user.errors[:name].size.should == 2
+    expect(user.valid?).to eq(false)
+    expect(user.errors[:name].any? {|msg| msg =~ /can't be (empty|blank)/ }).to eq(true)
+    expect(user.errors[:name].any? {|msg| msg == "should be Paul" }).to eq(true)
+    expect(user.errors[:name].size).to eq(2)
   end
 
   it "should clear the errors on subsequent calls to valid?" do
     user = ValidatedUser.new(:name => nil)
-    user.valid?.should == false
+    expect(user.valid?).to eq(false)
     user.name = 'Paul'
-    user.valid?.should == true
-    user.errors[:name].should == []
+    expect(user.valid?).to eq(true)
+    expect(user.errors[:name]).to eq([])
   end
 end
 
@@ -440,26 +440,26 @@ describe "validation callbacks and filter halt" do
 
   it "should keep error messages set in custom before_validation if an update filter returns false" do
     @user = FilterValidationUpdateUser.new(:name => "Paul")
-    @db.save_document(@user).should == true
+    expect(@db.save_document(@user)).to eq(true)
     @user.name = 'Bert'
-    @db.save_document(@user).should == false
+    expect(@db.save_document(@user)).to eq(false)
   end
 
   it "should keep error messages set in custom before_validation if a create filter returns false" do
     @user = FilterValidationCreateUser.new(:name => "Bert")
-    @db.save_document(@user).should == false
+    expect(@db.save_document(@user)).to eq(false)
   end
 
   it "should return false on saving a document when a before update filter returned false" do
     @user = FilterSaveUpdateUser.new(:name => "Paul")
-    @db.save_document(@user).should == true
+    expect(@db.save_document(@user)).to eq(true)
     @user.name = 'Bert'
-    @db.save_document(@user).should == false
+    expect(@db.save_document(@user)).to eq(false)
   end
 
   it "should return false on saving a document when a before save or before create filter returned false" do
     @user = FilterSaveCreateUser.new(:name => "Bert")
-    @db.save_document(@user).should == false
+    expect(@db.save_document(@user)).to eq(false)
   end
 
 end

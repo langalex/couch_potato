@@ -34,7 +34,7 @@ end
 class BigDecimalContainer
   include CouchPotato::Persistence
 
-  property :number, :type => BigDecimal
+  property :number, type: BigDecimal
 end
 
 def recreate_db
@@ -53,11 +53,11 @@ RSpec::Matchers.define :eql_ignoring_indentation do |expected|
     strip_indentation(string) == strip_indentation(expected)
   end
 
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     "expected\n#{strip_indentation(actual).inspect} to == \n#{strip_indentation(expected).inspect} but wasn't."
   end
 
-  failure_message_for_should_not do |actual|
+  failure_message_when_negated do |actual|
     "expected\n#{strip_indentation(actual).inspect} to not == \n#{strip_indentation(expected).inspect} but wasn."
   end
 

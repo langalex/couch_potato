@@ -8,4 +8,4 @@ else
    gem 'therubyracer'
 end
 
-gemspec name: 'couch_potato'
+gemspec name: 'couch_potato', path: '..'

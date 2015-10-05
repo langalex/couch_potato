@@ -30,31 +30,31 @@ begin
 
     describe '#to_partial_path' do
       it 'returns a path based on the class name' do
-        @model.to_partial_path.should == 'active_comments/active_comment'
+        expect(@model.to_partial_path).to eq('active_comments/active_comment')
       end
     end
 
     describe "#persisted?" do
       it "should return false if it is a new document " do
-        @model.should_not be_persisted
+        expect(@model).not_to be_persisted
       end
 
       it "should be true if it was saved" do
         @comment = ActiveComment.new(:name => 'Thilo', :email => 'test@local.host')
         CouchPotato.database.save_document! @comment
-        @comment.should be_persisted
+        expect(@comment).to be_persisted
       end
     end
 
     describe "#to_key" do
       it "should return nil if the document was not persisted" do
-        @model.to_key.should be_nil
+        expect(@model.to_key).to be_nil
       end
 
       it "should return the id of the document if it was persisted" do
         @comment = ActiveComment.new(:name => 'Thilo', :email => 'test@local.host')
         CouchPotato.database.save_document! @comment
-        @comment.to_key.should == [@comment.id]
+        expect(@comment.to_key).to eq([@comment.id])
       end
     end
 
@@ -62,31 +62,31 @@ begin
     describe "#errors" do
       it "should return a single error as array" do
         @model.valid?
-        @model.errors[:name].should be_kind_of(Array)
+        expect(@model.errors[:name]).to be_kind_of(Array)
       end
 
       it "should return multiple errors as array" do
         @model.valid?
-        @model.errors[:email].size.should == 2
+        expect(@model.errors[:email].size).to eq(2)
       end
 
       it "should return no error as an empty array" do
-        @model.errors[:name].should == []
+        expect(@model.errors[:name]).to eq([])
       end
 
       it "should be able to be Marshal.dump'ed" do
-        lambda { Marshal.dump(@model.errors) }.should_not raise_error
+        expect { Marshal.dump(@model.errors) }.not_to raise_error
       end
     end
 
     describe "#destroyed" do
       it "should return destroyed if the object is deleted" do
         @model._deleted = true
-        @model.should be_destroyed
+        expect(@model).to be_destroyed
       end
 
       it "should not return destroyed if it's not deleted" do
-        @model.should_not be_destroyed
+        expect(@model).not_to be_destroyed
       end
     end
 
@@ -95,7 +95,7 @@ begin
     end
 
     def assert_kind_of(klass, object)
-      object.should be_a(klass)
+      expect(object).to be_a(klass)
     end
   end
 

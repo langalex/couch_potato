@@ -1,13 +1,15 @@
 module CouchPotato::RSpec
-  
+
   module StubView
     class ViewStub
+      include RSpec::Mocks::ExampleMethods
+
       def initialize(clazz, view, db)
         @clazz = clazz
         @view = view
         @db = db
       end
-    
+
       def with(*args, &block)
         @args = args
         and_return(block.call) if block
@@ -15,18 +17,17 @@ module CouchPotato::RSpec
       end
 
       def and_return(return_value)
-        view_stub = RSpec::Mocks::Mock.new("#{@clazz}.#{@view}(#{@args.try(:join, ', ')}) view")
-        _stub = @clazz.stub(@view)
-        _stub.with(*@args) if @args
-        _stub.and_return(view_stub)
-        @db.stub(:view).with(view_stub).and_return(return_value)
-        if return_value.respond_to?(:first)
-          @db.stub(:first).with(view_stub).and_return(return_value.first)
-          if return_value.first
-            @db.stub(:first!).with(view_stub).and_return(return_value.first)
-          else
-            @db.stub(:first!).with(view_stub).and_raise(CouchPotato::NotFound)
-          end
+        view_stub = RSpec::Mocks::Double.new("#{@clazz}.#{@view}(#{@args.try(:join, ', ')}) view")
+        stub = allow(@clazz).to receive(@view)
+        stub.with(*@args) if @args
+        stub.and_return(view_stub)
+        allow(@db).to receive(:view).with(view_stub).and_return(return_value)
+        return unless return_value.respond_to?(:first)
+        allow(@db).to receive(:first).with(view_stub).and_return(return_value.first)
+        if return_value.first
+          allow(@db).to receive(:first!).with(view_stub).and_return(return_value.first)
+        else
+          allow(@db).to receive(:first!).with(view_stub).and_raise(CouchPotato::NotFound)
         end
       end
     end
@@ -37,21 +38,17 @@ module CouchPotato::RSpec
       stub
     end
   end
+end
 
-  module StubDb
-    def stub_db(options = {})
-      db = double('db', options)
-      db.extend CouchPotato::RSpec::StubView
-      CouchPotato.stub(:database => db)
-      db
-    end
+module StubDb
+  include ::RSpec::Mocks::ExampleMethods
+
+  def stub_db(options = {})
+    db = double(:db, options)
+    db.extend CouchPotato::RSpec::StubView
+    allow(self).to receive(:database) { db }
+    db
   end
 end
 
-module RSpec
-  module Mocks
-    module ExampleMethods
-      include CouchPotato::RSpec::StubDb
-    end
-  end
-end
+CouchPotato.extend StubDb

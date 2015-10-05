@@ -18,23 +18,23 @@ describe "persistence" do
 
       none_dude22 = NoneDude.new(:id => "22", :name => "foo")
 
-      dude22.should eql(dude22)
-      dude22.should_not eql(none_dude22)
-      dude22.should_not eql(dude11)
+      expect(dude22).to eql(dude22)
+      expect(dude22).not_to eql(none_dude22)
+      expect(dude22).not_to eql(dude11)
     end
 
     it "should handle new objects without id to be never equal" do
       dude = Dude.new(:name => "foo")
       dude22 = Dude.new(:id => "22", :name => "foo")
 
-      dude.should_not eql(Dude.new(:name => "foo"))
-      dude22.should_not eql(Dude.new(:name => "foo"))
+      expect(dude).not_to eql(Dude.new(:name => "foo"))
+      expect(dude22).not_to eql(Dude.new(:name => "foo"))
     end
 
     it "should handle same object references to be equal" do
       dude = Dude.new(:name => "foo")
 
-      dude.should eql(dude)
+      expect(dude).to eql(dude)
     end
   end
 end
