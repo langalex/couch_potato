@@ -39,17 +39,17 @@ module CouchPotato::RSpec
       stub
     end
   end
-end
 
-module StubDb
-  include ::RSpec::Mocks::ExampleMethods
+  module StubDb
+    include ::RSpec::Mocks::ExampleMethods
 
-  def stub_db(options = {})
-    db = double(:db, options)
-    db.extend CouchPotato::RSpec::StubView
-    allow(self).to receive(:database) { db }
-    db
+    def stub_db(options = {})
+      db = double(:db, options)
+      db.extend CouchPotato::RSpec::StubView
+      allow(self).to receive(:database) { db }
+      db
+    end
   end
-end
 
-CouchPotato.extend StubDb
+  ::CouchPotato.extend StubDb
+end
