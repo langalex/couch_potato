@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'couch_potato/rspec'
+require 'couch_potato-rspec'
 
 class WithStubbedView
   include CouchPotato::Persistence

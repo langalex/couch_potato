@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'couch_potato/rspec'
+require 'couch_potato-rspec'
 
 describe CouchPotato::RSpec::MapToMatcher do
 
