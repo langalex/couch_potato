@@ -16,6 +16,3 @@ before_script:
   - sudo /etc/init.d/couchdb restart
   - bundle
 script: bundle exec rake
-matrix:
-  allow_failures:
-    - rvm: jruby-19mode
