@@ -23,7 +23,7 @@ describe 'destroy' do
   it "should remove the document from the database" do
     expect {
       expect(CouchPotato.couchrest_database.get(@comment_id)).to
-    }.to raise_error(RestClient::ResourceNotFound)
+    }.to raise_error(CouchRest::NotFound)
   end
   
 end

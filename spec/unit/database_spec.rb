@@ -105,7 +105,7 @@ describe CouchPotato::Database, 'load!' do
   let(:db) { CouchPotato::Database.new(double('couchrest db', :info => nil).as_null_object) }
 
   it "should raise an error if no document found" do
-    allow(db.couchrest_database).to receive(:get).and_raise(RestClient::ResourceNotFound)
+    allow(db.couchrest_database).to receive(:get).and_raise(CouchRest::NotFound)
     expect {
       db.load! '1'
     }.to raise_error(CouchPotato::NotFound)
@@ -423,7 +423,7 @@ end
 describe CouchPotato::Database, '#destroy' do
   it 'does not try to delete an already deleted document' do
     couchrest_db = double(:couchrest_db)
-    allow(couchrest_db).to receive(:delete_doc).and_raise(RestClient::Conflict)
+    allow(couchrest_db).to receive(:delete_doc).and_raise(CouchRest::Conflict)
     db = CouchPotato::Database.new couchrest_db
     document = double(:document, reload: nil).as_null_object
     allow(document).to receive(:run_callbacks).and_yield

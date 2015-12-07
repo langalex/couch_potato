@@ -75,7 +75,7 @@ module CouchPotato
       begin
         block.call document if block
         save_document_without_conflict_handling(document, validate)
-      rescue RestClient::Conflict => e
+      rescue CouchRest::Conflict => e
         if block
           handle_write_conflict document, validate, retries, &block
         else
@@ -94,7 +94,7 @@ module CouchPotato
     def destroy_document(document)
       begin
         destroy_document_without_conflict_handling document
-      rescue RestClient::Conflict
+      rescue CouchRest::Conflict
         retry if document = document.reload
       end
     end
@@ -115,7 +115,7 @@ module CouchPotato
           instance = couchrest_database.get(id)
           instance.database = self
           instance
-        rescue(RestClient::ResourceNotFound)
+        rescue(CouchRest::NotFound)
           nil
         end
       end
