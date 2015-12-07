@@ -24,7 +24,7 @@ describe 'conflict handling' do
 
   it 'raises an error after 5 tries' do
     couchrest_database = double(:couchrest_database, info: double.as_null_object)
-    allow(couchrest_database).to receive(:save_doc).and_raise(RestClient::Conflict)
+    allow(couchrest_database).to receive(:save_doc).and_raise(CouchRest::Conflict)
     db = CouchPotato::Database.new(couchrest_database)
     measurement = double(:measurement).as_null_object
     allow(measurement).to receive(:run_callbacks).and_yield

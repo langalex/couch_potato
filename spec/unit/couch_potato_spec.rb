@@ -22,7 +22,7 @@ end
 describe CouchPotato, 'use' do
   it 'should return the db object' do
     db = CouchPotato.use("testdb")
-    expect(db.couchrest_database.root).to eq('http://127.0.0.1:5984/testdb')
+    expect(db.couchrest_database.root.to_s).to eq('http://127.0.0.1:5984/testdb')
   end
 end
 
