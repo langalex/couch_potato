@@ -82,7 +82,7 @@ module CouchPotato
 
       def query_view(parameters)
         if @list_name
-          CouchRest.get CouchRest.paramify_url(CouchPotato.full_url_to_database + "/_design/#{@design_document_name}/_list/#{@list_name}/#{@view_name}", parameters)
+          @database.connection.get CouchRest.paramify_url("/#{@database.name}/_design/#{@design_document_name}/_list/#{@list_name}/#{@view_name}", parameters)
         else
           @database.view view_url, parameters
         end
