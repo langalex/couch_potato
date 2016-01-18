@@ -21,8 +21,8 @@ describe 'destroy' do
   end
   
   it "should remove the document from the database" do
-    expect {
-      expect(CouchPotato.couchrest_database.get(@comment_id)).to
+    expect{
+      CouchPotato.couchrest_database.get!(@comment_id)
     }.to raise_error(CouchRest::NotFound)
   end
   

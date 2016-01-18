@@ -105,7 +105,7 @@ describe CouchPotato::Database, 'load!' do
   let(:db) { CouchPotato::Database.new(double('couchrest db', :info => nil).as_null_object) }
 
   it "should raise an error if no document found" do
-    allow(db.couchrest_database).to receive(:get).and_raise(CouchRest::NotFound)
+    allow(db.couchrest_database).to receive(:get).and_return(nil)
     expect {
       db.load! '1'
     }.to raise_error(CouchPotato::NotFound)
