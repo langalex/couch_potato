@@ -111,13 +111,9 @@ module CouchPotato
       if id.is_a?(Array)
         bulk_load id
       else
-        begin
-          instance = couchrest_database.get(id)
-          instance.database = self
-          instance
-        rescue(CouchRest::NotFound)
-          nil
-        end
+        instance = couchrest_database.get(id)
+        instance.database = self if instance
+        instance
       end
     end
     alias_method :load, :load_document
