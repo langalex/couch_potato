@@ -4,7 +4,7 @@ module CouchPotato
       private
 
       def load_attribute_from_document(name)
-        if _document.has_key?(name.to_sym) || _document.has_key?(name.to_s)
+        if _document.has_key?(name)
           property = self.class.properties.find{|property| property.name == name}
           @skip_dirty_tracking = true
           value = property.build(self, _document)
@@ -19,6 +19,7 @@ module CouchPotato
 
       def initialize(owner_clazz, name, options = {})
         self.name = name
+        @setter_name = "#{name}="
         self.type = options[:type]
         @type_caster = TypeCaster.new
         owner_clazz.send :include, PropertyMethods unless owner_clazz.ancestors.include?(PropertyMethods)
@@ -27,8 +28,8 @@ module CouchPotato
       end
 
       def build(object, json)
-        value = json[name.to_s].nil? ? json[name.to_sym] : json[name.to_s]
-        object.send "#{name}=", value
+        value = json[name]
+        object.send @setter_name, value
       end
 
       def dirty?(object)
@@ -56,10 +57,11 @@ module CouchPotato
       end
 
       def define_accessors(base, name, options)
+        ivar_name = "@#{name}".freeze
         base.class_eval do
-          define_method "#{name}" do
-            load_attribute_from_document(name) unless instance_variable_defined?("@#{name}")
-            value = instance_variable_get("@#{name}")
+          define_method name do
+            load_attribute_from_document(name) unless instance_variable_defined?(ivar_name)
+            value = instance_variable_get(ivar_name)
             if value.nil? && !options[:default].nil?
               default = if options[:default].respond_to?(:call)
                 if options[:default].arity == 1
@@ -70,7 +72,7 @@ module CouchPotato
               else
                 clone_attribute(options[:default])
               end
-              self.instance_variable_set("@#{name}", default)
+              self.instance_variable_set(ivar_name, default)
               default
             else
               value
@@ -80,7 +82,7 @@ module CouchPotato
           define_method "#{name}=" do |value|
             typecasted_value = type_caster.cast(value, options[:type])
             send("#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
-            self.instance_variable_set("@#{name}", typecasted_value)
+            self.instance_variable_set(ivar_name, typecasted_value)
           end
 
           define_method "#{name}?" do
