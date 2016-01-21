@@ -197,13 +197,14 @@ describe 'properties' do
     expect(p.ship_address).to be_falsey
   end
 
-  describe "time properties" do
-    it "should persist a Time as utc" do
-      time = Time.now
-      w = Watch.new :time => time
+  describe 'time properties' do
+    it 'should persist a Time as utc' do
+      time = Time.parse('2016-01-01 12:00:00 +0100')
+      w = Watch.new time: time
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
-      expect(w.time.to_s).to eq(time.utc.to_s)
+
+      expect(w._document[:time]).to eq('2016-01-01 11:00:00 UTC')
     end
 
     it "should parse a string and persist it as utc time" do

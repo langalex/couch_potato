@@ -37,7 +37,7 @@ module CouchPotato
       end
 
       def serialize(json, object)
-        json[name] = object.send name
+        json[name] = @type_caster.cast_back object.send(name)
       end
       alias :value :serialize
 

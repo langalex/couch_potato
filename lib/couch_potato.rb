@@ -75,8 +75,6 @@ end
 
 $LOAD_PATH << File.dirname(__FILE__)
 
-require 'core_ext/time'
-require 'core_ext/date'
 require 'couch_potato/validation'
 require 'couch_potato/persistence'
 require 'couch_potato/railtie' if defined?(Rails)

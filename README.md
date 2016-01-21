@@ -1,6 +1,6 @@
 ## Couch Potato
 
-... is a persistence layer written in ruby for CouchDB.
+… is a persistence layer written in ruby for CouchDB.
 
 [![Build Status](https://secure.travis-ci.org/langalex/couch_potato.png?branch=master)](http://travis-ci.org/langalex/couch_potato)
 
@@ -8,6 +8,19 @@
 
 [![Code Climate](https://codeclimate.com/github/langalex/couch_potato.png)](https://codeclimate.com/github/langalex/couch_potato)
 
+### Upgrading from 1.x to 2.x
+
+Version 1.x monkey patched Date#to_json (=> "2015/01/01") and Time#to_json (=> "2016/01/01 12:00:00 +0000"), 2.x does not (Date => "\"2015-01-01\"",
+Time => "\"2016-01-01 12:00:00 +0100\"").
+
+In order to keep the old behavior, add the following to your code:
+
+    require 'couch_potato/core_ext/time'
+    require 'couch_potato/core_ext/date'
+
+This will again apply the monkey patches. It is highly recommended to add the require statements if you are upgrading from 1.x. Otherwise,
+the format of Date and Time objects written to your database and used to query it will change, which means data written before the update won't
+be returned. To avoid the monkey patching, you have to re-write all your documents, so that dates/times are stored in the new format.
 
 ### Mission
 

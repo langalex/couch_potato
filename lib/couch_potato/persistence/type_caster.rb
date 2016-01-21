@@ -8,9 +8,17 @@ module CouchPotato
           cast_boolean(value)
         elsif type.instance_of?(Array)
           nested_type = type.first
-          value.map { |val| cast_native(val, nested_type) } if value
+          value.map {|val| cast_native(val, nested_type) } if value
         else
           cast_native(value, type)
+        end
+      end
+
+      def cast_back(value)
+        if value.is_a?(Time)
+          value.utc
+        else
+          value
         end
       end
 
@@ -27,6 +35,7 @@ module CouchPotato
       end
 
       def cast_native(value, type)
+        return if value.nil?
         if type && !value.is_a?(type)
           if type == Fixnum
             BigDecimal.new(value.to_s.scan(NUMBER_REGEX).join).round unless value.blank?
@@ -36,8 +45,14 @@ module CouchPotato
             BigDecimal.new(value.to_s) unless value.blank?
           elsif type == Hash
             value.to_hash unless value.blank?
-          else
+          elsif type == Time
+            Time.parse value unless value.blank?
+          elsif type == Date
+            Date.parse value unless value.blank?
+          elsif type.respond_to? :json_create
             type.json_create value unless value.blank?
+          else
+            JSON.parse value
           end
         else
           value
