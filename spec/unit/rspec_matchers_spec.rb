@@ -133,10 +133,10 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
         }"
     )
     @docs = [
-      {:name => "a", :age => 25, :numbers => [1, 2]},
-      {:name => "b", :age => 25, :numbers => [3, 4]},
-      {:name => "c", :age => 26, :numbers => [5, 6]},
-      {:name => "d", :age => 27, :numbers => [7, 8]}]
+      {:age => 25, :name => "a", :numbers => [1, 2]},
+      {:age => 25, :name => "b", :numbers => [3, 4]},
+      {:age => 26, :name => "c", :numbers => [5, 6]},
+      {:age => 27, :name => "d", :numbers => [7, 8]}]
   end
 
   it "should handle date return values" do
@@ -233,6 +233,46 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
         {:name => "a", :number => 2},
         {:name => "a", :number => 3}]
       expect(@view_spec).to map_reduce(docs).to({"key" => nil, "value" => {"rereduce_values" => [[1], [2, 3]]}})
+    end
+  end
+
+  describe "with key option" do
+    it "should return only results for the given key" do
+      options = {:key => [25, "a"]}
+      results = {"key" => nil, "value" => 2}
+      @view_spec.should map_reduce(@docs).with_options(options).to(results)
+    end
+  end
+
+  describe "with keys option" do
+    it "should return only results for the given keys" do
+      options = {:group => true, :keys => [[25, "b"], [26, "c"]]}
+      results = [{"key" => [25, "b"], "value" => 4}, {"key" => [26, "c"], "value" => 6}]
+      @view_spec.should map_reduce(@docs).with_options(options).to(*results)
+    end
+  end
+
+  describe "with startkey (but no endkey) option" do
+    it "should return results with keys from the startkey on" do
+      options = {:group_level => 1, :startkey => [26]}
+      results = [{"key" => [26], "value" => 6}, {"key" => [27], "value" => 8}]
+      @view_spec.should map_reduce(@docs).with_options(options).to(*results)
+    end
+  end
+
+  describe "with endkey (but no startkey) option" do
+    it "should return results with keys up to the endkey" do
+      options = {:endkey => [26, "c"]}
+      results = {"key" => nil, "value" => 6}
+      @view_spec.should map_reduce(@docs).with_options(options).to(results)
+    end
+  end
+
+  describe "with startkey and endkey options" do
+    it "should return only results in the given key range" do
+      options = {:group => true, :startkey => [25, "b"], :endkey => [26, "c"]}
+      results = [{"key" => [25, "b"], "value" => 4}, {"key" => [26, "c"], "value" => 6}]
+      @view_spec.should map_reduce(@docs).with_options(options).to(*results)
     end
   end
 

@@ -72,6 +72,7 @@ module CouchPotato
           var map = #{view_spec.map_function};
           var reduce = #{view_spec.reduce_function};
           var lib = #{view_spec.respond_to?(:lib) && view_spec.lib.to_json};
+          var keysEqual = function(a, b) { return !(a < b || b < a); }
 
           // Map the input docs
           var require = function(modulePath) {
@@ -86,12 +87,48 @@ module CouchPotato
             return module.exports;
           }
 
-          var mapResults = [];
+          var unfilteredMapResults = [];
           var emit = function(key, value) {
-            mapResults.push({key: key, value: value});
+            unfilteredMapResults.push({key: key, value: value});
           };
           for (var i in docs) {
             map(docs[i]);
+          }
+
+          // Filter results by key/keys/startkey/endkey (if given).
+          var mapResults = [];
+          if (options.key) {
+            for (var r in unfilteredMapResults) {
+              var result = unfilteredMapResults[r];
+              if (keysEqual(result.key, options.key))
+                mapResults.push(result);
+            }
+          }
+          // couchdb does not support multiple keys for reduce views without group=true
+          else if (options.keys && options.group) {
+            for (var r in unfilteredMapResults) {
+              var result = unfilteredMapResults[r];
+              for (var k in options.keys) {
+                var key = options.keys[k];
+                if (keysEqual(result.key, key)) {
+                  mapResults.push(result);
+                  break;
+                }
+              }
+            }
+          }
+          else if (options.startkey || options.endkey) {
+            for (var r in unfilteredMapResults) {
+              var result = unfilteredMapResults[r];
+              if (options.startkey && !(options.startkey <= result.key))
+                continue;
+              if (options.endkey && !(result.key <= options.endkey))
+                continue;
+              mapResults.push(result);
+            }
+          }
+          else {
+            mapResults = unfilteredMapResults;
           }
 
           // Group the map results, honoring the group and group_level options
@@ -100,7 +137,6 @@ module CouchPotato
             var groupLevel = options.group_level;
             if (groupLevel == "exact" || options.group == true)
               groupLevel = 9999;
-            var keysEqual = function(a, b) { return !(a < b || b < a); }
 
             for (var mr in mapResults) {
               var mapResult = mapResults[mr];
