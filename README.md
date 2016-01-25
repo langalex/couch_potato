@@ -653,14 +653,18 @@ describe User, 'views' do
   end
 
   it "should map/reduce users to the oldest age by name" do
-    docs = [User.new(:name => "John", :age => 25), User.new(:name => "John", :age => 30), User.new(:name => "Jane", :age => 20)]
-    User.oldest_by_name.should map_reduce(docs).with_options(:group => true).to(
-      {"key" => "John", "value" => 30}, {"key" => "Jane", "value" => 20})
+    docs = [
+      User.new(:name => "Andy", :age => 30),
+      User.new(:name => "John", :age => 25),
+      User.new(:name => "John", :age => 30),
+      User.new(:name => "Jane", :age => 20)]
+    User.oldest_by_name.should map_reduce(docs).with_options(:group => true, :startkey => "Jane").to(
+      {"key" => "Jane", "value" => 20}, {"key" => "John", "value" => 30})
   end
 end
 ```
 
-This will actually run your map/reduce functions in a JavaScript interpreter, passing the arguments as JSON and converting the results back to Ruby. `map_reduce` specs map the input documents, reduce the emitted keys/values, and rereduce the results while also respecting the `:group` and `:group_level` couchdb options. For more examples see the [spec](http://github.com/langalex/couch_potato/blob/master/spec/unit/rspec_matchers_spec.rb).
+This will actually run your map/reduce functions in a JavaScript interpreter, passing the arguments as JSON and converting the results back to Ruby. `map_reduce` specs map the input documents, reduce the emitted keys/values, and rereduce the results while also respecting the `:group`, `:group_level`, `:key`, `:keys`, `:startkey`, and `:endkey` couchdb options. For more examples see the [spec](http://github.com/langalex/couch_potato/blob/master/spec/unit/rspec_matchers_spec.rb).
 
 In order for this to work you must have the `js` executable in your PATH. This is usually part of the _spidermonkey_ package/port. (On MacPorts that's _spidemonkey_, on Linux it could be one of _libjs_, _libmozjs_ or _libspidermonkey_). When you installed CouchDB via your packet manager Spidermonkey should already be there.
 
