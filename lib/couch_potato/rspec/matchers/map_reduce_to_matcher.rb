@@ -72,7 +72,7 @@ module CouchPotato
           var map = #{view_spec.map_function};
           var reduce = #{view_spec.reduce_function};
           var lib = #{view_spec.respond_to?(:lib) && view_spec.lib.to_json};
-          var keysEqual = function(a, b) { return !(a < b || b < a); }
+          var collate = (function() { var module = {exports: {}}; var exports = module.exports; eval(#{File.read(File.expand_path(File.dirname(__FILE__) + '/../../../../vendor/pouchdb-collate/pouchdb-collate.js')).to_json}); return module.exports.collate;})();
 
           // Map the input docs
           var require = function(modulePath) {
@@ -100,7 +100,7 @@ module CouchPotato
           if (options.key) {
             for (var r in unfilteredMapResults) {
               var result = unfilteredMapResults[r];
-              if (keysEqual(result.key, options.key))
+              if (collate(result.key, options.key) == 0)
                 mapResults.push(result);
             }
           }
@@ -110,7 +110,7 @@ module CouchPotato
               var result = unfilteredMapResults[r];
               for (var k in options.keys) {
                 var key = options.keys[k];
-                if (keysEqual(result.key, key)) {
+                if (collate(result.key, key) == 0) {
                   mapResults.push(result);
                   break;
                 }
@@ -120,9 +120,9 @@ module CouchPotato
           else if (options.startkey || options.endkey) {
             for (var r in unfilteredMapResults) {
               var result = unfilteredMapResults[r];
-              if (options.startkey && !(options.startkey <= result.key))
+              if (options.startkey && collate(options.startkey, result.key) > 0)
                 continue;
-              if (options.endkey && !(result.key <= options.endkey))
+              if (options.endkey && collate(result.key, options.endkey) > 0)
                 continue;
               mapResults.push(result);
             }
@@ -144,7 +144,7 @@ module CouchPotato
               var groupFound = false;
               for (var g in grouped) {
                 var group = grouped[g];
-                if (keysEqual(groupedKey, group.groupedKey)) {
+                if (collate(groupedKey, group.groupedKey) == 0) {
                   group.keys.push(mapResult.key);
                   group.values.push(mapResult.value);
                   groupFound = true;
