@@ -11,13 +11,13 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       CouchPotato::Config.default_language = @default_language
     end
 
-    it "raises an error when passing invalid view parameters" do
+    it 'raises an error when passing invalid view parameters' do
       expect {
         CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {start_key: '1'}
       }.to raise_error(ArgumentError, "invalid view parameter: start_key")
     end
 
-    it "does not raise an error when passing valid view parameters" do
+    it 'does not raise an error when passing valid view parameters' do
       expect {
         CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {
           :key => 'keyvalue',
@@ -33,7 +33,8 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
           :group_level => 1,
           :reduce => false,
           :include_docs => true,
-          :inclusive_end => true
+          :inclusive_end => true,
+          :list_params => {}
         }
       }.not_to raise_error
     end
@@ -51,6 +52,11 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
     it "converts a plain value to a hash with a key" do
       spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, '2'
       expect(spec.view_parameters).to eq({:key => '2'})
+    end
+
+    it 'merges the list params' do
+      spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, key: '2', list_params: {:x => 'y'}
+      expect(spec.view_parameters).to eq({:key => '2', :x => 'y'})
     end
 
     it "generates the design document path by snake_casing the class name but keeping double colons" do

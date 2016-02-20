@@ -91,7 +91,6 @@ module CouchPotato
       def view_url
         "#{@design_document_name}/#{@view_name}"
       end
-
     end
   end
 end

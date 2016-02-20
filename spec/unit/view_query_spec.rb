@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe CouchPotato::View::ViewQuery, 'query_view!' do
-  let(:db) { double 'db', :get => nil, view: nil, :save_doc => nil, 
+  let(:db) { double 'db', :get => nil, view: nil, :save_doc => nil,
     connection: double.as_null_object, name: nil }
 
   before(:each) do
     CouchPotato::View::ViewQuery.clear_cache
   end
 
-  it "does not pass a key if conditions are empty" do
+  it 'does not pass a key if conditions are empty' do
     expect(db).to receive(:view).with(anything, {})
     CouchPotato::View::ViewQuery.new(db, '', {:view0 => {}}).query_view!
   end
@@ -74,19 +74,19 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
     CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, nil, {'test' => "<lib_code>"}).query_view!
   end
 
-  it "updates a view when the map function has changed" do
+  it 'updates a view when the map function has changed' do
     allow(db).to receive(:get).and_return({'views' => {'view2' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}}})
     expect(db).to receive(:save_doc)
     CouchPotato::View::ViewQuery.new(db, 'design', :view2 => {:map => '<new map_code>', :reduce => '<reduce_code>'}).query_view!
   end
 
-  it "updates a view when the map function has changed" do
+  it 'updates a view when the map function has changed' do
     allow(db).to receive(:get).and_return({'views' => {'view3' => {'map' => '<map_code>'}}})
     expect(db).to receive(:save_doc)
     CouchPotato::View::ViewQuery.new(db, 'design', :view3 => {:map => '<new map_code>'}).query_view!
   end
 
-  it "updates a view when the lib hash has changed" do
+  it 'updates a view when the lib hash has changed' do
     allow(db).to receive(:get).and_return({'views' => {'view4' => {'map' => '<map_code>'}}}, 'lib' => {'test' => "<test_lib>"})
 
     expect(db).to receive(:save_doc)
@@ -105,7 +105,7 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
     CouchPotato::View::ViewQuery.new(db, 'design', {:view5 => {:map => '<map_code>'}}, nil, {'test1' => '<test1_lib>'}).query_view!
   end
 
-  it "overrides libs with the same name" do
+  it 'overrides libs with the same name' do
     allow(db).to receive(:get).and_return({'views' => {'view6' => {'map' => '<map_code>'}, 'lib' => {'test' => "<test_lib>"}}})
 
     expect(db).to receive(:save_doc).with({
@@ -118,19 +118,19 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
     CouchPotato::View::ViewQuery.new(db, 'design', {:view6 => {:map => '<map_code>'}}, nil, {'test' => '<test1_lib>'}).query_view!
   end
 
-  it "does not pass in reduce or lib keys if there is no lib or reduce object" do
+  it 'does not pass in reduce or lib keys if there is no lib or reduce object' do
     allow(db).to receive(:get).and_return({'views' => {}})
     expect(db).to receive(:save_doc).with('views' => {'view7' => {'map' => '<map code>'}})
     CouchPotato::View::ViewQuery.new(db, 'design', :view7 => {:map => '<map code>', :reduce => nil}).query_view!
   end
 
-  it "updates a view when the reduce function has changed" do
+  it 'updates a view when the reduce function has changed' do
     allow(db).to receive(:get).and_return({'views' => {'view8' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}}})
     expect(db).to receive(:save_doc)
     CouchPotato::View::ViewQuery.new(db, 'design', :view8 => {:map => '<map_code>', :reduce => '<new reduce_code>'}).query_view!
   end
 
-  it "updates a view when the list function has changed" do
+  it 'updates a view when the list function has changed' do
     allow(db).to receive(:get).and_return({
       'views' => {'view9' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}},
       'lists' => {'list1' => '<list_code>'}
@@ -170,5 +170,4 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
     expect(db.connection).to receive(:get).with('/my_database/_design/my_design/_list/list1/view13?key=1')
     CouchPotato::View::ViewQuery.new(db, 'my_design', {:view13 => {:map => '<map_code>', :reduce => '<reduce_code>'}}, :list1 => '<new_list_code>').query_view!(:key => 1)
   end
-
 end
