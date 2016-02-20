@@ -517,6 +517,13 @@ You can also pass in the list at query time:
 CouchPotato.database.view(User.all(list: :add_last_name))
 ```
 
+And you can pass parameters to the list:
+
+```ruby
+CouchPotato.database.view(User.all(list: :add_last_name, list_params: {filter: '*'}))
+```
+
+
 #### Associations
 
 Not supported. Not sure if they ever will be. You can implement those yourself using views and custom methods on your models.
