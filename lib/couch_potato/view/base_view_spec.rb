@@ -15,8 +15,9 @@ module CouchPotato
         assert_valid_view_parameters normalized_view_parameters
         @klass = klass
         @design_document = translate_to_design_doc_name(klass.to_s, view_name, @list_name)
-        @view_name = view_name
         @options = options
+        @view_name = compute_view_name(view_name,
+          options.key?(:digest_view_name) ? options[:digest_view_name] : Config.digest_view_names)
         @list_params = normalized_view_parameters.delete :list_params
 
         @list_function = klass.lists(@list_name) if @list_name
@@ -37,6 +38,14 @@ module CouchPotato
       end
 
       private
+
+      def compute_view_name(view_name, digest)
+        if digest
+          "#{view_name}-#{Digest::MD5.hexdigest(map_function)}"
+        else
+          view_name
+        end
+      end
 
       def normalize_view_parameters(params)
         normalized_params = params.dup

@@ -8,8 +8,10 @@ CouchRest.decode_json_objects = true
 CouchRest::Connection::DEFAULT_HEADERS.merge!('Prefer' => 'return=minimal')
 
 module CouchPotato
-  Config = Struct.new(:database_host, :database_name, :split_design_documents_per_view, :default_language).new
+  Config = Struct.new(:database_host, :database_name, :digest_view_names,
+    :split_design_documents_per_view, :default_language).new
   Config.split_design_documents_per_view = false
+  Config.digest_view_names = false
   Config.default_language = :javascript
   Config.database_host = "http://127.0.0.1:5984"
 
