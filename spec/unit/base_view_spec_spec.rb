@@ -103,6 +103,32 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       expect(spec.list_name).to eq(:test_list)
     end
 
+    it 'returns the view name' do
+      spec = CouchPotato::View::BaseViewSpec.new Object, 'by_id', {}, {}
+      expect(spec.view_name).to eq('by_id')
+    end
+
+    it 'adds a digest to the view name based on the map function content when passing digest_view_name' do
+      # need to use RawViewSpec here so we can pass a map function
+      spec = CouchPotato::View::RawViewSpec.new Object, 'by_id',
+        {digest_view_name: true, map: 'function() {}'}, {}
+
+      expect(spec.view_name).to eq('by_id-4644e3a3ef266d4e6b513dc79bad5ab7')
+    end
+
+    it 'adds a digest to the view name if configure to' do
+      begin
+        CouchPotato::Config.digest_view_names = true
+        # need to use RawViewSpec here so we can pass a map function
+        spec = CouchPotato::View::RawViewSpec.new Object, 'by_id',
+          {map: 'function() {}'}, {}
+
+        expect(spec.view_name).to eq('by_id-4644e3a3ef266d4e6b513dc79bad5ab7')
+      ensure
+        CouchPotato::Config.digest_view_names = false
+      end
+    end
+
     it "returns the list function" do
       klass = double 'class'
       allow(klass).to receive(:lists).with('test_list').and_return('<list_code>')

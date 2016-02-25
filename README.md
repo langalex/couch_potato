@@ -91,8 +91,9 @@ Create a `config/couchdb.yml`:
 
 ```yml
 default: &default
-  split_design_documents_per_view: true # optional
-  default_language: :erlang # optional
+  split_design_documents_per_view: true # optional, default is false
+  digest_view_names: true # optional, default is false
+  default_language: :erlang # optional, default is javascript
 
 development:
   <<: *default
@@ -468,6 +469,10 @@ end
 In this case querying the view would only return the emitted value for each row.
 
 You can pass in your own view specifications by passing in `:type => MyViewSpecClass`. Take a look at the CouchPotato::View::*ViewSpec classes to get an idea of how this works.
+
+##### Digest view names
+
+If turned on, Couch Potato will append an MD5 digest of the map function to each view name. This makes sure (together with split_design_documents_per_view) that no views/design documents are ever updated. Instead, new ones are created. Since reindexing can take a long time once your database is larger, you want to avoid blocking your app while CouchDB is busy. Instead, you create a new view, warm it up, and only then start using it. 
 
 ##### Lists
 
