@@ -76,6 +76,14 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       expect(spec.design_document).to eq('user_view_by_login_and_email')
     end
 
+    it 'adds the view name digest to the design doc name' do
+      CouchPotato::Config.split_design_documents_per_view = true
+      spec = CouchPotato::View::RawViewSpec.new 'User', 'by_login_and_email',
+        {digest_view_name: true, map: 'function(doc) {}'}, ''
+
+      expect(spec.design_document).to eq('user_view_by_login_and_email-375c815fcb4f977f330a2edfadc7f74d')
+    end
+
     it "generates the design document independent of the list name by default" do
       CouchPotato::Config.split_design_documents_per_view = false
       spec = CouchPotato::View::BaseViewSpec.new double(lists: nil, :to_s => 'User'), '', {list: 'test_list'}, {}
