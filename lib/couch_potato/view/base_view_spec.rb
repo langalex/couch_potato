@@ -41,14 +41,13 @@ module CouchPotato
 
       def compute_view_name(view_name, digest)
         if digest
-          "#{view_name}-#{Digest::MD5.hexdigest(map_function)}"
+          "#{view_name}-#{Digest::MD5.hexdigest(map_function + reduce_function.to_s)}"
         else
           view_name
         end
       end
 
       def normalize_view_parameters(params)
-        normalized_params = params.dup
         hash = wrap_in_hash params
         remove_nil_stale(replace_range_key(hash))
       end
