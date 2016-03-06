@@ -11,30 +11,42 @@ module CouchPotato
 
         def initialize(clazz)
           @clazz = clazz
-          @list = []
+          @list = {}
         end
 
         def each
-          (list + inherited_properties).each {|property| yield property}
+          (@all_list ||= inherited_properties.merge(list)).values.each {|property| yield property}
         end
 
         def <<(property)
-          @list << property
+          list[property.name] = property
+        end
+        
+        def []=(key, property)
+          list[key] = property
         end
 
+        def [](key)
+          (@all_list ||= inherited_properties.merge(list))[key]
+        end
+        
+        def values
+          list.values
+        end
+        
         # XXX
         def inspect
-          list.map(&:name).inspect
+          values.map(&:name).inspect
         end
 
         def inherited_properties
           superclazz = @clazz.superclass
-          properties = []
+          properties = {}
           while superclazz && superclazz.respond_to?(:properties)
-            properties << superclazz.properties.list
+            properties.reverse_merge!(superclazz.properties.list)
             superclazz = superclazz.superclass
           end
-          properties.flatten
+          properties
         end
       end
 
@@ -63,7 +75,7 @@ module CouchPotato
         #  end
         #  Book.property_names # => [:title, :year]
         def property_names
-          properties.map(&:name)
+          properties.values.map(&:name)
         end
 
         # Declare a property on a model class. Properties are not typed by default.

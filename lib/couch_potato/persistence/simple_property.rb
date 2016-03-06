@@ -5,7 +5,7 @@ module CouchPotato
 
       def load_attribute_from_document(name)
         if _document.has_key?(name)
-          property = self.class.properties.find{|property| property.name == name}
+          property = self.class.properties[name]
           @skip_dirty_tracking = true
           value = property.build(self, _document)
           @skip_dirty_tracking = false
@@ -18,8 +18,8 @@ module CouchPotato
       attr_accessor :name, :type
 
       def initialize(owner_clazz, name, options = {})
-        self.name = name
-        @setter_name = "#{name}="
+        self.name = name.freeze
+        @setter_name = "#{name}=".freeze
         self.type = options[:type]
         @type_caster = TypeCaster.new
         owner_clazz.send :include, PropertyMethods unless owner_clazz.ancestors.include?(PropertyMethods)
@@ -33,18 +33,18 @@ module CouchPotato
       end
 
       def dirty?(object)
-        object.send("#{name}_changed?")
+        object.send("#{name}_changed?".freeze)
       end
 
       def serialize(json, object)
-        json[name] = @type_caster.cast_back object.send(name)
+        json[name] = object.send name
       end
       alias :value :serialize
 
       private
 
       def module_for(clazz, module_name)
-        module_name = "#{clazz.name.to_s.gsub('::', '__')}#{module_name}"
+        module_name = "#{clazz.name.to_s.gsub('::', '__')}#{module_name}".freeze
         unless clazz.const_defined?(module_name)
           accessors_module = clazz.const_set(module_name, Module.new)
           clazz.send(:include, accessors_module)
@@ -81,7 +81,7 @@ module CouchPotato
 
           define_method "#{name}=" do |value|
             typecasted_value = type_caster.cast(value, options[:type])
-            send("#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
+            send("#{name}_will_change!".freeze) unless @skip_dirty_tracking || typecasted_value == send(name)
             self.instance_variable_set(ivar_name, typecasted_value)
           end
 
