@@ -12,6 +12,7 @@ module CouchPotato
         def initialize(clazz)
           @clazz = clazz
           @list = []
+          @hash = {}
         end
 
         def each
@@ -19,7 +20,12 @@ module CouchPotato
         end
 
         def <<(property)
+          @hash[property.name] = property
           @list << property
+        end
+
+        def find_property(name)
+          @hash[name]
         end
 
         # XXX

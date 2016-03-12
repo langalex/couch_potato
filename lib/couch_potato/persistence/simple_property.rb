@@ -5,7 +5,7 @@ module CouchPotato
 
       def load_attribute_from_document(name)
         if _document.has_key?(name)
-          property = self.class.properties.find{|property| property.name == name}
+          property = self.class.properties.find_property name
           @skip_dirty_tracking = true
           value = property.build(self, _document)
           @skip_dirty_tracking = false
