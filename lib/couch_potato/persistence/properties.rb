@@ -15,8 +15,8 @@ module CouchPotato
           @hash = {}
         end
 
-        def each
-          (list + inherited_properties).each {|property| yield property}
+        def each(&block)
+          (list + inherited_properties).each(&block)
         end
 
         def <<(property)
