@@ -25,7 +25,7 @@ module CouchPotato
         end
 
         def find_property(name)
-          @hash[name]
+          @hash[name] || @clazz.superclass.properties.find_property(name)
         end
 
         # XXX

@@ -14,6 +14,9 @@ class Plant
   property :branch, type: Branch
 end
 
+class SpecialPlant < Plant
+end
+
 
 describe 'attributes' do
   context 'attributes=' do
@@ -84,6 +87,14 @@ describe 'attributes' do
       expect do
         plant.length
       end.to raise_error(NoMethodError, /undefined method `length'/)
+    end
+  end
+
+  context 'inherited attributes' do
+    it 'returns inherited attributes' do
+      plant = SpecialPlant.new _document: {leaf_count: 1}
+
+      expect(plant.leaf_count).to eq(1)
     end
   end
 
