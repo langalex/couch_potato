@@ -37,23 +37,25 @@ module CouchPotato
     #
     #   db.view(User.all(keys: [1, 2, 3]))
     def view(spec)
-      results = CouchPotato::View::ViewQuery.new(
-        couchrest_database,
-        spec.design_document,
-        {spec.view_name => {
-          :map => spec.map_function,
-          :reduce => spec.reduce_function
-        }
-        },
-        ({spec.list_name => spec.list_function} unless spec.list_name.nil?),
-        spec.lib,
-        spec.language
-      ).query_view!(spec.view_parameters)
-      processed_results = spec.process_results results
-      processed_results.each do |document|
-        document.database = self if document.respond_to?(:database=)
-      end if processed_results.respond_to?(:each)
-      processed_results
+      ActiveSupport::Notifications.instrument('couch_potato.view') do
+        results = CouchPotato::View::ViewQuery.new(
+          couchrest_database,
+          spec.design_document,
+          {spec.view_name => {
+            :map => spec.map_function,
+            :reduce => spec.reduce_function
+          }
+          },
+          ({spec.list_name => spec.list_function} unless spec.list_name.nil?),
+          spec.lib,
+          spec.language
+        ).query_view!(spec.view_parameters)
+        processed_results = spec.process_results results
+        processed_results.each do |document|
+          document.database = self if document.respond_to?(:database=)
+        end if processed_results.respond_to?(:each)
+        processed_results
+      end
     end
 
     # returns the first result from a #view query or nil
@@ -108,12 +110,14 @@ module CouchPotato
     def load_document(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
 
-      if id.is_a?(Array)
-        bulk_load id
-      else
-        instance = couchrest_database.get(id)
-        instance.database = self if instance
-        instance
+      ActiveSupport::Notifications.instrument('couch_potato.load') do
+        if id.is_a?(Array)
+          bulk_load id
+        else
+          instance = couchrest_database.get(id)
+          instance.database = self if instance
+          instance
+        end
       end
     end
     alias_method :load, :load_document
