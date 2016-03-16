@@ -37,7 +37,7 @@ module CouchPotato
     #
     #   db.view(User.all(keys: [1, 2, 3]))
     def view(spec)
-      ActiveSupport::Notifications.instrument('couch_potato.view') do
+      ActiveSupport::Notifications.instrument('couch_potato.view', name: "#{spec.design_document}/#{spec.view_name}") do
         results = CouchPotato::View::ViewQuery.new(
           couchrest_database,
           spec.design_document,
