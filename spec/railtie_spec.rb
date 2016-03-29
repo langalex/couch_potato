@@ -2,8 +2,18 @@ require 'spec_helper'
 require 'yaml'
 
 module Rails
+  class Env
+    def development?
+      true
+    end
+  end
+  
   def self.env
     'test'
+  end
+
+  def self.env
+    Env.new
   end
 
   class Railtie
