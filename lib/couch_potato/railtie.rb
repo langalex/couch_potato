@@ -1,8 +1,8 @@
-require File.expand_path(File.dirname(__FILE__) + '/../../rails/reload_classes')
 require 'erb'
 
 module CouchPotato
   def self.rails_init
+    require File.expand_path(File.dirname(__FILE__) + '/../../rails/reload_classes') if Rails.env.development?
     path = Rails.root.join('config/couchdb.yml')
     if File.exist?(path)
       require 'yaml'
