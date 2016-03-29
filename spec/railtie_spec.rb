@@ -2,18 +2,14 @@ require 'spec_helper'
 require 'yaml'
 
 module Rails
-  class Env
+  class Env < String
     def development?
       true
     end
   end
-  
-  def self.env
-    'test'
-  end
 
   def self.env
-    Env.new
+    Env.new 'test'
   end
 
   class Railtie
