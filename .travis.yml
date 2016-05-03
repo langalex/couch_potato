@@ -1,10 +1,11 @@
+language: ruby
 rvm:
-  - 2.0.0
-  - 2.1.2
-  - 2.2.2
-  - 2.3.0
-  - jruby-9.0.1.0
-  - rbx-2.5.8
+  - "2.0"
+  - "2.1"
+  - "2.2"
+  - "2.3.0"
+  - "jruby-9.0.5.0"
+  - "rbx-3.9"
 services:
   - couchdb
 gemfile:
