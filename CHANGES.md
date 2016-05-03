@@ -1,5 +1,34 @@
 ## Changes
 
+### 1.7.0
+
+* added `_revisions` method that returns all available revisions of a document.
+
+### 1.6.4
+
+* bug fix for accessing inherited properties (Alexander Lang)
+
+### 1.6.3
+
+* added ActiveSupport instrumentation (Alexander Lang)
+
+### 1.6.2
+
+* view digest bugfix (Alexander Lang)
+
+### 1.6.1
+
+* added option to add digests to a single view (Alexander Lang)
+
+### 1.6.0
+
+* added global option to add digests to view names (Alexander Lang)
+
+### 1.5.1
+
+* updated CouchRest to 2.0.0.rc3 in order to re-use http connections. Performance improvements. (Thilo Utke)
+* added passing params to lists (Alexander Lang)
+
 ### 1.5.0
 
 * Moved RSpec matchers into couch_potato-rspec gem. This way, people not using RSpec don't need to install the helpers, plus we can release separate matchers for RSpec 2 and 3.
