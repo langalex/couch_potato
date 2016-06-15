@@ -19,7 +19,7 @@ describe 'conflict handling' do
       m.value += 1
     end
 
-    expect(measurement.reload.value).to eql(3)
+    expect(measurement.value).to eql(3)
   end
 
   it 'raises an error after 5 tries' do

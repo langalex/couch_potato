@@ -145,10 +145,12 @@ module CouchPotato
     private
 
     def handle_write_conflict(document, validate, retries, &block)
-      document = document.reload
       if retries == 5
         raise CouchPotato::Conflict.new
       else
+        reloaded = document.reload
+        document.attributes = reloaded.attributes
+        document._rev = reloaded._rev
         save_document document, validate, retries + 1, &block
       end
     end
