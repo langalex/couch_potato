@@ -195,6 +195,21 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
         {"key" => [26], "value" => 6},
         {"key" => [27], "value" => 8})
     end
+
+    it "should leave non-array keys intact when the :group_level option is specified" do
+      @view_spec = double(
+        :map_function => "function(doc) {
+          for (var i in doc.numbers)
+            emit(doc.age, doc.numbers[i]);
+          }",
+        :reduce_function => "function (keys, values, rereduce) {
+            return Math.max.apply(this, values);
+          }")
+      expect(@view_spec).to map_reduce(@docs).with_options(:group_level => 1).to(
+        {"key" => 25, "value" => 4},
+        {"key" => 26, "value" => 6},
+        {"key" => 27, "value" => 8})
+    end
   end
 
   describe "rereducing" do
