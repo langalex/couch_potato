@@ -140,7 +140,7 @@ module CouchPotato
 
             for (var mr in mapResults) {
               var mapResult = mapResults[mr];
-              var groupedKey = mapResult.key.slice(0, groupLevel);
+              var groupedKey = Array.isArray(mapResult.key) ? mapResult.key.slice(0, groupLevel) : mapResult.key;
               var groupFound = false;
               for (var g in grouped) {
                 var group = grouped[g];
