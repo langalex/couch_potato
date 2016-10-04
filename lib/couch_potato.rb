@@ -12,7 +12,7 @@ module CouchPotato
   Config.split_design_documents_per_view = false
   Config.digest_view_names = false
   Config.default_language = :javascript
-  Config.database_host = "http://127.0.0.1:5984"
+  Config.database_host = 'http://127.0.0.1:5984'
 
   class NotFound < StandardError; end
   class Conflict < StandardError; end
@@ -25,19 +25,19 @@ module CouchPotato
 
   # Returns a database instance which you can then use to create objects and query views. You have to set the CouchPotato::Config.database_name before this works.
   def self.database
-    @@__database ||= Database.new(self.couchrest_database)
+    Thread.current[:__couch_potato_database] ||= Database.new(couchrest_database)
   end
 
   # Returns the underlying CouchRest database object if you want low level access to your CouchDB. You have to set the CouchPotato::Config.database_name before this works.
   def self.couchrest_database
-    @@__couchrest_database ||= CouchRest.database(full_url_to_database(CouchPotato::Config.database_name, CouchPotato::Config.database_host))
+    Thread.current[:__couchrest_database] ||= CouchRest.database(full_url_to_database(CouchPotato::Config.database_name, CouchPotato::Config.database_host))
   end
 
   # Returns a specific database instance
   def self.use(database_name)
-    @@__databases ||= {}
-    @@__databases["#{database_name}"] = Database.new(couchrest_database_for_name!(database_name)) unless @@__databases["#{database_name}"]
-    @@__databases["#{database_name}"]
+    Thread.current[:__couch_potato_databases] ||= {}
+    Thread.current[:__couch_potato_databases][database_name] = Database.new(couchrest_database_for_name!(database_name)) unless Thread.current[:__couch_potato_databases][database_name]
+    Thread.current[:__couch_potato_databases][database_name]
   end
 
   # Executes a block of code and yields a datbase with the given name.
@@ -48,9 +48,9 @@ module CouchPotato
   #  end
   #
   def self.with_database(database_name)
-    @@__databases ||= {}
-    @@__databases["#{database_name}"] = Database.new(couchrest_database_for_name(database_name)) unless @@__databases["#{database_name}"]
-    yield(@@__databases["#{database_name}"])
+    Thread.current[:__couch_potato_databases] ||= {}
+    Thread.current[:__couch_potato_databases][database_name] = Database.new(couchrest_database_for_name(database_name)) unless Thread.current[:__couch_potato_databases][database_name]
+    yield Thread.current[:__couch_potato_databases][database_name]
   end
 
   # Returns a CouchRest-Database for directly accessing that functionality.
@@ -63,9 +63,7 @@ module CouchPotato
     CouchRest.database!(full_url_to_database(database_name))
   end
 
-  private
-
-  def self.full_url_to_database(database_name=CouchPotato::Config.database_name, database_host = CouchPotato::Config.database_host)
+  def self.full_url_to_database(database_name = CouchPotato::Config.database_name, database_host = CouchPotato::Config.database_host)
     raise('No Database configured. Set CouchPotato::Config.database_name') unless database_name
     if database_name.match(%r{https?://})
       database_name
