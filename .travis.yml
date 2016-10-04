@@ -5,13 +5,14 @@ rvm:
   - "2.2"
   - "2.3.0"
   - "jruby-9.0.5.0"
-  - "rbx"
+  - "rbx-2"
 services:
   - couchdb
 gemfile:
   - gemfiles/active_support_4_0
   - gemfiles/active_support_4_1
   - gemfiles/active_support_4_2
+  - gemfiles/active_support_5_0
 before_install:
   gem install bundler --version 1.11.2
 before_script:
