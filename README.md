@@ -27,11 +27,7 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Supported Environments
 
-* Ruby 2.0, 2.1, 2.2, Rubinius
-* CouchDB 1.6.0
-* ActiveSupport 4.0, 4.1, 4.2
-
-(Supported means I run the specs against those before releasing a new gem.)
+Check travis.yml for supported Ruby/ActiveSupport versions.
 
 ### Installation
 
@@ -472,7 +468,7 @@ You can pass in your own view specifications by passing in `:type => MyViewSpecC
 
 ##### Digest view names
 
-If turned on, Couch Potato will append an MD5 digest of the map function to each view name. This makes sure (together with split_design_documents_per_view) that no views/design documents are ever updated. Instead, new ones are created. Since reindexing can take a long time once your database is larger, you want to avoid blocking your app while CouchDB is busy. Instead, you create a new view, warm it up, and only then start using it. 
+If turned on, Couch Potato will append an MD5 digest of the map function to each view name. This makes sure (together with split_design_documents_per_view) that no views/design documents are ever updated. Instead, new ones are created. Since reindexing can take a long time once your database is larger, you want to avoid blocking your app while CouchDB is busy. Instead, you create a new view, warm it up, and only then start using it.
 
 ##### Lists
 
