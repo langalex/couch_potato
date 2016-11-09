@@ -36,6 +36,8 @@ module CouchPotato
             BigDecimal.new(value.to_s) unless value.blank?
           elsif type == Hash
             value.to_hash unless value.blank?
+          elsif type.ancestors.include?(CouchPotato::Persistence)
+            type.new value unless value.blank?
           else
             type.json_create value unless value.blank?
           end

@@ -114,10 +114,19 @@ describe 'properties' do
   end
 
   it "should persist subclasses of the specified type" do
-    w = Watch.new(:custom_address => [Address2.new])
+    w = Watch.new(:custom_address => [Address2.new(id: 'a1', city: 'Berlin')])
     CouchPotato.database.save_document! w
     w = CouchPotato.database.load_document w.id
+
     expect(w.custom_address[0]).to be_an_instance_of Address2
+  end
+
+  it 'initializes an typed array property from an array of hashes' do
+    w = Watch.new(custom_address: [{id: 'a1', city: 'Berlin'}])
+
+    expect(w.custom_address.map(&:class)).to eq([Address])
+    expect(w.custom_address.map(&:id)).to eq(['a1'])
+    expect(w.custom_address.map(&:city)).to eq(['Berlin'])
   end
 
   def it_should_persist value
