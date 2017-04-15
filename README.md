@@ -622,6 +622,25 @@ CouchPotato.database.view(Comment.by_commenter_id('23)) # => [:comment1, :commen
 CouchPotato.database.first(Comment.by_commenter_id('23)) # => :comment1
 ```
 
+##### Testing Properties
+
+Couch Potato provides custom RSpec matchers for testing properties.  For example:
+
+    class User
+      include CouchPotato::Persistence
+
+      property :name, :default => "John Doe"
+      property :active, :type => :boolean
+    end
+
+    # RSpec
+    require 'couch_potato/rspec'
+
+    describe User do
+      it { should have_property(:name).with_options(:default => "John Doe")
+      it { should have_property(:active).of_type(:boolean) }
+    end
+
 ##### Testing map/reduce functions
 
 Couch Potato provides custom RSpec matchers for testing the map and reduce functions of your views. For example you can do this:
