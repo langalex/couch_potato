@@ -160,18 +160,18 @@ end
 ```
 
 In this case `Address` also implements `CouchPotato::Persistence` which means its JSON representation will be added to the user document.
-Couch Potato also has support for the basic types (right now `Fixnum`, `Date`, `Time` and `:boolean` are supported):
+Couch Potato also has support for the basic types (right now `Integer`, `Date`, `Time` and `:boolean` are supported):
 
 ```ruby
 class User
   include CouchPotato::Persistence
 
-  property :age, :type => Fixnum
+  property :age, :type => Integer
   property :receive_newsletter, :type => :boolean
 end
 ```
 
-With this in place when you set the user's age as a String (e.g. using an HTML form) it will be converted into a `Fixnum` automatically.
+With this in place when you set the user's age as a String (e.g. using an HTML form) it will be converted into a `Integer` automatically.
 
 
 Properties can have a default value:
@@ -626,7 +626,7 @@ class User
   include CouchPotato::Persistence
 
   property :name
-  property :age, :type => Fixnum
+  property :age, :type => Integer
 
   view :by_name, :key => :name
   view :by_age,  :key => :age

@@ -10,6 +10,7 @@ class Plant
   include CouchPotato::Persistence
   property :leaf_count
   property :typed_leaf_count, type: Fixnum
+  property :integer_something, type: Integer
   property :typed_leaf_size,  type: Float
   property :branch, type: Branch
 end
@@ -108,6 +109,57 @@ describe 'attributes' do
         expect(Plant.new(branch: {leafs: 3}).branch.leafs).to eq(3)
       end
     end
+
+    describe 'integer' do
+      it 'rounds a float to a fixnum' do
+        @plant.integer_something = 4.5
+
+        expect(@plant.integer_something).to eq(5)
+      end
+
+      it 'converts a string into a fixnum' do
+        @plant.integer_something = '4'
+
+        expect(@plant.integer_something).to eq(4)
+      end
+
+      it 'converts a string into a negative fixnum' do
+        @plant.integer_something = '-4'
+
+        expect(@plant.integer_something).to eq(-4)
+      end
+
+      it 'leaves a fixnum as is' do
+        @plant.integer_something = 4
+
+        expect(@plant.integer_something).to eq(4)
+      end
+
+      it 'leaves nil as is' do
+        @plant.integer_something = nil
+
+        expect(@plant.integer_something).to be_nil
+      end
+
+      it 'sets the attributes to zero if a string given' do
+        @plant.integer_something = 'x'
+
+        expect(@plant.integer_something).to eq(0)
+      end
+
+      it 'parses numbers out of a string' do
+        @plant.integer_something = 'x123'
+
+        expect(@plant.integer_something).to eq(123)
+      end
+
+      it 'sets the attributes to nil if given a blank string' do
+        @plant.integer_something = ''
+
+        expect(@plant.integer_something).to be_nil
+      end
+    end
+
 
     describe 'fixnum' do
       it 'rounds a float to a fixnum' do
