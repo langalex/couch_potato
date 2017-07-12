@@ -41,6 +41,7 @@ describe 'attributes' do
       plant = Plant.new(leaf_count: 1)
 
       expect(plant.attributes).to eq('leaf_count' => 1, 'created_at' => nil,
+        'integer_something' => nil,
         'updated_at' => nil, 'typed_leaf_count' => nil,
         'typed_leaf_size' => nil, 'branch' => nil)
     end
