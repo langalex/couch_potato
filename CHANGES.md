@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.7.1
+
+* added support for properties of type Integer
+
 ### 1.7.0
 
 * added `_revisions` method that returns all available revisions of a document.
