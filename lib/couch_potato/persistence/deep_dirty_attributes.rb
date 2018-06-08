@@ -133,16 +133,18 @@ module CouchPotato
           if deep_trackable_type?(options[:type])
             index = properties.find_index {|p| p.name == name}
             properties.list[index] = DeepTrackedProperty.new(self, name, options)
+            remove_attribute_dirty_methods_from_activesupport_module
           end
-          remove_attribute_dirty_methods_from_activesupport_module
         end
 
         def remove_attribute_dirty_methods_from_activesupport_module
-          methods = deep_tracked_property_names.flat_map {|n| ["#{n}_changed?", "#{n}_change", "#{n}_was"]}.map(&:to_sym)
-          activesupport_modules = ancestors.select {|m| m.name.nil? && (methods - m.instance_methods).empty?}
-          activesupport_modules.each do |mod|
+          methods = deep_tracked_property_names.flat_map {|n| [:"#{n}_changed?", :"#{n}_change", :"#{n}_was"]}
+          active_support_module = send(:generated_attribute_methods)
+          if active_support_module
             methods.each do |method|
-              mod.send :remove_method, method if mod.instance_methods.include?(method)
+              if active_support_module.instance_methods.include?(method)
+                active_support_module.send :remove_method, method
+              end
             end
           end
         end
