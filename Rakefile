@@ -24,7 +24,7 @@ task :spec do
     Rake::Task[:spec_unit].execute
     Rake::Task[:spec_functional].execute
   else
-    %w(4_0 4_1 4_2).each do |version|
+    %w[4_2 5_0 5_1 5_2].each do |version|
       Bundler.with_clean_env do
         puts "Running tests with ActiveSupport #{version.sub('_', '.')}"
         sh "env BUNDLE_GEMFILE=gemfiles/active_support_#{version} bundle install"

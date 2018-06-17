@@ -4,8 +4,6 @@
 
 [![Build Status](https://secure.travis-ci.org/langalex/couch_potato.png?branch=master)](http://travis-ci.org/langalex/couch_potato)
 
-[![Dependencies](https://gemnasium.com/langalex/couch_potato.png)](https://gemnasium.com/langalex/couch_potato)
-
 [![Code Climate](https://codeclimate.com/github/langalex/couch_potato.png)](https://codeclimate.com/github/langalex/couch_potato)
 
 ### Upgrading from 1.x to 2.x
@@ -40,9 +38,9 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Supported Environments
 
-* Ruby 2.0, 2.1, 2.2, Rubinius
-* CouchDB 1.6.0
-* ActiveSupport 4.0, 4.1, 4.2
+* Ruby 2.0 - 2.4, Rubinius
+* CouchDB 1.6.0+
+* ActiveSupport 4.2, 5.0, 5.1, 5.2
 
 (Supported means I run the specs against those before releasing a new gem.)
 
