@@ -11,14 +11,14 @@ Gem::Specification.new do |s|
   s.version     = CouchPotato::VERSION
   s.platform    = Gem::Platform::RUBY
 
-  s.add_dependency 'json', '~> 1.6'
-  s.add_dependency 'couchrest', '~>2.0.0.rc3'
-  s.add_dependency 'activemodel', '~> 4.0'
+  s.add_dependency 'json', '~> 2.1'
+  s.add_dependency 'couchrest', '~>2.0.1'
+  s.add_dependency 'activemodel', '>= 4.0'
 
-  s.add_development_dependency 'rspec', '~>3.2.0'
+  s.add_development_dependency 'rspec', '~>3.5'
   s.add_development_dependency 'timecop'
   s.add_development_dependency 'tzinfo'
-  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rake', '~>12.3.1'
 
   s.files         = `git ls-files | grep -v "lib/couch_potato/rspec"`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/* | grep -v rspec_matchers`.split("\n")

@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
   s.version     = CouchPotato::RSPEC_VERSION
   s.platform    = Gem::Platform::RUBY
 
-  s.add_dependency 'rspec', '~>3.0'
-  s.add_development_dependency 'rake'
+  s.add_dependency 'rspec', '~>3.5'
+  s.add_development_dependency 'rake', '~>12.3.1'
 
   s.files         = `git ls-files | grep "lib/couch_potato/rspec\|vendor/pouchdb-collate"`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/* | grep rspec_matchers`.split("\n")
