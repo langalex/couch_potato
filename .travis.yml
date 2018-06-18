@@ -1,15 +1,11 @@
 rvm:
-  - 2.0.0
-  - 2.1.2
-  - 2.2.2
+  - 2.2
   - jruby-9.0.1.0
-  - rbx-3
 services:
   - couchdb
 gemfile:
-  - gemfiles/active_support_4_0
-  - gemfiles/active_support_4_1
   - gemfiles/active_support_4_2
+  - gemfiles/active_support_5_0
 before_script:
   - sudo sh -c 'echo "[native_query_servers]" >> /etc/couchdb/local.ini'
   - sudo sh -c 'echo "erlang = {couch_native_process, start_link, []}" >> /etc/couchdb/local.ini'
