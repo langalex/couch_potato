@@ -79,18 +79,23 @@ module CouchPotato
         #    property :next_year, default: ->(book) { book.year + 1 }
         #  end
         def property(name, options = {})
-          undefine_attribute_methods
-          define_attribute_methods property_names + [name]
-          properties << SimpleProperty.new(self, name, options)
-          remove_attribute_accessors_from_activesupport_module
-        end
+          # ActiveModel::AttributeMethods.generated_attribute_methods
+          active_support_module = send(:generated_attribute_methods)
 
-        def remove_attribute_accessors_from_activesupport_module
-          active_support_module = ancestors[1..-1].find{|m| m.name.nil? && (property_names - m.instance_methods).empty?}
-          if active_support_module
-            property_names.each do |name|
-              active_support_module.send :remove_method, name if active_support_module.instance_methods.include?(name)
-            end
+          # Mimic ActiveModel::AttributeMethods.undefine_attribute_methods, but only for this
+          # property's accessor method
+          active_support_module.module_eval do
+            undef_method(name) if instance_methods.include?(name)
+          end
+          cache = send(:attribute_method_matchers_cache)
+          cache.delete(name)
+
+          define_attribute_method name
+          properties << SimpleProperty.new(self, name, options)
+
+          # Remove the default ActiveModel::AttributeMethods accessor
+          if active_support_module.instance_methods.include?(name)
+            active_support_module.send(:remove_method, name)
           end
         end
       end
