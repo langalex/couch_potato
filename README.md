@@ -81,7 +81,7 @@ Another switch allows you to store each CouchDB view in its own design document.
 CouchPotato::Config.split_design_documents_per_view = true
 ```
 
-If you are using more than one datavase from your app, you can create aliases:
+If you are using more than one database from your app, you can create aliases:
 
 ```ruby
 CouchPotato::Config.additional_databases = {'db1' => 'db1_production', 'db2' => 'https://db2.example.com/db'}
