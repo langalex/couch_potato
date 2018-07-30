@@ -11,8 +11,6 @@ module CouchPotato
     end
 
     class ListAsMatcher
-      include RunJS
-
       def initialize(expected_ruby, results_ruby)
         @expected_ruby = expected_ruby
         @results_ruby = results_ruby
@@ -20,22 +18,23 @@ module CouchPotato
 
       def matches?(view_spec)
         js = <<-JS
-          #{File.read(File.dirname(__FILE__) + '/json2.js')}
-          var results = #{@results_ruby.to_json};
-          var listed = '';
-          var list = #{view_spec.list_function};
+          (function() {
+            var results = #{@results_ruby.to_json};
+            var listed = '';
+            var list = #{view_spec.list_function};
 
-          var getRow = function() {
-            return results.rows.shift();
-          };
-          var send = function(text) {
-            listed = listed + text;
-          };
-          list();
-          JSON.stringify(JSON.parse(listed));
+            var getRow = function() {
+              return results.rows.shift();
+            };
+            var send = function(text) {
+              listed = listed + text;
+            };
+            list();
+            return JSON.stringify(JSON.parse(listed));
+          })()
+
         JS
-
-        @actual_ruby = JSON.parse(run_js(js))
+        @actual_ruby = JSON.parse(ExecJS.eval(js))
 
         @expected_ruby == @actual_ruby
       end
