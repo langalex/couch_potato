@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
 
   s.add_dependency 'rspec', '~>3.5'
+  s.add_dependency 'execjs', '~>2.7.0'
   s.add_development_dependency 'rake', '~>12.3.1'
 
   s.files         = `git ls-files | grep "lib/couch_potato/rspec\|vendor/pouchdb-collate"`.split("\n")
