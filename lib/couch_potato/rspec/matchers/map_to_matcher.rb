@@ -14,8 +14,6 @@ module CouchPotato
     end
 
     class MapToMatcher
-      include RunJS
-
       def initialize(expected_ruby, input_ruby)
         @expected_ruby = expected_ruby
         @input_ruby = input_ruby
@@ -23,29 +21,31 @@ module CouchPotato
 
       def matches?(view_spec)
         js = <<-JS
-          var doc = #{@input_ruby.to_json};
-          var map = #{view_spec.map_function};
-          var lib = #{view_spec.respond_to?(:lib) && view_spec.lib.to_json};
-          var result = [];
-          var require = function(modulePath) {
-            var module = {exports: {}};
-            var exports = module.exports;
-            var pathArray = modulePath.split("/").slice(2);
-            var result = lib;
-            for (var i in pathArray) {
-              result = result[pathArray[i]];
+          (function() {
+            var doc = #{@input_ruby.to_json};
+            var map = #{view_spec.map_function};
+            var lib = #{view_spec.respond_to?(:lib) && view_spec.lib.to_json};
+            var result = [];
+            var require = function(modulePath) {
+              var module = {exports: {}};
+              var exports = module.exports;
+              var pathArray = modulePath.split("/").slice(2);
+              var result = lib;
+              for (var i in pathArray) {
+                result = result[pathArray[i]];
+              }
+              eval(result);
+              return module.exports;
             }
-            eval(result);
-            return module.exports;
-          }
 
-          var emit = function(key, value) {
-            result.push([key, value]);
-          };
-          map(doc);
-          JSON.stringify(result);
+            var emit = function(key, value) {
+              result.push([key, value]);
+            };
+            map(doc);
+            return JSON.stringify(result);
+          })()
         JS
-        @actual_ruby = JSON.parse(run_js(js))
+        @actual_ruby = JSON.parse(ExecJS.eval(js))
         @expected_ruby == @actual_ruby
       end
 

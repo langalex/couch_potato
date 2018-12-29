@@ -11,28 +11,28 @@ module CouchPotato
     end
 
     class ReduceToMatcher
-      include RunJS
-
       def initialize(expected_ruby, keys, values, rereduce = false)
         @expected_ruby, @keys, @values, @rereduce = expected_ruby, keys, values, rereduce
       end
 
       def matches?(view_spec)
         js = <<-JS
-          sum = function(values) {
-            var rv = 0;
-            for (var i in values) {
-              rv += values[i];
-            }
-            return rv;
-          };
+          (function() {
+            sum = function(values) {
+              var rv = 0;
+              for (var i in values) {
+                rv += values[i];
+              }
+              return rv;
+            };
 
-          var keys = #{@keys.to_json};
-          var values = #{@values.to_json};
-          var reduce = #{view_spec.reduce_function};
-          JSON.stringify({result: reduce(keys, values, #{@rereduce})});
+            var keys = #{@keys.to_json};
+            var values = #{@values.to_json};
+            var reduce = #{view_spec.reduce_function};
+            return JSON.stringify({result: reduce(keys, values, #{@rereduce})});
+          })()
         JS
-        @actual_ruby = JSON.parse(run_js(js))['result']
+        @actual_ruby = JSON.parse(ExecJS.eval(js))['result']
         @expected_ruby == @actual_ruby
       end
 

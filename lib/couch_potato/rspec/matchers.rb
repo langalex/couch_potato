@@ -1,29 +1,4 @@
-begin
-  require 'v8'
-rescue LoadError
-  begin
-    require 'rhino'
-  rescue LoadError
-    STDERR.puts "You need to install therubyracer (or therhinoracer on jruby) to use matchers"
-  end
-end
-
-module CouchPotato
-  module RSpec
-    module RunJS
-      private
-
-      def run_js(js)
-        if defined?(V8)
-          V8::Context.new.eval(js)
-        else
-          Rhino::Context.open{|cxt| cxt.eval(js)}
-        end
-      end
-    end
-  end
-end
-
+require 'execjs'
 
 require 'couch_potato/rspec/matchers/map_to_matcher'
 require 'couch_potato/rspec/matchers/reduce_to_matcher'
@@ -53,4 +28,3 @@ module RSpec
     end
   end
 end
-
