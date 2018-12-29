@@ -2,10 +2,6 @@ source 'https://rubygems.org'
 
 gem 'activemodel', '~>4.0.0'
 gem 'rails', '~>4.0.0'
-if RUBY_PLATFORM =~ /java/
-  gem 'therubyrhino'
-else
-   gem 'therubyracer'
-end
+gem 'execjs'
 
 gemspec name: 'couch_potato', path: '..'
