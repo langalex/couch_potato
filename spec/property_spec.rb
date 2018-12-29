@@ -93,10 +93,10 @@ describe 'properties' do
 
   it "should persist a big decimal" do
     require 'bigdecimal'
-    c = BigDecimalContainer.new :number => BigDecimal.new( '42.42' )
+    c = BigDecimalContainer.new :number => BigDecimal( '42.42' )
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
-    expect(c.number).to eq(BigDecimal.new( '42.42' ))
+    expect(c.number).to eq(BigDecimal( '42.42' ))
   end
 
   it "should persist a hash" do
