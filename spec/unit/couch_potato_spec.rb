@@ -24,6 +24,15 @@ describe CouchPotato, 'use' do
     db = CouchPotato.use("testdb")
     expect(db.couchrest_database.root.to_s).to eq('http://127.0.0.1:5984/testdb')
   end
+
+  it 'returns a db from the additional_databases pool' do
+    CouchPotato::Config.database_host = 'http://127.0.0.1:5984'
+    CouchPotato::Config.additional_databases = {'1' => 'db1', '2' => 'db2'}
+
+    db = CouchPotato.use('2')
+
+    expect(db.couchrest_database.root.to_s).to eq('http://127.0.0.1:5984/db2')
+  end
 end
 
 describe CouchPotato, '.models' do

@@ -11,6 +11,7 @@ module CouchPotato
         CouchPotato::Config.database_name = config
       else
         CouchPotato::Config.database_name = config['database']
+        CouchPotato::Config.additional_databases = config['additional_databases'] if config['additional_databases']
         CouchPotato::Config.split_design_documents_per_view = config['split_design_documents_per_view'] if config['split_design_documents_per_view']
         CouchPotato::Config.digest_view_names = config['digest_view_names'] if config['digest_view_names']
         CouchPotato::Config.default_language = config['default_language'] if config['default_language']

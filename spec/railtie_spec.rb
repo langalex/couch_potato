@@ -83,6 +83,16 @@ describe "railtie" do
     end
   end
 
+  context 'yaml file contains additional_databases' do
+    it 'assigns additional_databases to config' do
+      allow(File).to receive_messages(:read => "test:\n  database: test\n  additional_databases:\n    db2: test2")
+
+      expect(CouchPotato::Config).to receive(:additional_databases=).with('db2' => 'test2')
+
+      CouchPotato.rails_init
+    end
+  end
+
   it "should process the yml file with erb" do
     allow(File).to receive_messages(:read => "test: \n  database: <%= 'db' %>")
 
