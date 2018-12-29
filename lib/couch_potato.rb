@@ -8,11 +8,12 @@ CouchRest.decode_json_objects = true
 
 module CouchPotato
   Config = Struct.new(:database_host, :database_name, :digest_view_names,
-    :split_design_documents_per_view, :default_language).new
+    :split_design_documents_per_view, :default_language, :additional_databases).new
   Config.split_design_documents_per_view = false
   Config.digest_view_names = false
   Config.default_language = :javascript
   Config.database_host = 'http://127.0.0.1:5984'
+  Config.additional_databases = {}
 
   class NotFound < StandardError; end
   class Conflict < StandardError; end
@@ -35,9 +36,10 @@ module CouchPotato
 
   # Returns a specific database instance
   def self.use(database_name)
+    resolved_database_name = Config.additional_databases[database_name] || database_name
     Thread.current[:__couch_potato_databases] ||= {}
-    Thread.current[:__couch_potato_databases][database_name] = Database.new(couchrest_database_for_name!(database_name)) unless Thread.current[:__couch_potato_databases][database_name]
-    Thread.current[:__couch_potato_databases][database_name]
+    Thread.current[:__couch_potato_databases][resolved_database_name] = Database.new(couchrest_database_for_name!(resolved_database_name)) unless Thread.current[:__couch_potato_databases][resolved_database_name]
+    Thread.current[:__couch_potato_databases][resolved_database_name]
   end
 
   # Executes a block of code and yields a datbase with the given name.
@@ -48,9 +50,7 @@ module CouchPotato
   #  end
   #
   def self.with_database(database_name)
-    Thread.current[:__couch_potato_databases] ||= {}
-    Thread.current[:__couch_potato_databases][database_name] = Database.new(couchrest_database_for_name(database_name)) unless Thread.current[:__couch_potato_databases][database_name]
-    yield Thread.current[:__couch_potato_databases][database_name]
+    yield use(database_name)
   end
 
   # Returns a CouchRest-Database for directly accessing that functionality.

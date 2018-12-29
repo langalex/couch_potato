@@ -3,7 +3,6 @@ rvm:
   - "2.2"
   - "2.3.0"
   - "jruby-9.0.5.0"
-  - "rbx-3.9"
 services:
   - couchdb
 gemfile:
@@ -16,6 +15,9 @@ before_install:
 before_script:
   - sudo sh -c 'echo "[native_query_servers]" >> /etc/couchdb/local.ini'
   - sudo sh -c 'echo "erlang = {couch_native_process, start_link, []}" >> /etc/couchdb/local.ini'
-  - sudo /etc/init.d/couchdb restart
+  - sudo service couchdb restart
   - bundle
 script: bundle exec rake
+matrix:
+  allow_failures:
+  - rvm: "jruby-9.0.5.0"
