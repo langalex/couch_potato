@@ -11,7 +11,7 @@ class Plant
   property :leaf_count
   property :typed_leaf_count, type: Fixnum
   property :integer_something, type: Integer
-  property :typed_leaf_size,  type: Float
+  property :typed_leaf_size, type: Float
   property :branch, type: Branch
 end
 

@@ -1,6 +1,8 @@
+require 'bigdecimal/util'
 module CouchPotato
   module Persistence
     class TypeCaster #:nodoc:
+
       NUMBER_REGEX = /-?\d*\.?\d*/
 
       def cast(value, type)
@@ -28,12 +30,13 @@ module CouchPotato
 
       def cast_native(value, type)
         if type && !value.is_a?(type)
-          if [Fixnum, Integer].include? type
-            BigDecimal(value.to_s.scan(NUMBER_REGEX).join).round unless value.blank?
+
+          if ['Integer', 'Bignum', 'Fixnum'].include?(type.to_s)
+            value.to_s.scan(NUMBER_REGEX).join.to_d.round unless value.blank?
           elsif type == Float
             value.to_s.scan(NUMBER_REGEX).join.to_f unless value.blank?
           elsif type == BigDecimal
-            BigDecimal(value.to_s) unless value.blank?
+            value.to_s.to_d unless value.blank?
           elsif type == Hash
             value.to_hash unless value.blank?
           elsif type.ancestors.include?(CouchPotato::Persistence)

@@ -29,7 +29,7 @@ module CouchPotato
       end
 
       def clone_attribute(value)
-        if [Fixnum, Symbol, TrueClass, FalseClass, NilClass, Float, BigDecimal].include?(value.class)
+        if [Integer, Symbol, TrueClass, FalseClass, NilClass, Float, BigDecimal].find{|klass| value.is_a?(klass)}
           value
         elsif [Hash, Array].include?(value.class)
           #Deep clone
