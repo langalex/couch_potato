@@ -1,5 +1,6 @@
 rvm:
   - 2.2
+  - 2.6
   - jruby-9.0.1.0
 services:
   - couchdb
