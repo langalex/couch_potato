@@ -57,13 +57,13 @@ describe 'dirty attribute tracking' do
         it "should not dup BigDecimal" do
 
           expect {
-            Bowl.new :price => BigDecimal.new("5.23")
+            Bowl.new :price => BigDecimal("5.23")
           }.not_to raise_error
         end
 
         it "should return the old value" do
-          bowl = Bowl.new :price => BigDecimal.new("5.23")
-          bowl.price = BigDecimal.new("2.23")
+          bowl = Bowl.new :price => BigDecimal("5.23")
+          bowl.price = BigDecimal("2.23")
           expect(bowl.price_was).to eq(5.23)
         end
 

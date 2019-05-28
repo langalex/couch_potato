@@ -10,7 +10,7 @@ end
 class Plant
   include CouchPotato::Persistence
   property :leaf_count
-  property :typed_leaf_count, :type => Fixnum
+  property :typed_leaf_count, :type => Integer
   property :typed_leaf_size,  :type => Float
   property :branch, :type => Branch
 end
