@@ -396,23 +396,17 @@ describe "deep dirty attribute tracking" do
       @book.title = "B"
       @book.cover.color = "blue"
       @db.save! @book
-      expect(@book).not_to be_dirty
-      expect(@book.cover).not_to be_dirty
+      expect(@book).not_to be_changed
+      expect(@book.cover).not_to be_changed
     end
 
     it "should reset all elements in a document array" do
-      @book.pages.each(&:is_dirty)
+      @book.pages.each(&:number_will_change!)
       @db.save! @book
-      expect(@book).not_to be_dirty
+      expect(@book).not_to be_changed
       @book.pages.each do |page|
-        expect(page).not_to be_dirty
+        expect(page).not_to be_changed
       end
-    end
-
-    it "should reset a forced dirty state" do
-      @book.is_dirty
-      @db.save! @book
-      expect(@book).not_to be_dirty
     end
 
     it "clears old values" do

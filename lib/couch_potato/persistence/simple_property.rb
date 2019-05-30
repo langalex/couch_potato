@@ -32,7 +32,7 @@ module CouchPotato
         object.send @setter_name, value
       end
 
-      def dirty?(object)
+      def changed?(object)
         object.send("#{name}_changed?")
       end
 

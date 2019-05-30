@@ -214,7 +214,7 @@ module CouchPotato
 
       return false if false == document.run_callbacks(:save) do
         return false if false == document.run_callbacks(:update) do
-          if document.dirty?
+          if document.changed?
             res = couchrest_database.save_doc document.to_hash
             document._rev = res['rev']
           end

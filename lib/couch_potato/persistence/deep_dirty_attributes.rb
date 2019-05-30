@@ -33,7 +33,7 @@ module CouchPotato
 
       private
 
-      def reset_dirty_attributes
+      def clear_changes_information
         super
         reset_deep_dirty_attributes
       end
@@ -44,10 +44,10 @@ module CouchPotato
           value = send(property.name)
           if value
             if doc?(value)
-              value.send(:reset_dirty_attributes)
+              value.send(:clear_changes_information)
             elsif value.respond_to?(:each)
               value.each do |item|
-                item.send(:reset_dirty_attributes) if doc?(item)
+                item.send(:clear_changes_information) if doc?(item)
               end
             end
           end
