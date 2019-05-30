@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gem 'activemodel', '~>5.1.7'
+gem 'rails', '~>5.1.7'
+gem 'execjs'
+
+gemspec name: 'couch_potato', path: '..'

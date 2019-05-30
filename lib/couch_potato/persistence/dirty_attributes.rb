@@ -23,8 +23,7 @@ module CouchPotato
       private
 
       def reset_dirty_attributes
-        @previously_changed = changes
-        @changed_attributes.clear
+        clear_changes_information
         @forced_dirty = nil
       end
 

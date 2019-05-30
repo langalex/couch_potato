@@ -7,6 +7,8 @@ services:
 gemfile:
   - gemfiles/active_support_4_2
   - gemfiles/active_support_5_0
+  - gemfiles/active_support_5_1
+  - gemfiles/active_support_5_2
 before_script:
   - sudo sh -c 'echo "[native_query_servers]" >> /etc/couchdb/local.ini'
   - sudo sh -c 'echo "erlang = {couch_native_process, start_link, []}" >> /etc/couchdb/local.ini'
