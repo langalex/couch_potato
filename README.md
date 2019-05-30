@@ -40,7 +40,7 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 * Ruby 2.2, 2.6, JRuby 9.2
 * CouchDB 1.6.0+
-* ActiveSupport 4.2, 5.0, 5.1, 5.2
+* ActiveSupport 5.0, 5.1, 5.2
 
 (Supported means I run the specs against those before releasing a new gem.)
 
@@ -127,8 +127,6 @@ production:
     db2: https://db2.example.com/db
 ```
 
-#### Rails 3.x
-
 Add to your `Gemfile`:
 
 ```ruby
@@ -140,8 +138,6 @@ gem 'activemodel'
 gem "couch_potato"
 gem 'tzinfo'
 ```
-
-Note: please make sure that when you run `Date.today.as_json` in the Rails console it returns something like `2010/12/10` and not `2010-12-10` - if it does another gem has overwritten Couch Potato's Date patches - in this case move Couch Potato further down in your `Gemfile` or whereever you load it.
 
 ### Introduction
 
@@ -493,7 +489,7 @@ You can pass in your own view specifications by passing in `:type => MyViewSpecC
 
 ##### Digest view names
 
-If turned on, Couch Potato will append an MD5 digest of the map function to each view name. This makes sure (together with split_design_documents_per_view) that no views/design documents are ever updated. Instead, new ones are created. Since reindexing can take a long time once your database is larger, you want to avoid blocking your app while CouchDB is busy. Instead, you create a new view, warm it up, and only then start using it. 
+If turned on, Couch Potato will append an MD5 digest of the map function to each view name. This makes sure (together with split_design_documents_per_view) that no views/design documents are ever updated. Instead, new ones are created. Since reindexing can take a long time once your database is larger, you want to avoid blocking your app while CouchDB is busy. Instead, you create a new view, warm it up, and only then start using it.
 
 ##### Lists
 

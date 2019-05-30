@@ -5,7 +5,6 @@ rvm:
 services:
   - couchdb
 gemfile:
-  - gemfiles/active_support_4_2
   - gemfiles/active_support_5_0
   - gemfiles/active_support_5_1
   - gemfiles/active_support_5_2
