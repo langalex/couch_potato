@@ -224,7 +224,7 @@ module CouchPotato
     end
 
     def valid_document?(document)
-      errors = document.errors.errors.dup
+      errors = document.errors.dup
       errors.instance_variable_set("@messages", errors.messages.dup) if errors.respond_to?(:messages)
       document.valid?
       errors.each do |k, v|
