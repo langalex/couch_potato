@@ -48,6 +48,10 @@ module CouchPotato
             value.to_s.to_d unless value.blank?
           elsif type == Hash
             value.to_hash unless value.blank?
+          elsif type == Time
+            Time.parse value unless value.blank?
+          elsif type == Date
+            Date.parse value unless value.blank?
           elsif type.ancestors.include?(CouchPotato::Persistence)
             type.new value unless value.blank?
           else
