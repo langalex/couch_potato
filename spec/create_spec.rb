@@ -9,7 +9,7 @@ describe "create" do
     it "should store the class" do
       @comment = Comment.new :title => 'my_title'
       CouchPotato.database.save_document! @comment
-      expect(CouchPotato.couchrest_database.get(@comment.id).send(JSON.create_id)).to eq('Comment')
+      expect(CouchPotato.couchrest_database.get(@comment.id)._document[JSON.create_id]).to eq('Comment')
     end
 
     it "should persist a given created_at" do
@@ -46,7 +46,7 @@ describe "create" do
         CouchPotato.with_database(db_name) do |couch|
           couch.save_document! @comment
         end
-        expect(CouchPotato.couchrest_database_for_name(db_name).get(@comment.id).send(JSON.create_id)).to eq('Comment')
+        expect(CouchPotato.couchrest_database_for_name(db_name).get(@comment.id).title).to eq('my_title')
       end
     end
   end

@@ -7,7 +7,6 @@ require File.dirname(__FILE__) + '/persistence/callbacks'
 require File.dirname(__FILE__) + '/persistence/json'
 require File.dirname(__FILE__) + '/persistence/dirty_attributes'
 require File.dirname(__FILE__) + '/persistence/deep_dirty_attributes'
-require File.dirname(__FILE__) + '/persistence/ghost_attributes'
 require File.dirname(__FILE__) + '/persistence/attachments'
 require File.dirname(__FILE__) + '/persistence/type_caster'
 require File.dirname(__FILE__) + '/persistence/revisions'
@@ -23,7 +22,7 @@ module CouchPotato
     def self.included(base) #:nodoc:
       base.send :include, Properties, Callbacks, Json, CouchPotato::View::CustomViews,
         CouchPotato::View::Lists
-      base.send :include, DirtyAttributes, GhostAttributes, Attachments
+      base.send :include, DirtyAttributes, Attachments
       base.send :include, MagicTimestamps, ActiveModelCompliance,
         ForbiddenAttributesProtection, Revisions
       base.send :include, Validation

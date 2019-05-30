@@ -67,29 +67,6 @@ describe 'attributes' do
     end
   end
 
-  # useful when loading models from custom views
-  context 'accessing ghost attributes' do
-    it 'allows me to access attributes that are in the couchdb document but not defined as a property' do
-      plant = Plant.json_create(JSON.create_id => 'Plant', 'color' => 'red', 'leaf_count' => 1)
-
-      expect(plant.color).to eq('red')
-    end
-
-    it 'raises a no method error when trying to read attributes that are not in the document' do
-      plant = Plant.json_create(JSON.create_id => 'Plant', 'leaf_count' => 1)
-      expect do
-        plant.length
-      end.to raise_error(NoMethodError)
-    end
-
-    it "raises a no method error if the document hasn't been loaded from the database" do
-      plant = Plant.new
-      expect do
-        plant.length
-      end.to raise_error(NoMethodError, /undefined method `length'/)
-    end
-  end
-
   context 'inherited attributes' do
     it 'returns inherited attributes' do
       plant = SpecialPlant.new _document: {leaf_count: 1}
