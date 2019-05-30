@@ -16,6 +16,10 @@ begin
       expect(one).to equal(other)
     end
 
+    def assert_respond_to(receiver, method)
+      expect(receiver).to respond_to(method)
+    end
+
     class ActiveComment
       include CouchPotato::Persistence
       property :name

@@ -9,13 +9,13 @@ module CouchPotato
 
         before_create lambda {|model|
           model.created_at ||= (Time.zone || Time).now
-          @changed_attributes.try :delete, 'created_at'
+          clear_attribute_changes [:created_at]
           model.updated_at ||= (Time.zone || Time).now
-          @changed_attributes.try :delete, 'updated_at'
+          clear_attribute_changes [:updated_at]
         }
         before_update lambda {|model|
           model.updated_at = (Time.zone || Time).now
-          @changed_attributes.try :delete, 'updated_at'
+          clear_attribute_changes [:updated_at]
         }
       end
     end

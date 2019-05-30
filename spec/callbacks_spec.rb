@@ -382,13 +382,13 @@ describe "validation callbacks and filter halt" do
 
     property :name
     before_validation :check_name
-    before_validation_on_update :return_false_from_callback
+    before_validation_on_update :abort_callback
 
     def check_name
       errors.add(:name, 'should be Paul') unless name == "Paul"
     end
 
-    def return_false_from_callback
+    def abort_callback
       false
     end
   end
@@ -398,14 +398,14 @@ describe "validation callbacks and filter halt" do
 
     property :name
     before_validation :check_name
-    before_validation_on_save :return_false_from_callback
-    before_validation_on_create :return_false_from_callback
+    before_validation_on_save :abort_callback
+    before_validation_on_create :abort_callback
 
     def check_name
       errors.add(:name, 'should be Paul') unless name == "Paul"
     end
 
-    def return_false_from_callback
+    def abort_callback
       false
     end
   end
@@ -414,9 +414,9 @@ describe "validation callbacks and filter halt" do
     include CouchPotato::Persistence
 
     property :name
-    before_update :return_false_from_callback
+    before_update :abort_callback
 
-    def return_false_from_callback
+    def abort_callback
       false
     end
   end
@@ -425,10 +425,10 @@ describe "validation callbacks and filter halt" do
     include CouchPotato::Persistence
 
     property :name
-    before_save :return_false_from_callback
-    before_create :return_false_from_callback
+    before_save :abort_callback
+    before_create :abort_callback
 
-    def return_false_from_callback
+    def abort_callback
       false
     end
   end
@@ -450,16 +450,42 @@ describe "validation callbacks and filter halt" do
     expect(@db.save_document(@user)).to eq(false)
   end
 
-  it "should return false on saving a document when a before update filter returned false" do
-    @user = FilterSaveUpdateUser.new(:name => "Paul")
-    expect(@db.save_document(@user)).to eq(true)
-    @user.name = 'Bert'
-    expect(@db.save_document(@user)).to eq(false)
-  end
+  if ActiveModel.version.segments.first < 5
+    it "should return false on saving a document when a before update filter returned false" do
+      @user = FilterSaveUpdateUser.new(:name => "Paul")
+      expect(@db.save_document(@user)).to eq(true)
+      @user.name = 'Bert'
+      expect(@db.save_document(@user)).to eq(false)
+    end
 
-  it "should return false on saving a document when a before save or before create filter returned false" do
-    @user = FilterSaveCreateUser.new(:name => "Bert")
-    expect(@db.save_document(@user)).to eq(false)
+    it "should return false on saving a document when a before save or before create filter returned false" do
+      @user = FilterSaveCreateUser.new(:name => "Bert")
+      expect(@db.save_document(@user)).to eq(false)
+    end
+  else
+    class FilterSaveCreateUser5 < FilterSaveCreateUser
+      def abort_callback
+        throw :abort
+      end
+    end
+
+    class FilterSaveUpdateUser5 < FilterSaveUpdateUser
+      def abort_callback
+        throw :abort
+      end
+    end
+
+    it "returns false on saving a document when a before update filter throws :abort" do
+      @user = FilterSaveUpdateUser5.new(:name => "Paul")
+      expect(@db.save_document(@user)).to eq(true)
+      @user.name = 'Bert'
+      expect(@db.save_document(@user)).to eq(false)
+    end
+
+    it "returns false on saving a document when a before save or before create filter throws :abort" do
+      @user = FilterSaveCreateUser5.new(:name => "Bert")
+      expect(@db.save_document(@user)).to eq(false)
+    end
   end
 
 end
