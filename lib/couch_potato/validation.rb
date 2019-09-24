@@ -13,8 +13,7 @@ module CouchPotato
     def self.included(base) #:nodoc:
       base.send :include, ::ActiveModel::Validations
       base.send :include, ::ActiveModel::Validations::Callbacks
-
-      base.prepend ValidationContext
+      base.send :include, ValidationContext
     end
   end
 end
