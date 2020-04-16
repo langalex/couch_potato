@@ -81,9 +81,9 @@ module CouchPotato
       end
 
       def assert_sorted_false_not_with_startkey_endkey(params)
-        used_limit_params = (params.keys & [:startkey, :endkey, :startkey_docid, :endkey_docid])
-        if params[:sorted] == false && used_limit_params.any?
-          fail ArgumentError, "view parameter: `sorted: false` can not be combined with #{used_limit_params.join(', ')}"
+        used_key_params = params.keys & [:startkey, :endkey, :startkey_docid, :endkey_docid]
+        if params[:sorted] == false && used_key_params.any?
+          fail ArgumentError, "view parameter: `sorted: false` can not be combined with #{used_key_params.join(', ')}"
         end
       end
 
