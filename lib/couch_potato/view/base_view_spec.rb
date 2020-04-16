@@ -13,6 +13,7 @@ module CouchPotato
         @language = options[:language] || Config.default_language
 
         assert_valid_view_parameters normalized_view_parameters
+        assert_sorted_false_not_with_startkey_endkey normalized_view_parameters
         @klass = klass
         @options = options
         @view_name = compute_view_name(view_name,
@@ -79,8 +80,15 @@ module CouchPotato
         end
       end
 
+      def assert_sorted_false_not_with_startkey_endkey(params)
+        used_key_params = params.keys & [:startkey, :endkey, :startkey_docid, :endkey_docid]
+        if params[:sorted] == false && used_key_params.any?
+          fail ArgumentError, "view parameter: `sorted: false` can not be combined with #{used_key_params.join(', ')}"
+        end
+      end
+
       def valid_view_parameters
-        %w(list_params key keys startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end)
+        %w(list_params key keys startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end sorted)
       end
 
       def translate_to_design_doc_name(klass_name, view_name, list_name)
