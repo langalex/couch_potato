@@ -11,6 +11,8 @@ module CouchPotato
     end
 
     class ListAsMatcher
+      include ::RSpec::Matchers::Composable
+
       def initialize(expected_ruby, results_ruby)
         @expected_ruby = expected_ruby
         @results_ruby = results_ruby
@@ -36,7 +38,7 @@ module CouchPotato
         JS
         @actual_ruby = JSON.parse(ExecJS.eval(js))
 
-        @expected_ruby == @actual_ruby
+        values_match? @expected_ruby, @actual_ruby
       end
 
       def failure_message

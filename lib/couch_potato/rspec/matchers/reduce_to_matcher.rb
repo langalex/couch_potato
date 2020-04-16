@@ -11,6 +11,8 @@ module CouchPotato
     end
 
     class ReduceToMatcher
+      include ::RSpec::Matchers::Composable
+
       def initialize(expected_ruby, keys, values, rereduce = false)
         @expected_ruby, @keys, @values, @rereduce = expected_ruby, keys, values, rereduce
       end
@@ -33,7 +35,7 @@ module CouchPotato
           })()
         JS
         @actual_ruby = JSON.parse(ExecJS.eval(js))['result']
-        @expected_ruby == @actual_ruby
+        values_match? @expected_ruby, @actual_ruby
       end
 
       def failure_message
