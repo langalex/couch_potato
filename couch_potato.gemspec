@@ -1,4 +1,6 @@
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+# frozen_string_literal: true
+
+$LOAD_PATH.push File.expand_path('lib', __dir__)
 require 'couch_potato/version'
 
 Gem::Specification.new do |s|
@@ -22,6 +24,6 @@ Gem::Specification.new do |s|
 
   s.files         = `git ls-files | grep -v "lib/couch_potato/rspec"`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/* | grep -v rspec_matchers`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map {|f| File.basename(f) }
+  s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   s.require_paths = ['lib']
 end
