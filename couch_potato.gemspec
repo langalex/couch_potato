@@ -1,4 +1,6 @@
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+# frozen_string_literal: true
+
+$LOAD_PATH.push File.expand_path('lib', __dir__)
 require 'couch_potato/version'
 
 Gem::Specification.new do |s|
@@ -11,9 +13,9 @@ Gem::Specification.new do |s|
   s.version     = CouchPotato::VERSION
   s.platform    = Gem::Platform::RUBY
 
-  s.add_dependency 'json', '~> 1.6'
+  s.add_dependency 'activemodel', ['>= 5.2', '< 6.1']
   s.add_dependency 'couchrest', '~>2.0.0'
-  s.add_dependency 'activemodel', ['>= 4.0', '< 6.0']
+  s.add_dependency 'json', '~> 1.6'
 
   s.add_development_dependency 'rspec', '~>3.2.0'
   s.add_development_dependency 'timecop'
@@ -22,6 +24,6 @@ Gem::Specification.new do |s|
 
   s.files         = `git ls-files | grep -v "lib/couch_potato/rspec"`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/* | grep -v rspec_matchers`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map {|f| File.basename(f) }
+  s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   s.require_paths = ['lib']
 end
