@@ -37,7 +37,6 @@ describe CouchPotato::Database, 'full_url_to_database' do
 end
 
 describe CouchPotato::Database, 'load' do
-
   let(:couchrest_db) { double('couchrest db', :info => nil).as_null_object }
   let(:db) { CouchPotato::Database.new couchrest_db }
 
@@ -431,5 +430,67 @@ describe CouchPotato::Database, '#destroy' do
     expect {
       db.destroy document
     }.to_not raise_error
+  end
+end
+
+describe CouchPotato::Database, '#switch_to' do
+  let(:couchrest_db) { instance_double(CouchRest::Database) }
+  let(:db) { CouchPotato::Database.new couchrest_db }
+
+  it 'returns the database with the given name' do
+    new_db = db.switch_to('db2')
+
+    expect(new_db.couchrest_database.name).to eq('db2')
+  end
+
+  it 'adds a cleared cache to the new database if the original has one' do
+    db.cache = {key: 'value'}
+    new_db = db.switch_to('db2')
+
+    expect(new_db.cache).to be_empty
+  end
+
+  it 'does not clear the cache of the original database' do
+    db.cache = {key: 'value'}
+    _new_db = db.switch_to('db2')
+
+    expect(db.cache).to have_key(:key)
+  end
+
+  it 'adds no cache to the new database if the original has none' do
+    new_db = db.switch_to('db2')
+
+    expect(new_db.cache).to be_nil
+  end
+end
+
+describe CouchPotato::Database, '#switch_to_default' do
+  let(:couchrest_db) { instance_double(CouchRest::Database) }
+  let(:db) { CouchPotato::Database.new couchrest_db }
+
+  it 'returns the default database' do
+    new_db = db.switch_to_default
+
+    expect(new_db.couchrest_database.name).to eq('couch_potato_test')
+  end
+
+  it 'adds a cleared cache to the new database if the original has one' do
+    db.cache = {key: 'value'}
+    new_db = db.switch_to_default
+
+    expect(new_db.cache).to be_empty
+  end
+
+  it 'does not clear the cache of the original database' do
+    db.cache = {key: 'value'}
+    _new_db = db.switch_to_default
+
+    expect(db.cache).to have_key(:key)
+  end
+
+  it 'adds no cache to the new database if the original has none' do
+    new_db = db.switch_to_default
+
+    expect(new_db.cache).to be_nil
   end
 end
