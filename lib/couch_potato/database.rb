@@ -1,7 +1,9 @@
 module CouchPotato
   class Database
-
     class ValidationsFailedError < ::StandardError; end
+    # Pass in a cache to enable caching #load calls.
+    # A cache needs to respond to #[], #[]= and #clear (just use a Hash).
+    attr_accessor :cache
 
     def initialize(couchrest_database)
       @couchrest_database = couchrest_database
@@ -37,24 +39,19 @@ module CouchPotato
     #
     #   db.view(User.all(keys: [1, 2, 3]))
     def view(spec)
-      ActiveSupport::Notifications.instrument('couch_potato.view', name: "#{spec.design_document}/#{spec.view_name}") do
-        results = CouchPotato::View::ViewQuery.new(
-          couchrest_database,
-          spec.design_document,
-          {spec.view_name => {
-            :map => spec.map_function,
-            :reduce => spec.reduce_function
-          }
-          },
-          ({spec.list_name => spec.list_function} unless spec.list_name.nil?),
-          spec.lib,
-          spec.language
-        ).query_view!(spec.view_parameters)
-        processed_results = spec.process_results results
-        processed_results.each do |document|
-          document.database = self if document.respond_to?(:database=)
-        end if processed_results.respond_to?(:each)
-        processed_results
+      id = view_cache_id(spec)
+      cached = cache && id.is_a?(String) && cache[id]
+      if cache
+        if cached
+          ActiveSupport::Notifications.instrument('couch_potato.view.cached') do
+            cached
+          end
+        else
+          cache[id] = view_without_caching(spec)
+          cache[id]
+        end
+      else
+        view_without_caching(spec)
       end
     end
 
@@ -74,10 +71,11 @@ module CouchPotato
     # * yield the object to be saved to the block and run if once before saving
     # * on conflict: reload the document, run the block again and retry saving
     def save_document(document, validate = true, retries = 0, &block)
+      cache&.clear
       begin
         block.call document if block
         save_document_without_conflict_handling(document, validate)
-      rescue CouchRest::Conflict => e
+      rescue CouchRest::Conflict
         if block
           handle_write_conflict document, validate, retries, &block
         else
@@ -94,6 +92,7 @@ module CouchPotato
     alias_method :save!, :save_document!
 
     def destroy_document(document)
+      cache&.clear
       begin
         destroy_document_without_conflict_handling document
       rescue CouchRest::Conflict
@@ -108,16 +107,18 @@ module CouchPotato
     # returns nil if the single document could not be found. when passing an array and some documents
     # could not be found these are omitted from the returned array
     def load_document(id)
-      raise "Can't load a document without an id (got nil)" if id.nil?
-
-      ActiveSupport::Notifications.instrument('couch_potato.load') do
-        if id.is_a?(Array)
-          bulk_load id
+      cached = cache && id.is_a?(String) && cache[id]
+      if cache
+        if cached
+          ActiveSupport::Notifications.instrument('couch_potato.load.cached') do
+            cached
+          end
         else
-          instance = couchrest_database.get(id)
-          instance.database = self if instance
-          instance
+          cache[id] = load_document_without_caching(id)
+          cache[id]
         end
+      else
+        load_document_without_caching(id)
       end
     end
     alias_method :load, :load_document
@@ -144,7 +145,48 @@ module CouchPotato
 
     private
 
+    def view_without_caching(spec)
+      ActiveSupport::Notifications.instrument('couch_potato.view', name: "#{spec.design_document}/#{spec.view_name}") do
+        results = CouchPotato::View::ViewQuery.new(
+          couchrest_database,
+          spec.design_document,
+          {spec.view_name => {
+            :map => spec.map_function,
+            :reduce => spec.reduce_function
+          }
+          },
+          ({spec.list_name => spec.list_function} unless spec.list_name.nil?),
+          spec.lib,
+          spec.language
+        ).query_view!(spec.view_parameters)
+        processed_results = spec.process_results results
+        processed_results.each do |document|
+          document.database = self if document.respond_to?(:database=)
+        end if processed_results.respond_to?(:each)
+        processed_results
+      end
+    end
+
+    def load_document_without_caching(id)
+      raise "Can't load a document without an id (got nil)" if id.nil?
+
+      ActiveSupport::Notifications.instrument('couch_potato.load') do
+        if id.is_a?(Array)
+          bulk_load id
+        else
+          instance = couchrest_database.get(id)
+          instance.database = self if instance
+          instance
+        end
+      end
+    end
+
+    def view_cache_id(spec)
+      spec.send(:klass).to_s + spec.view_name.to_s + spec.view_parameters.to_s
+    end
+
     def handle_write_conflict(document, validate, retries, &block)
+      cache&.clear
       if retries == 5
         raise CouchPotato::Conflict.new
       else
