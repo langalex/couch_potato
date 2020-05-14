@@ -34,9 +34,20 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
           :reduce => false,
           :include_docs => true,
           :inclusive_end => true,
-          :list_params => {}
+          :list_params => {},
+          :sorted => true,
         }
       }.not_to raise_error
+    end
+
+    it "raises an error when sorted false is combined with key limits" do
+      expect {
+        CouchPotato::View::BaseViewSpec.new Object, 'all', {}, {
+          :startkey => nil,
+          :endkey => {},
+          :sorted => false,
+        }
+      }.to raise_error(ArgumentError, "view parameter: `sorted: false` can not be combined with startkey, endkey")
     end
 
     it "removes stale when it's nil" do
