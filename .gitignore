@@ -4,3 +4,5 @@ pkg
 .rvmrc
 *.swp
 *.lock
+
+.ruby-version
