@@ -231,6 +231,20 @@ end
 
 When a conflict occurs Couch Potato automatically reloads the document, runs the block and tries to save it again. Note that the block is also run before initally saving the document.
 
+#### Caching load reqeusts
+
+You can add a cache to a database instance to enable caching subsequent `#load` calls to the same id.
+Any write operation will completely clear the cache.
+
+```ruby
+db = CouchPotato.database
+db.cache = {}
+db.load '1'
+db.load '1' # goes to the cache instead of to the database
+```
+
+In web apps, the idea is to use a per request cache, i.e. set a new cache for every request.
+
 #### Operations on multiple documents
 
 You can also load a bunch of documents with one request.
