@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CouchPotato
   class Database
     class ValidationsFailedError < ::StandardError; end
@@ -55,9 +57,24 @@ module CouchPotato
       end
     end
 
+    # Same as #view but instead of returning the results, it yields them
+    # to a given block in batches of the given size, making multiple
+    # requests with according skip/limit params sent to CouchDB.
+    def view_in_batches(spec, batch_size: 500)
+      batch = 0
+      loop do
+        spec.view_parameters = spec.view_parameters.merge({ skip: batch * batch_size, limit: batch_size })
+        results = view(spec)
+        yield results
+        break if results.size < batch_size
+
+        batch += 1
+      end
+    end
+
     # returns the first result from a #view query or nil
     def first(spec)
-      spec.view_parameters = spec.view_parameters.merge({:limit => 1})
+      spec.view_parameters = spec.view_parameters.merge({ limit: 1 })
       view(spec).first
     end
 
@@ -73,23 +90,23 @@ module CouchPotato
     def save_document(document, validate = true, retries = 0, &block)
       cache&.clear
       begin
-        block.call document if block
+        block&.call document
         save_document_without_conflict_handling(document, validate)
       rescue CouchRest::Conflict
         if block
           handle_write_conflict document, validate, retries, &block
         else
-          raise CouchPotato::Conflict.new
+          raise CouchPotato::Conflict
         end
       end
     end
-    alias_method :save, :save_document
+    alias save save_document
 
     # saves a document, raises a CouchPotato::Database::ValidationsFailedError on failure
     def save_document!(document)
-      save_document(document) || raise(ValidationsFailedError.new(document.errors.full_messages))
+      save_document(document) || raise(ValidationsFailedError, document.errors.full_messages)
     end
-    alias_method :save!, :save_document!
+    alias save! save_document!
 
     def destroy_document(document)
       cache&.clear
@@ -99,7 +116,7 @@ module CouchPotato
         retry if document = document.reload
       end
     end
-    alias_method :destroy, :destroy_document
+    alias destroy destroy_document
 
     # loads a document by its id(s)
     # id - either a single id or an array of ids
@@ -121,16 +138,15 @@ module CouchPotato
         load_document_without_caching(id)
       end
     end
-    alias_method :load, :load_document
+    alias load load_document
 
     # loads one or more documents by its id(s)
     # behaves like #load except it raises a CouchPotato::NotFound if any of the documents could not be found
     def load!(id)
       doc = load(id)
-      if id.is_a?(Array)
-        missing_docs = id - doc.map(&:id)
-      end
+      missing_docs = id - doc.map(&:id) if id.is_a?(Array)
       raise(CouchPotato::NotFound, missing_docs.try(:join, ', ')) if doc.nil? || missing_docs.try(:any?)
+
       doc
     end
 
@@ -139,9 +155,7 @@ module CouchPotato
     end
 
     # returns the underlying CouchRest::Database instance
-    def couchrest_database
-      @couchrest_database
-    end
+    attr_reader :couchrest_database
 
     # returns a new database instance connected to the CouchDB database
     # with the given name. the name is passed through the
@@ -170,10 +184,11 @@ module CouchPotato
     private
 
     def copy_clear_cache_proc
-      ->(db) {
-          next unless cache
-          db.cache = cache.dup
-          db.cache.clear
+      lambda { |db|
+        next unless cache
+
+        db.cache = cache.dup
+        db.cache.clear
       }
     end
 
@@ -182,19 +197,20 @@ module CouchPotato
         results = CouchPotato::View::ViewQuery.new(
           couchrest_database,
           spec.design_document,
-          {spec.view_name => {
-            :map => spec.map_function,
-            :reduce => spec.reduce_function
-          }
-          },
-          ({spec.list_name => spec.list_function} unless spec.list_name.nil?),
+          { spec.view_name => {
+            map: spec.map_function,
+            reduce: spec.reduce_function
+          } },
+          ({ spec.list_name => spec.list_function } unless spec.list_name.nil?),
           spec.lib,
           spec.language
         ).query_view!(spec.view_parameters)
         processed_results = spec.process_results results
-        processed_results.each do |document|
-          document.database = self if document.respond_to?(:database=)
-        end if processed_results.respond_to?(:each)
+        if processed_results.respond_to?(:each)
+          processed_results.each do |document|
+            document.database = self if document.respond_to?(:database=)
+          end
+        end
         processed_results
       end
     end
@@ -220,7 +236,7 @@ module CouchPotato
     def handle_write_conflict(document, validate, retries, &block)
       cache&.clear
       if retries == 5
-        raise CouchPotato::Conflict.new
+        raise CouchPotato::Conflict
       else
         reloaded = document.reload
         document.attributes = reloaded.attributes
@@ -248,10 +264,10 @@ module CouchPotato
 
     def bulk_load(ids)
       response = couchrest_database.bulk_load ids
-      docs = response['rows'].map{|row| row["doc"]}.compact
-      docs.each{|doc|
+      docs = response['rows'].map { |row| row['doc'] }.compact
+      docs.each do |doc|
         doc.database = self if doc.respond_to?(:database=)
-      }
+      end
     end
 
     def create_document(document, validate)
@@ -259,51 +275,53 @@ module CouchPotato
 
       if validate
         document.errors.clear
-        return false if false == document.run_callbacks(:validation_on_save) do
-          return false if false == document.run_callbacks(:validation_on_create) do
+        return false if document.run_callbacks(:validation_on_save) do
+          return false if document.run_callbacks(:validation_on_create) do
             return false unless valid_document?(document)
-          end
-        end
+          end == false
+        end == false
       end
 
-      return false if false == document.run_callbacks(:save) do
-        return false if false == document.run_callbacks(:create) do
+      return false if document.run_callbacks(:save) do
+        return false if document.run_callbacks(:create) do
           res = couchrest_database.save_doc document.to_hash
           document._rev = res['rev']
           document._id = res['id']
-        end
-      end
+        end == false
+      end == false
+
       true
     end
 
     def update_document(document, validate)
       if validate
         document.errors.clear
-        return false if false == document.run_callbacks(:validation_on_save) do
-          return false if false == document.run_callbacks(:validation_on_update) do
+        return false if document.run_callbacks(:validation_on_save) do
+          return false if document.run_callbacks(:validation_on_update) do
             return false unless valid_document?(document)
-          end
-        end
+          end == false
+        end == false
       end
 
-      return false if false == document.run_callbacks(:save) do
-        return false if false == document.run_callbacks(:update) do
+      return false if document.run_callbacks(:save) do
+        return false if document.run_callbacks(:update) do
           if document.dirty?
             res = couchrest_database.save_doc document.to_hash
             document._rev = res['rev']
           end
-        end
-      end
+        end == false
+      end == false
+
       true
     end
 
     def valid_document?(document)
       errors = document.errors.errors.dup
-      errors.instance_variable_set("@messages", errors.messages.dup) if errors.respond_to?(:messages)
+      errors.instance_variable_set('@messages', errors.messages.dup) if errors.respond_to?(:messages)
       document.valid?
       errors.each do |k, v|
         if v.respond_to?(:each)
-          v.each {|message| document.errors.add(k, message)}
+          v.each { |message| document.errors.add(k, message) }
         else
           document.errors.add(k, v)
         end
