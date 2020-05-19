@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 require 'rspec/mocks'
+require 'active_support/core_ext/array'
 
 module CouchPotato::RSpec
   module StubView
@@ -24,7 +27,15 @@ module CouchPotato::RSpec
         stub.and_return(view_stub)
         allow(@db).to receive(:view).with(view_stub).and_return(return_value)
         return unless return_value.respond_to?(:first)
+
         allow(@db).to receive(:first).with(view_stub).and_return(return_value.first)
+        allow(@db)
+          .to receive(:view_in_batches) do |_view, batch_size: CouchPotato::Database.default_batch_size, &block|
+            batches = return_value.in_groups_of(batch_size, false)
+            batches.each(&block)
+          end
+          .with(view_stub, any_args)
+
         if return_value.first
           allow(@db).to receive(:first!).with(view_stub).and_return(return_value.first)
         else

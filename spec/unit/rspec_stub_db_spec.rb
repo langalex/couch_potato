@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'couch_potato-rspec'
 
@@ -38,6 +40,35 @@ describe 'stubbing a view' do
   it 'stubs the database to return the first fake result' do
     expect(@db.first(WithStubbedView.stubbed_view('123'))).to eq(:result)
     expect(@db.first!(WithStubbedView.stubbed_view('123'))).to eq(:result)
+  end
+
+  it 'stubs the database to return fake results in batches with no given batch size' do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return([:result] * 501)
+
+    expect do |b|
+      @db.view_in_batches(WithStubbedView.stubbed_view('123'), &b)
+    end.to yield_successive_args([:result] * 500, [:result])
+  end
+
+  it 'stubs the database to return fake results in batches with a given batch size' do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return([:result] * 3)
+
+    expect do |b|
+      @db.view_in_batches(WithStubbedView.stubbed_view('123'), batch_size: 2, &b)
+    end.to yield_successive_args([:result] * 2, [:result])
+  end
+
+  it 'stubs the database to return fake results in batches for multiple view specs' do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return([:result])
+    @db.stub_view(WithStubbedView, :stubbed_view).with('456').and_return([:result2])
+
+    expect do |b|
+      @db.view_in_batches(WithStubbedView.stubbed_view('123'), &b)
+    end.to yield_successive_args([:result])
+
+    expect do |b|
+      @db.view_in_batches(WithStubbedView.stubbed_view('456'), &b)
+    end.to yield_successive_args([:result2])
   end
 
   it 'raises an error if there is no first result' do
