@@ -6,6 +6,8 @@ module CouchPotato
     # Pass in a cache to enable caching #load calls.
     # A cache needs to respond to #[], #[]= and #clear (just use a Hash).
     attr_accessor :cache
+    cattr_accessor :default_batch_size
+    self.default_batch_size = 500
 
     def initialize(couchrest_database)
       @couchrest_database = couchrest_database
@@ -60,7 +62,7 @@ module CouchPotato
     # Same as #view but instead of returning the results, it yields them
     # to a given block in batches of the given size, making multiple
     # requests with according skip/limit params sent to CouchDB.
-    def view_in_batches(spec, batch_size: 500)
+    def view_in_batches(spec, batch_size: default_batch_size)
       batch = 0
       loop do
         spec.view_parameters = spec.view_parameters.merge({ skip: batch * batch_size, limit: batch_size })

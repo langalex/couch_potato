@@ -383,6 +383,16 @@ CouchPotato.database.view User.all
 
 This will load all user documents in your database sorted by `created_at`.
 
+For large data sets, use batches:
+
+```ruby
+CouchPotato.database.view_in_batches(User.all, batch_size: 100) do |users|
+  ...
+end
+```
+
+This will query CouchDB with skip/limit until all documents have been yielded.
+
 ```ruby
 CouchPotato.database.view User.all(:key => (Time.now- 10)..(Time.now), :descending => true)
 ```
@@ -622,9 +632,9 @@ describe 'save a user' do
 end
 ```
 
-By creating you own instances of `CouchPotato::Database` and passing them a fake CouchRest database instance you can completely disconnect your unit tests/spec from the database.
+By creating your own instances of `CouchPotato::Database` and passing them a fake CouchRest database instance you can completely disconnect your unit tests/spec from the database.
 
-For stubbing out the database couch potato offers some helpers via the `couch_potato-rspec` gem. Use version 2.x of the gem, you you are on RSpec 2, use 3.x for RSpec 3.
+For stubbing out the database couch potato offers some helpers via the `couch_potato-rspec` gem. Use version 2.x of the gem if you are on RSpec 2, use 3.x for RSpec 3.
 
 ```ruby
 class Comment
@@ -637,7 +647,8 @@ require 'couch_potato/rspec'
 db = stub_db # stubs CouchPotato.database
 db.stub_view(Comment, :by_commenter_id).with('23').and_return([:comment1, :comment2])
 
-CouchPotato.database.view(Comment.by_commenter_id('23)) # => [:comment1, :comment2]
+CouchPotato.database.view(Comment.by_commenter_id('23')) # => [:comment1, :comment2]
+CouchPotato.database.view_in_batches(Comment.by_commenter_id('23'), batch_size: 1) # => yields [:comment1] and [:comment2]
 CouchPotato.database.first(Comment.by_commenter_id('23)) # => :comment1
 ```
 
