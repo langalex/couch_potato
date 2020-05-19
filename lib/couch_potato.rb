@@ -37,13 +37,18 @@ module CouchPotato
 
   # Returns a specific database instance
   def self.use(database_name)
-    resolved_database_name = Config.additional_databases[database_name] || database_name
+    resolved_database_name = resolve_database_name(database_name)
     Thread.current[:__couch_potato_databases] ||= {}
     Thread.current[:__couch_potato_databases][resolved_database_name] = Database.new(couchrest_database_for_name!(resolved_database_name)) unless Thread.current[:__couch_potato_databases][resolved_database_name]
     Thread.current[:__couch_potato_databases][resolved_database_name]
   end
 
-  # Executes a block of code and yields a datbase with the given name.
+  # resolves a name to a database name/full url configured under additional databases
+  def self.resolve_database_name(database_name)
+    Config.additional_databases[database_name] || database_name
+  end
+
+  # Executes a block of code and yields a database with the given name.
   #
   # example:
   #  CouchPotato.with_database('couch_customer') do |couch|
