@@ -15,12 +15,12 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activemodel', ['>= 5.0', '< 6.1']
   s.add_dependency 'couchrest', '~>2.0.0'
-  s.add_dependency 'json', '~> 1.6'
+  s.add_dependency 'json', '~> 2.3'
 
-  s.add_development_dependency 'rspec', '~>3.2.0'
+  s.add_development_dependency 'rake', '~>12.0'
+  s.add_development_dependency 'rspec', '~>3.5.0'
   s.add_development_dependency 'timecop'
   s.add_development_dependency 'tzinfo'
-  s.add_development_dependency 'rake', '< 11.0'
 
   s.files         = `git ls-files | grep -v "lib/couch_potato/rspec"`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/* | grep -v rspec_matchers`.split("\n")
