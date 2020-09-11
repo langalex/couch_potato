@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'couchrest', '~>2.0.0'
   s.add_dependency 'json', '~> 2.3'
 
+  s.add_development_dependency 'byebug'
   s.add_development_dependency 'rake', '~>12.0'
   s.add_development_dependency 'rspec', '~>3.5.0'
   s.add_development_dependency 'timecop'
