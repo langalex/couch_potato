@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CouchPotato
   module View
     class BaseViewSpec
@@ -7,7 +9,7 @@ module CouchPotato
       private :klass, :options
 
       def initialize(klass, view_name, options, view_parameters)
-        normalized_view_parameters = normalize_view_parameters view_parameters
+        normalized_view_parameters = ViewParameters.normalize_view_parameters view_parameters
 
         @list_name = normalized_view_parameters.delete(:list) || options[:list]
         @language = options[:language] || Config.default_language
@@ -16,13 +18,13 @@ module CouchPotato
         @klass = klass
         @options = options
         @view_name = compute_view_name(view_name,
-          options.key?(:digest_view_name) ? options[:digest_view_name] : Config.digest_view_names)
+                                       options.key?(:digest_view_name) ? options[:digest_view_name] : Config.digest_view_names)
         @design_document = translate_to_design_doc_name(klass.to_s, @view_name, @list_name)
         @list_params = normalized_view_parameters.delete :list_params
 
         @list_function = klass.lists(@list_name) if @list_name
         @view_parameters = {}
-        [:group, :include_docs, :descending, :group_level, :limit].each do |key|
+        %i[group include_docs descending group_level limit].each do |key|
           @view_parameters[key] = options[key] if options.include?(key)
         end
         @view_parameters.merge!(normalized_view_parameters)
@@ -47,40 +49,14 @@ module CouchPotato
         end
       end
 
-      def normalize_view_parameters(params)
-        hash = wrap_in_hash params
-        remove_nil_stale(replace_range_key(hash))
-      end
-
-      def remove_nil_stale(params)
-        params.reject{|name, value| name.to_s == 'stale' && value.nil?}
-      end
-
-      def wrap_in_hash(params)
-        if params.is_a?(Hash)
-          params
-        else
-          {:key => params}
-        end
-      end
-
-      def replace_range_key(params)
-        if((key = params[:key]).is_a?(Range))
-          params.delete :key
-          params[:startkey] = key.first
-          params[:endkey] = key.last
-        end
-        params
-      end
-
       def assert_valid_view_parameters(params)
         params.keys.each do |key|
-          fail ArgumentError, "invalid view parameter: #{key}" unless valid_view_parameters.include?(key.to_s)
+          raise ArgumentError, "invalid view parameter: #{key}" unless valid_view_parameters.include?(key.to_s)
         end
       end
 
       def valid_view_parameters
-        %w(list_params key keys startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end)
+        %w[list_params key keys startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end]
       end
 
       def translate_to_design_doc_name(klass_name, view_name, list_name)
@@ -91,7 +67,7 @@ module CouchPotato
         doc_name = klass_name.downcase
 
         if CouchPotato::Config.split_design_documents_per_view
-          doc_name += "_view_#{view_name}"  if view_name.present?
+          doc_name += "_view_#{view_name}" if view_name.present?
           doc_name += "_list_#{list_name}" if list_name.present?
         end
         doc_name

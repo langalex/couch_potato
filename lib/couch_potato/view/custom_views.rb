@@ -1,9 +1,10 @@
 require 'couch_potato/view/base_view_spec'
+require 'couch_potato/view/flex_view_spec'
 require 'couch_potato/view/model_view_spec'
 require 'couch_potato/view/properties_view_spec'
 require 'couch_potato/view/custom_view_spec'
 require 'couch_potato/view/raw_view_spec'
-
+require 'couch_potato/view/view_parameters'
 
 module CouchPotato
   module View
@@ -25,7 +26,7 @@ module CouchPotato
         def execute_view(view_name, view_parameters) #:nodoc:
           view_spec_class(views(view_name)[:type]).new(self, view_name, views(view_name), view_parameters)
         end
-        
+
         # Declare a CouchDB view, for examples on how to use see the *ViewSpec classes in CouchPotato::View
         def view(view_name, options)
           view_name = view_name.to_s
@@ -42,7 +43,7 @@ module CouchPotato
             CouchPotato::View.const_get("#{name}ViewSpec")
           end
         end
-        
+
         def _find_view(view) #:nodoc:
           (@views && @views[view]) || (superclass._find_view(view) if superclass.respond_to?(:_find_view))
         end

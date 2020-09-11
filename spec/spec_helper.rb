@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 require 'rubygems'
+require 'byebug'
 require 'rspec'
 require 'time'
 require 'active_support'
 require 'timecop'
 
-$:.unshift(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
 
 require 'couch_potato'
 
@@ -13,7 +16,7 @@ CouchPotato::Config.database_name = ENV['DATABASE'] || 'couch_potato_test'
 # silence deprecation warnings from ActiveModel as the Spec uses Errors#on
 begin
   ActiveSupport::Deprecation.silenced = true
-rescue
+rescue StandardError
   # ignore errors, ActiveSupport is probably not installed
 end
 
@@ -64,5 +67,4 @@ RSpec::Matchers.define :eql_ignoring_indentation do |expected|
   def strip_indentation(string)
     string.gsub(/^\s+/m, '')
   end
-
 end
