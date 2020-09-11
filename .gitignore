@@ -6,4 +6,3 @@ pkg
 *.lock
 
 .ruby-version
-.byebug_history
