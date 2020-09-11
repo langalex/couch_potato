@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rubygems'
-require 'byebug'
 require 'rspec'
 require 'time'
 require 'active_support'
