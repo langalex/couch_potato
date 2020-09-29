@@ -34,7 +34,7 @@ module CouchPotato
     # irb> result.values # values emitted in map function
     # irb> result.average_time # custom method from ResultsExt module
     # irb> db.view(Thing.by_time(include_docs: true)).docs # documents
-    # irb> db.view(Thing.by_time(reduce: true)).value # value of first row, i.e. result of the reduce function (without grouping)
+    # irb> db.view(Thing.by_time(reduce: true)).reduce_value # value of first row, i.e. result of the reduce function (without grouping)
     class FlexViewSpec
       attr_reader :klass
 
@@ -59,8 +59,15 @@ module CouchPotato
           rows.map { |row| row['value'] }
         end
 
-        def value
+        def reduce_value
           rows.dig(0, 'value')
+        end
+
+        # returns a count from a CouchDB reduce. returns 0 when the result
+        # set is empty (which would result in `nil` when calling #reduce_value).
+        # you still have to pass reduce=true to the view call.
+        def reduce_count
+          reduce_value || 0
         end
 
         def docs

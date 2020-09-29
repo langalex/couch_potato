@@ -320,7 +320,7 @@ describe 'views' do
       @db.save_document Build.new(time: '1')
       @db.save_document Build.new(time: '1')
 
-      value = @db.view(Build.flex_with_key(reduce: true)).value
+      value = @db.view(Build.flex_with_key(reduce: true)).reduce_value
 
       expect(value).to eq(2)
     end
