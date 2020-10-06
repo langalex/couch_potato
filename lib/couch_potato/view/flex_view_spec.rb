@@ -39,6 +39,8 @@ module CouchPotato
       attr_reader :klass
 
       class Results
+        attr_accessor :database # set by database
+
         def initialize(raw_results)
           @raw_results = raw_results
         end
@@ -71,7 +73,11 @@ module CouchPotato
         end
 
         def docs
-          rows.map { |row| row['doc'] }
+          rows.map do |row|
+            doc = row['doc']
+            doc.database = database if doc.respond_to?(:database=)
+            doc
+          end
         end
 
         def rows

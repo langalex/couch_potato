@@ -314,6 +314,7 @@ describe 'views' do
       docs = @db.view(Build.flex_with_key(include_docs: true)).docs
 
       expect(docs.map(&:time)).to eq(['1'])
+      expect(docs.first.database).to eq(@db)
     end
 
     it 'returns the value of reduce' do

@@ -208,7 +208,9 @@ module CouchPotato
           spec.language
         ).query_view!(spec.view_parameters)
         processed_results = spec.process_results results
-        if processed_results.respond_to?(:each)
+        if processed_results.respond_to?(:database=)
+          processed_results.database = self
+        elsif processed_results.respond_to?(:each)
           processed_results.each do |document|
             document.database = self if document.respond_to?(:database=)
           end
