@@ -8,8 +8,10 @@ module CouchPotato
     attr_accessor :cache
     cattr_accessor :default_batch_size
     self.default_batch_size = 500
+    attr_reader :name # the (unresolved) name of the database unless this is the default database
 
-    def initialize(couchrest_database)
+    def initialize(couchrest_database, name: nil)
+      @name = name
       @couchrest_database = couchrest_database
     end
 
@@ -169,7 +171,7 @@ module CouchPotato
       resolved_database_name = CouchPotato.resolve_database_name(database_name)
       self
         .class
-        .new(CouchPotato.couchrest_database_for_name(resolved_database_name))
+        .new(CouchPotato.couchrest_database_for_name(resolved_database_name), name: database_name)
         .tap(&copy_clear_cache_proc)
     end
 

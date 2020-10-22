@@ -38,8 +38,7 @@ module CouchPotato
   def self.use(database_name)
     resolved_database_name = resolve_database_name(database_name)
     Thread.current[:__couch_potato_databases] ||= {}
-    Thread.current[:__couch_potato_databases][resolved_database_name] = Database.new(couchrest_database_for_name!(resolved_database_name)) unless Thread.current[:__couch_potato_databases][resolved_database_name]
-    Thread.current[:__couch_potato_databases][resolved_database_name]
+    Thread.current[:__couch_potato_databases][resolved_database_name] ||= Database.new(couchrest_database_for_name!(resolved_database_name), name: database_name)
   end
 
   # resolves a name to a database name/full url configured under additional databases
