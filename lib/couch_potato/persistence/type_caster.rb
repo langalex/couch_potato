@@ -1,16 +1,17 @@
+# frozen_string_literal: true
+
 require 'bigdecimal/util'
 module CouchPotato
   module Persistence
     class TypeCaster #:nodoc:
-
-      NUMBER_REGEX = /-?\d*\.?\d*/
+      NUMBER_REGEX = /-?\d*\.?\d*/.freeze
 
       def cast(value, type)
         if type == :boolean
           cast_boolean(value)
         elsif type.instance_of?(Array)
           nested_type = type.first
-          value.map {|val| cast_native(val, nested_type) } if value
+          value&.map { |val| cast_native(val, nested_type) }
         else
           cast_native(value, type)
         end
@@ -40,12 +41,12 @@ module CouchPotato
         return if value.nil?
         if type && !value.is_a?(type)
 
-          if ['Integer', 'Bignum', 'Fixnum'].include?(type.to_s)
+          if %w[Integer Bignum Fixnum].include?(type.to_s)
             value.to_s.scan(NUMBER_REGEX).join.to_d.round unless value.blank?
           elsif type == Float
             value.to_s.scan(NUMBER_REGEX).join.to_f unless value.blank?
           elsif type == BigDecimal
-            value.to_s.to_d unless value.blank?
+            value.to_d unless value.blank?
           elsif type == Hash
             value.to_hash unless value.blank?
           elsif type == Time
@@ -61,7 +62,6 @@ module CouchPotato
           value
         end
       end
-
     end
   end
 end
