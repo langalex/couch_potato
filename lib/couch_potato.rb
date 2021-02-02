@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'couchrest'
 require 'json'
 
@@ -9,7 +11,7 @@ CouchRest::Connection::DEFAULT_HEADERS.merge!('Prefer' => 'return=minimal')
 
 module CouchPotato
   Config = Struct.new(:database_host, :database_name, :digest_view_names,
-    :split_design_documents_per_view, :default_language, :additional_databases).new
+                      :split_design_documents_per_view, :default_language, :additional_databases).new
   Config.split_design_documents_per_view = false
   Config.digest_view_names = false
   Config.default_language = :javascript
@@ -18,6 +20,20 @@ module CouchPotato
 
   class NotFound < StandardError; end
   class Conflict < StandardError; end
+
+  def self.configure(config)
+    if config.is_a?(String)
+      Config.database_name = config
+    else
+      config = config.stringify_keys
+      Config.database_name = config['database']
+      Config.database_host = config['database_host']
+      Config.additional_databases = config['additional_databases'].stringify_keys if config['additional_databases']
+      Config.split_design_documents_per_view = config['split_design_documents_per_view'] if config['split_design_documents_per_view']
+      Config.digest_view_names = config['digest_view_names'] if config['digest_view_names']
+      Config.default_language = config['default_language'] if config['default_language']
+    end
+  end
 
   # returns all the classes that include the CouchPotato::Persistence module
   def self.models
@@ -72,6 +88,7 @@ module CouchPotato
 
   def self.full_url_to_database(database_name = CouchPotato::Config.database_name, database_host = CouchPotato::Config.database_host)
     raise('No Database configured. Set CouchPotato::Config.database_name') unless database_name
+
     if database_name.match(%r{https?://})
       database_name
     else
