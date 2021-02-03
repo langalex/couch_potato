@@ -26,7 +26,7 @@ module CouchPotato
     else
       config = config.stringify_keys
       Config.database_name = config['database']
-      Config.database_host = config['database_host']
+      Config.database_host = config['database_host'] if config['database_host']
       Config.additional_databases = config['additional_databases'].stringify_keys if config['additional_databases']
       Config.split_design_documents_per_view = config['split_design_documents_per_view'] if config['split_design_documents_per_view']
       Config.digest_view_names = config['digest_view_names'] if config['digest_view_names']

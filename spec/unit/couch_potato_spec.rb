@@ -19,6 +19,14 @@ describe CouchPotato, '.configure' do
     expect(CouchPotato::Config.database_name).to eq('testdb')
   end
 
+  it 'does not override database_host if not given' do
+    CouchPotato.configure(
+      database: 'testdb'
+    )
+
+    expect(CouchPotato::Config.database_host).to eq('http://127.0.0.1:5984')
+  end
+
   it 'sets the given config options' do
     CouchPotato.configure(
       database: 'testdb',
