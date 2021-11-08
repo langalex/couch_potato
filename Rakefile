@@ -19,17 +19,18 @@ RSpec::Core::RakeTask.new(:spec_unit) do |spec|
 end
 
 desc 'Run all specs'
+task :spec_ci do
+  Rake::Task[:spec_unit].execute
+  Rake::Task[:spec_functional].execute
+end
+
+desc 'Run all specs for all gemfiles'
 task :spec do
-  if ENV['TRAVIS'] # travis handles the environments for us
-    Rake::Task[:spec_unit].execute
-    Rake::Task[:spec_functional].execute
-  else
-    %w(5_2 5_1 5_0).each do |version|
-      Bundler.with_clean_env do
-        puts "Running tests with ActiveSupport #{version.sub('_', '.')}"
-        sh "env BUNDLE_GEMFILE=gemfiles/active_support_#{version} bundle install"
-        sh "env BUNDLE_GEMFILE=gemfiles/active_support_#{version} bundle exec rake spec_unit spec_functional"
-      end
+  %w(6_0 5_2 5_1 5_0).each do |version|
+    Bundler.with_clean_env do
+      puts "Running tests with ActiveSupport #{version.sub('_', '.')}"
+      sh "env BUNDLE_GEMFILE=gemfiles/active_support_#{version} bundle install"
+      sh "env BUNDLE_GEMFILE=gemfiles/active_support_#{version} bundle exec rake spec_unit spec_functional"
     end
   end
 end
