@@ -14,7 +14,6 @@ describe 'conflict handling' do
 
     db.couchrest_database.save_doc measurement.reload._document.merge('value' => 2)
 
-    measurement.is_dirty
     db.save measurement do |m|
       m.value += 1
     end

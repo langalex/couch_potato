@@ -311,10 +311,8 @@ module CouchPotato
 
       return false if document.run_callbacks(:save) do
         return false if document.run_callbacks(:update) do
-          if document.dirty?
-            res = couchrest_database.save_doc document.to_hash
-            document._rev = res['rev']
-          end
+          res = couchrest_database.save_doc document.to_hash
+          document._rev = res['rev']
         end == false
       end == false
 

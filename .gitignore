@@ -6,3 +6,4 @@ pkg
 *.lock
 
 .ruby-version
+.tool-versions

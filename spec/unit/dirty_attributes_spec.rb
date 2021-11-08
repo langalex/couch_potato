@@ -13,17 +13,11 @@ describe 'dirty attribute tracking' do
   end
 
   describe "save" do
-    it "should not save when nothing dirty" do
+    it "should save when nothing dirty" do
       plate = Plate.new :food => 'sushi'
       @db.save_document!(plate)
-      expect(@couchrest_db).not_to receive(:save_doc)
+      expect(@couchrest_db).to receive(:save_doc)
       @db.save_document(plate)
-    end
-
-    it "should return true when not dirty" do
-      plate = Plate.new :food => 'sushi'
-      @db.save_document!(plate)
-      expect(@db.save_document(plate)).to be_truthy
     end
 
     it "should save when there are dirty attributes" do
@@ -79,11 +73,6 @@ describe 'dirty attribute tracking' do
       it "should return false if attribute not changed" do
         expect(Plate.new).not_to be_food_changed
       end
-
-      it "should return true if forced dirty" do
-        @plate.is_dirty
-        expect(@plate).to be_dirty
-      end
     end
   end
 
@@ -122,15 +111,5 @@ describe 'dirty attribute tracking' do
       db.save! @plate
       expect(@plate).not_to be_food_changed
     end
-
-    it "should reset a forced dirty state" do
-      couchrest_db = double('database', :get => Plate.json_create({'_id' => '1', '_rev' => '2', 'food' => 'sushi', JSON.create_id => 'Plate'}), :info => nil, :save_doc => {'rev' =>  '3'})
-      db = CouchPotato::Database.new(couchrest_db)
-      @plate = db.load_document '1'
-      @plate.is_dirty
-      db.save! @plate
-      expect(@plate).not_to be_dirty
-    end
   end
-
 end

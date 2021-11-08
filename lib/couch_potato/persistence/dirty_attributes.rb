@@ -6,25 +6,8 @@ module CouchPotato
       def self.included(base) #:nodoc:
         base.send :include, ActiveModel::Dirty
         base.class_eval do
-          after_save :reset_dirty_attributes
+          after_save :clear_changes_information
         end
-      end
-
-      # returns true if a model has dirty attributes, i.e. their value has changed since the last save
-      def dirty?
-        changed? || @forced_dirty
-      end
-
-      # marks a model as dirty
-      def is_dirty
-        @forced_dirty = true
-      end
-
-      private
-
-      def reset_dirty_attributes
-        clear_changes_information
-        @forced_dirty = nil
       end
 
       def clone_attribute(value)
@@ -35,7 +18,7 @@ module CouchPotato
           Marshal::load(Marshal::dump(value))
         else
           value.clone
-        end
+         end
       end
     end
   end

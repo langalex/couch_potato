@@ -8,7 +8,6 @@
 
 [![Code Climate](https://codeclimate.com/github/langalex/couch_potato.png)](https://codeclimate.com/github/langalex/couch_potato)
 
-
 ### Mission
 
 The goal of Couch Potato is to create a minimal framework in order to store and retrieve Ruby objects to/from CouchDB and create and query views.
@@ -21,9 +20,9 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Core Features
 
-* persisting objects by including the CouchPotato::Persistence module
-* declarative views with either custom or generated map/reduce functions
-* extensive spec suite
+- persisting objects by including the CouchPotato::Persistence module
+- declarative views with either custom or generated map/reduce functions
+- extensive spec suite
 
 ### Supported Environments
 
@@ -97,7 +96,7 @@ default: &default
   split_design_documents_per_view: true # optional, default is false
   digest_view_names: true # optional, default is false
   default_language: :erlang # optional, default is javascript
-  database_host: 'http://127.0.0.1:5984'
+  database_host: "http://127.0.0.1:5984"
 
 development:
   <<: *default
@@ -183,7 +182,6 @@ end
 ```
 
 With this in place when you set the user's age as a String (e.g. using an HTML form) it will be converted into a `Integer` automatically.
-
 
 Properties can have a default value:
 
@@ -277,75 +275,13 @@ end
 
 #### Dirty tracking
 
-CouchPotato tracks the dirty state of attributes in the same way ActiveRecord does:
+CouchPotato tracks the dirty state of attributes in the same way ActiveRecord does. Models are always saved though to avoid missing updates when multiple processes update the same documents concurrently.
 
 ```ruby
 user = User.create :name => 'joe'
 user.name # => 'joe'
 user.name_changed? # => false
 user.name_was # => nil
-```
-
-You can also force a dirty state:
-
-```ruby
-user.name = 'jane'
-user.name_changed? # => true
-user.name_not_changed
-user.name_changed? # => false
-CouchPotato.database.save_document user # does nothing as no attributes are dirty
-```
-
-#### Optional Deep Dirty Tracking
-
-In addition to standard dirty tracking, you can opt-in to more advanced dirty tracking for deeply structured documents by including the `CouchPotato::DeepDirtyAttributes` module in your models. This provides two benefits:
-
-1. Dirty checking for array and embedded document properties is more reliable, such that modifying elements in an array (by any means) or changing a property of an embedded document will make the root document be `changed?`. With standard dirty checking, the `#{property}=` method must be called on the root document for it to be `changed?`.
-2. It gives more useful and detailed change tracking for embedded documents, arrays of simple values, and arrays of embedded documents.
-
-The `#{property}_changed?` and `#{property}_was` methods work the same as basic dirty checking, and the `_was` values are always deep clones of the original/previous value. The `#{property}_change` and `changes` methods differ from basic dirty checking for embedded documents and arrays, giving richer details of the changes instead of just the previous and current values. This makes generating detailed, human friendly audit trails of documents easy.
-
-Tracking changes in embedded documents gives easy access to the changes in that document:
-
-```ruby
-book = Book.new(:cover => Cover.new(:color => "red"))
-book.cover.color = "blue"
-book.cover_changed? # => true
-book.cover_was # => <deep clone of original state of book.cover>
-book.cover_change # => [<deep clone of original state of book.cover>, {:color => ["red", "blue"]}]
-```
-
-Tracking changes in arrays of simple properties gives easy access to added and removed items:
-
-```ruby
-book = Book.new(:authors => ["Sarah", "Jane"])
-book.authors.delete "Jane"
-book.authors << "Sue"
-book.authors_changed? # => true
-book.authors_was # => ["Sarah", "Jane"]
-book.authors_change # => [["Sarah", "Jane"], {:added => ["Sue"], :removed => ["Jane"]}]
-```
-
-Tracking changes in an array of embedded documents also gives changed items:
-
-```ruby
-book = Book.new(:pages => [Page.new(:number => 1), Page.new(:number => 2)]
-book.pages[0].title = "New title"
-book.pages.delete_at 1
-book.pages << Page.new(:number => 3)
-book.pages_changed? # => true
-book.pages_was # => <deep clone of original pages array>
-book.pages_change[0] # => <deep clone of original pages array>
-book.pages_change[1] # => {:added => [<page 3>], :removed => [<page 2>], :changed => [[<deep clone of original page 1>, {:title => [nil, "New title"]}]]}
-```
-
-For change tracking in nested documents and document arrays to work, the embedded documents **must** have unique `_id` values. This can be accomplished easily in your embedded CouchPotato models by overriding `initialize`:
-
-```ruby
-def initialize(*args)
-  self._id = SecureRandom.uuid
-  super
-end
 ```
 
 #### Object validations
@@ -486,7 +422,16 @@ end
 When querying this view you will get the raw data returned by CouchDB which looks something like this:
 
 ```json
-{'total_entries': 2, 'rows': [{'value': 'alex', 'key': '2009-01-03 00:02:34 +000', 'id': '75976rgi7546gi02a'}]}
+{
+  "total_entries": 2,
+  "rows": [
+    {
+      "value": "alex",
+      "key": "2009-01-03 00:02:34 +000",
+      "id": "75976rgi7546gi02a"
+    }
+  ]
+}
 ```
 
 To process this raw data you can also pass in a results filter:
@@ -499,7 +444,7 @@ end
 
 In this case querying the view would only return the emitted value for each row.
 
-You can pass in your own view specifications by passing in `:type => MyViewSpecClass`. Take a look at the CouchPotato::View::*ViewSpec classes to get an idea of how this works.
+You can pass in your own view specifications by passing in `:type => MyViewSpecClass`. Take a look at the CouchPotato::View::\*ViewSpec classes to get an idea of how this works.
 
 ##### Digest view names
 
@@ -547,7 +492,6 @@ And you can pass parameters to the list:
 ```ruby
 CouchPotato.database.view(User.all(list: :add_last_name, list_params: {filter: '*'}))
 ```
-
 
 #### Associations
 
