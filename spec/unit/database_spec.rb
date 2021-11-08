@@ -200,7 +200,7 @@ describe CouchPotato::Database, 'save_document' do
       expect(category.new?).to be_falsey
       category.name = nil
       @db.save_document(category, false)
-      expect(category.dirty?).to be_falsey
+      expect(category.changed?).to be_falsey
     end
 
     it 'should run the validations when saved with true' do
@@ -209,7 +209,7 @@ describe CouchPotato::Database, 'save_document' do
       expect(category.new?).to eq(false)
       category.name = nil
       @db.save_document(category, true)
-      expect(category.dirty?).to eq(true)
+      expect(category.changed?).to eq(true)
       expect(category.valid?).to eq(false)
     end
 
@@ -219,7 +219,7 @@ describe CouchPotato::Database, 'save_document' do
       expect(category.new?).to eq(false)
       category.name = nil
       @db.save_document(category)
-      expect(category.dirty?).to eq(true)
+      expect(category.changed?).to eq(true)
     end
   end
 

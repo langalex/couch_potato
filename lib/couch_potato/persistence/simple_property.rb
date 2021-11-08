@@ -32,10 +32,6 @@ module CouchPotato
         object.send @setter_name, value
       end
 
-      def dirty?(object)
-        object.send("#{name}_changed?")
-      end
-
       def serialize(json, object)
         json[name] = object.send name
       end
