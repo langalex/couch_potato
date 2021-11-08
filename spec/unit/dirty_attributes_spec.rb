@@ -13,17 +13,11 @@ describe 'dirty attribute tracking' do
   end
 
   describe "save" do
-    it "should not save when nothing dirty" do
+    it "should save when nothing dirty" do
       plate = Plate.new :food => 'sushi'
       @db.save_document!(plate)
-      expect(@couchrest_db).not_to receive(:save_doc)
+      expect(@couchrest_db).to receive(:save_doc)
       @db.save_document(plate)
-    end
-
-    it "should return true when not dirty" do
-      plate = Plate.new :food => 'sushi'
-      @db.save_document!(plate)
-      expect(@db.save_document(plate)).to be_truthy
     end
 
     it "should save when there are dirty attributes" do
