@@ -23,6 +23,7 @@ jobs:
           - active_support_5_2
           - active_support_6_0
     steps:
+      - uses: actions/checkout@v2
       - name: Set up CouchDB
         uses: cobot/couchdb-action@v4
         with:
@@ -33,6 +34,5 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - uses: actions/checkout@v2
       - name: Run tests
         run: bundle exec rake
