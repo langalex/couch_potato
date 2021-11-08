@@ -2,7 +2,8 @@ name: Ruby CI
 on:
   push:
     branches:
-      - main
+      - master
+      - 1.x
   pull_request:
     branches:
       - master
@@ -30,7 +31,7 @@ jobs:
       - name: Set up Ruby 2.6
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: { { matrix.ruby } }
+          ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - uses: actions/checkout@v2
       - name: Run tests
