@@ -9,6 +9,17 @@ module CouchPotato
           after_save :clear_changes_information
         end
       end
+
+      def clone_attribute(value)
+        if [Integer, Symbol, TrueClass, FalseClass, NilClass, Float, BigDecimal].find{|klass| value.is_a?(klass)}
+          value
+        elsif [Hash, Array].include?(value.class)
+          #Deep clone
+          Marshal::load(Marshal::dump(value))
+        else
+          value.clone
+         end
+      end
     end
   end
 end
