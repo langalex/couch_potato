@@ -61,12 +61,14 @@ module CouchPotato
 
   # Returns a CouchRest-Database for directly accessing that functionality.
   def self.couchrest_database_for_name(database_name)
-    CouchRest.database(full_url_to_database(database_name, CouchPotato::Config.database_host))
+    Thread.current[:__couchrest_databases] ||= {}
+    Thread.current[:__couchrest_databases][database_name] ||= CouchRest.database(full_url_to_database(database_name, CouchPotato::Config.database_host))
   end
 
   # Creates a CouchRest-Database for directly accessing that functionality.
   def self.couchrest_database_for_name!(database_name)
-    CouchRest.database!(full_url_to_database(database_name))
+    Thread.current[:__couchrest_databases] ||= {}
+    Thread.current[:__couchrest_databases][database_name] ||= CouchRest.database!(full_url_to_database(database_name))
   end
 
   def self.full_url_to_database(database_name = CouchPotato::Config.database_name, database_host = CouchPotato::Config.database_host)
