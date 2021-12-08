@@ -206,7 +206,7 @@ class User
 end
 ```
 
-Now you can save your objects. All database operations are encapsulated in the `CouchPotato::Database` class. This separates your domain logic from the database access logic which makes it easier to write tests and also keeps you models smaller and cleaner.
+Now you can save your objects. All database operations are encapsulated in the `CouchPotato::Database` class. This separates your domain logic from the database access logic which makes it easier to write tests and also keeps your models smaller and cleaner.
 
 ```ruby
 user = User.new :name => 'joe'
@@ -444,11 +444,11 @@ class User
   view :all, :key => :created_at, :properties => [:name], :type => :properties
 end
 
-CouchPotato.database.view(User.everyone).first.name # => "joe"
-CouchPotato.database.view(User.everyone).first.bio # => nil
+CouchPotato.database.view(User.all).first.name # => "joe"
+CouchPotato.database.view(User.all).first.bio # => nil
 
-CouchPotato.database.first(User.everyone).name # => "joe" # convenience function, returns nil if nothing found
-CouchPotato.database.first!(User.everyone) # would raise CouchPotato::NotFound if nothing was found
+CouchPotato.database.first(User.all).name # => "joe" # convenience function, returns nil if nothing found
+CouchPotato.database.first!(User.all) # would raise CouchPotato::NotFound if nothing was found
 ```
 
 If you want Rails to automatically show a 404 page when `CouchPotato::NotFound` is raised add this to your `ApplicationController`:
