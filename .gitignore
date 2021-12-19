@@ -5,3 +5,4 @@ pkg
 *.swp
 *.lock
 .ruby-version
+.tool-versions
