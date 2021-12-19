@@ -12,8 +12,8 @@ begin
       end
     end
 
-    def assert_equal(one, other)
-      expect(one).to equal(other)
+    def assert_equal(one, other, _message = nil)
+      expect(one).to eq(other)
     end
 
     def assert_respond_to(receiver, method)
@@ -66,7 +66,7 @@ begin
     describe "#errors" do
       it "should return a single error as array" do
         @model.valid?
-        expect(@model.errors[:name]).to be_kind_of(Array)
+        expect(@model.errors[:name]).to eq(["can't be blank"])
       end
 
       it "should return multiple errors as array" do
