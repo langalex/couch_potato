@@ -2,6 +2,8 @@
 
 … is a persistence layer written in ruby for CouchDB.
 
+![CI](https://github.com/langalex/couch_potato/actions/workflows/ruby.yml/badge.svg)
+
 [![Code Climate](https://codeclimate.com/github/langalex/couch_potato.png)](https://codeclimate.com/github/langalex/couch_potato)
 
 ### Upgrading from 1.x to 2.x
@@ -36,9 +38,8 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Supported Environments
 
-- Ruby 2.6, JRuby 9.2
 - CouchDB 1.6.0+
-- ActiveSupport 5.0, 5.1, 5.2
+- see .github/workflows/ruby.yml
 
 (Supported means I run the specs against those before releasing a new gem.)
 
