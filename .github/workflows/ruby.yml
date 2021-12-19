@@ -18,10 +18,11 @@ jobs:
       matrix:
         ruby: [2.6, 2.7, "jruby"]
         gemfile:
-          - active_support_5_0
-          - active_support_5_1
-          - active_support_5_2
-          - active_support_6_0
+          - "active_support_5_0"
+          - "active_support_5_1"
+          - "active_support_5_2"
+          - "active_support_6_0"
+          - "active_support_6_1"
     steps:
       - uses: actions/checkout@v2
       - name: Set up CouchDB
