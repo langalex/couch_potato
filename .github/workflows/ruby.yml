@@ -2,11 +2,11 @@ name: Ruby CI
 on:
   push:
     branches:
-      - master
+      - main
       - 1.x
   pull_request:
     branches:
-      - master
+      - main
       - 1.x
 jobs:
   test:

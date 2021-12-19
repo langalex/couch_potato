@@ -2,8 +2,6 @@
 
 … is a persistence layer written in ruby for CouchDB.
 
-[![Build Status](https://secure.travis-ci.org/langalex/couch_potato.png?branch=master)](http://travis-ci.org/langalex/couch_potato)
-
 [![Code Climate](https://codeclimate.com/github/langalex/couch_potato.png)](https://codeclimate.com/github/langalex/couch_potato)
 
 ### Upgrading from 1.x to 2.x
@@ -32,15 +30,15 @@ Lastly Couch Potato aims to provide a seamless integration with Ruby on Rails, e
 
 ### Core Features
 
-* persisting objects by including the CouchPotato::Persistence module
-* declarative views with either custom or generated map/reduce functions
-* extensive spec suite
+- persisting objects by including the CouchPotato::Persistence module
+- declarative views with either custom or generated map/reduce functions
+- extensive spec suite
 
 ### Supported Environments
 
-* Ruby 2.6, JRuby 9.2
-* CouchDB 1.6.0+
-* ActiveSupport 5.0, 5.1, 5.2
+- Ruby 2.6, JRuby 9.2
+- CouchDB 1.6.0+
+- ActiveSupport 5.0, 5.1, 5.2
 
 (Supported means I run the specs against those before releasing a new gem.)
 
@@ -112,7 +110,7 @@ default: &default
   split_design_documents_per_view: true # optional, default is false
   digest_view_names: true # optional, default is false
   default_language: :erlang # optional, default is javascript
-  database_host: 'http://127.0.0.1:5984'
+  database_host: "http://127.0.0.1:5984"
 
 development:
   <<: *default
@@ -194,7 +192,6 @@ end
 ```
 
 With this in place when you set the user's age as a String (e.g. using an HTML form) it will be converted into a `Integer` automatically.
-
 
 Properties can have a default value:
 
@@ -487,7 +484,16 @@ end
 When querying this view you will get the raw data returned by CouchDB which looks something like this:
 
 ```json
-{'total_entries': 2, 'rows': [{'value': 'alex', 'key': '2009-01-03 00:02:34 +000', 'id': '75976rgi7546gi02a'}]}
+{
+  "total_entries": 2,
+  "rows": [
+    {
+      "value": "alex",
+      "key": "2009-01-03 00:02:34 +000",
+      "id": "75976rgi7546gi02a"
+    }
+  ]
+}
 ```
 
 To process this raw data you can also pass in a results filter:
@@ -500,7 +506,7 @@ end
 
 In this case querying the view would only return the emitted value for each row.
 
-You can pass in your own view specifications by passing in `:type => MyViewSpecClass`. Take a look at the CouchPotato::View::*ViewSpec classes to get an idea of how this works.
+You can pass in your own view specifications by passing in `:type => MyViewSpecClass`. Take a look at the CouchPotato::View::\*ViewSpec classes to get an idea of how this works.
 
 ##### Digest view names
 
@@ -548,7 +554,6 @@ And you can pass parameters to the list:
 ```ruby
 CouchPotato.database.view(User.all(list: :add_last_name, list_params: {filter: '*'}))
 ```
-
 
 #### Associations
 
