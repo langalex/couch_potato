@@ -39,7 +39,8 @@ describe "create" do
   describe "fails" do
     before(:each) do
       @comment = Comment.new
-      CouchPotato::Database.new(double('database', :info => nil)).save_document(@comment)
+      @db = CouchPotato::Database.new(double('database', :info => nil))
+      @db.save_document(@comment)
     end
 
     it "should not assign an id" do
@@ -58,11 +59,11 @@ describe "create" do
       expect(@comment.updated_at).to be_nil
     end
     
-    describe "with bank" do
+    describe "with !" do
       it "should raise an exception" do
         expect {
-          @comment.save!
-        }.to raise_error
+          @db.save! @comment
+        }.to raise_error(CouchPotato::Database::ValidationsFailedError)
       end
     end
   end
