@@ -108,6 +108,6 @@ describe CouchPotato::View::ModelViewSpec, '#map_function' do
 
   it "should raise exception when emit value cannot be handled" do
     spec = CouchPotato::View::ModelViewSpec.new Object, 'all', {:emit_value => []}, {}
-    expect { spec.map_function }.to raise_error
+    expect { spec.map_function }.to raise_error(RuntimeError)
   end
 end
