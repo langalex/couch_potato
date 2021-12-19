@@ -1,5 +1,10 @@
 ## Changes
 
+### 1.9.0
+
+- add spec/support for Rails 6.1 and 7
+- add caching Couchrest connections to reduce total number created
+
 ### 1.8.0
 
 - remove not saving model if it is not dirty. this could lead to missed document updates if the document has been updated in a different process in-between being loaded and saved in the current process.
