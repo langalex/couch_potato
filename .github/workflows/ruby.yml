@@ -23,6 +23,12 @@ jobs:
           - "active_support_5_2"
           - "active_support_6_0"
           - "active_support_6_1"
+          - "active_support_7_0"
+        exclude:
+          - ruby: 2.6
+            gemfile: "active_support_7_0"
+          - ruby: "jruby"
+            gemfile: "active_support_7_0"
     steps:
       - uses: actions/checkout@v2
       - name: Set up CouchDB
