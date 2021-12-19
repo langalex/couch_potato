@@ -26,7 +26,7 @@ end
 
 desc 'Run all specs for all gemfiles'
 task :spec do
-  %w(6_0 5_2 5_1 5_0).each do |version|
+  %w(6_1 6_0 5_2 5_1 5_0).each do |version|
     Bundler.with_clean_env do
       puts "Running tests with ActiveSupport #{version.sub('_', '.')}"
       sh "env BUNDLE_GEMFILE=gemfiles/active_support_#{version} bundle install"

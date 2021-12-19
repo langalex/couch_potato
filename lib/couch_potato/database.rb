@@ -302,10 +302,9 @@ module CouchPotato
     end
 
     def valid_document?(document)
-      errors = document.errors.dup
-      errors.instance_variable_set("@messages", errors.messages.dup) if errors.respond_to?(:messages)
+      original_errors_hash = document.errors.to_hash
       document.valid?
-      errors.each do |k, v|
+      original_errors_hash.each do |k, v|
         if v.respond_to?(:each)
           v.each {|message| document.errors.add(k, message)}
         else
