@@ -1,8 +1,12 @@
 ## Changes
 
+### 1.10.0
+
+- add spec/support for Rails 7
+
 ### 1.9.0
 
-- add spec/support for Rails 6.1 and 7
+- add spec/support for Rails 6.1
 - add caching Couchrest connections to reduce total number created
 
 ### 1.8.0

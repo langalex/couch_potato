@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake'
   s.add_dependency 'execjs', '~>2.7'
 
-  s.files         = `git ls-files | grep "lib/couch_potato/rspec\|vendor/pouchdb-collate"`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/* | grep rspec_matchers`.split("\n")
+  s.files         = `git ls-files | grep "lib/couch_potato/rspec"`.split("\n")
+  s.test_files    = `git ls-files -- spec/* | grep rspec_matchers`.split("\n")
   s.require_paths = ['lib']
 end
