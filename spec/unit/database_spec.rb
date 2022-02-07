@@ -98,6 +98,10 @@ describe CouchPotato::Database, 'load' do
 
       db.load(['1'])
     end
+
+    it 'returns an empty array when passing an empty array' do
+      expect(db.load([])).to eq([])
+    end
   end
 end
 

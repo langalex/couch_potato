@@ -269,6 +269,8 @@ module CouchPotato
     end
 
     def bulk_load(ids)
+      return [] if ids.empty?
+
       response = couchrest_database.bulk_load ids
       docs = response['rows'].map { |row| row['doc'] }.compact
       docs.each do |doc|
