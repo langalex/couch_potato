@@ -1,5 +1,9 @@
 ## Changes
 
+### 1.10.1
+
+- support passing an empty array to CouchPotato::Database#load
+
 ### 1.10.0
 
 - add spec/support for Rails 7
