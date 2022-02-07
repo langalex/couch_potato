@@ -15,10 +15,12 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
 
   it 'updates a view if it does not exist' do
     expect(db).to receive(:save_doc).with(
-      'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}, 'lib' => {'test' => '<lib_code>'}},
-      'lists' => {},
-      "_id" => "_design/design",
-      "language" => "javascript"
+      {
+        'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}, 'lib' => {'test' => '<lib_code>'}},
+        'lists' => {},
+        "_id" => "_design/design",
+        "language" => "javascript"
+        }
     )
 
     CouchPotato::View::ViewQuery.new(db, 'design', {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}}, nil, {'test' => "<lib_code>"}).query_view!
@@ -46,8 +48,11 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
 
   it 'updates a view in erlang if it does not exist' do
     expect(db).to receive(:save_doc).with(
-      'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}},
-      'lists' => {}, "_id" => "_design/design", "language" => "erlang")
+      {
+        'views' => {'view' => {'map' => '<map_code>', 'reduce' => '<reduce_code>'}},
+        'lists' => {}, "_id" => "_design/design", "language" => "erlang"
+      }
+    )
 
     CouchPotato::View::ViewQuery.new(db, 'design',
       {:view => {:map => '<map_code>', :reduce => '<reduce_code>'}},
@@ -120,7 +125,7 @@ describe CouchPotato::View::ViewQuery, 'query_view!' do
 
   it 'does not pass in reduce or lib keys if there is no lib or reduce object' do
     allow(db).to receive(:get).and_return({'views' => {}})
-    expect(db).to receive(:save_doc).with('views' => {'view7' => {'map' => '<map code>'}})
+    expect(db).to receive(:save_doc).with({'views' => {'view7' => {'map' => '<map code>'}}})
     CouchPotato::View::ViewQuery.new(db, 'design', :view7 => {:map => '<map code>', :reduce => nil}).query_view!
   end
 

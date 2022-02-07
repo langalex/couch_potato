@@ -448,9 +448,9 @@ describe CouchPotato::Database, '#view_in_batches' do
     allow(spec).to receive(:view_parameters) { { key: 'x' } }
 
     expect(spec).to receive(:view_parameters=)
-      .with(key: 'x', skip: 0, limit: 2)
+      .with({key: 'x', skip: 0, limit: 2})
     expect(spec).to receive(:view_parameters=)
-      .with(key: 'x', skip: 2, limit: 2)
+      .with({key: 'x', skip: 2, limit: 2})
 
     db.view_in_batches(spec, batch_size: 2) { |results| }
   end
