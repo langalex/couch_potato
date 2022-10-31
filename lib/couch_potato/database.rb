@@ -70,16 +70,14 @@ module CouchPotato
       loop do
         spec.view_parameters = spec
           .view_parameters
-          .merge(
-            {
-              startkey: rows&.last&.dig('key'),
-              startkey_docid: rows&.last&.dig('id'),
-              limit: batch_size
-            }
-          )
+          .merge({limit: batch_size})
           .merge(
             if rows
-              {skip: 1}
+              {
+                startkey: rows&.last&.dig('key'),
+                startkey_docid: rows&.last&.dig('id'),
+                skip: 1
+              }
             else
               {}
             end
