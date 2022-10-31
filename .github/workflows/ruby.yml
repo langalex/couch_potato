@@ -26,6 +26,8 @@ jobs:
             gemfile: "active_support_7_0"
           - ruby: "3.0"
             gemfile: "active_support_6_0"
+          - ruby: "3.1"
+            gemfile: "active_support_6_0"
     steps:
       - uses: actions/checkout@v2
       - name: Set up CouchDB
