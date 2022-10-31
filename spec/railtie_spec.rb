@@ -100,4 +100,19 @@ describe "railtie" do
 
     CouchPotato.rails_init
   end
+
+  it 'processes aliases' do
+    allow(File).to receive_messages(:read => <<~YAML)
+      default: &default
+        default_language: :javascript
+      test:
+        <<: *default
+        database: couch_potato_test
+    YAML
+
+    expect(CouchPotato::Config).to receive(:default_language=).with(:javascript)
+    expect(CouchPotato::Config).to receive(:database_name=).with('couch_potato_test')
+
+    CouchPotato.rails_init
+  end
 end

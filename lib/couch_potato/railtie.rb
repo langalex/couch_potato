@@ -11,6 +11,7 @@ module CouchPotato
       config = YAML.safe_load(
         ERB.new(File.read(path)).result, 
         permitted_classes: [Symbol], 
+        aliases: true
       )[Rails.env]
       CouchPotato.configure(config)
     else
