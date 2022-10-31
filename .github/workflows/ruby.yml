@@ -24,7 +24,7 @@ jobs:
           - "active_support_6_0"
           - "active_support_6_1"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up CouchDB
         uses: cobot/couchdb-action@v4
         with:
