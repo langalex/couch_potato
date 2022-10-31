@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.11.0
+
+- improve view_in_batches performance by switching to using startkey_docid over skip
+
 ### 1.10.1
 
 - support passing an empty array to CouchPotato::Database#load
