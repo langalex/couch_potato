@@ -1,5 +1,10 @@
 ## Changes
 
+# 1.12.0
+
+- remove active_support 5.x
+- add Ruby 3.1 support (active_support 6.1, 7.0)
+
 # 1.11.0
 
 - improve view_in_batches performance by switching to using startkey_docid over skip
