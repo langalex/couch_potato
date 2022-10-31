@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~>6.1'
+gem 'railties', '~>6.1'
+gem 'activemodel'
 gem 'execjs'
 
 gemspec name: 'couch_potato', path: '..'
