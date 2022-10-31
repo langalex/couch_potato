@@ -430,11 +430,11 @@ describe CouchPotato::Database, '#view_in_batches' do
   let(:view_query) do
     instance_double(
       CouchPotato::View::ViewQuery,
-      query_view!: { 'rows' => [result] }
+      query_view!: { 'rows' => [] }
     )
   end
-  let(:result) { double('result') }
-  let(:spec) { double('view spec', process_results: [result]).as_null_object }
+  let(:processed_result) { double(:processed_result) }
+  let(:spec) { double('view spec', process_results: processed_result).as_null_object }
   let(:couchrest_db) { double('couchrest db').as_null_object }
   let(:db) { CouchPotato::Database.new(couchrest_db) }
 
@@ -443,22 +443,41 @@ describe CouchPotato::Database, '#view_in_batches' do
       .to receive_messages(new: view_query)
   end
 
-  it 'sets skip/limit for each batch' do
-    allow(spec).to receive(:process_results).and_return([result, result], [result]) # run twice
+  it 'sets no skip/startkey/startkey_docid for the first batch' do
     allow(spec).to receive(:view_parameters) { { key: 'x' } }
 
     expect(spec).to receive(:view_parameters=)
-      .with({key: 'x', skip: 0, limit: 2})
-    expect(spec).to receive(:view_parameters=)
-      .with({key: 'x', skip: 2, limit: 2})
+      .with({key: 'x', limit: 2})
 
     db.view_in_batches(spec, batch_size: 2) { |results| }
   end
 
-  it 'yields batches until running out of data' do
-    allow(spec).to receive(:process_results).and_return([result, result], [result])
+  it 'sets skip/startkey/startkey_docid for each other batch' do
+    allow(spec).to receive(:view_parameters) { { key: 'x' } }
+    allow(view_query).to receive(:query_view!)
+      .and_return({'rows' => [{}, {'key' => 'k1', 'id' => 'id1'}]}, {'rows' => [{}]})
+    allow(spec).to receive(:view_parameters=)
 
-    expect { |b| db.view_in_batches(spec, batch_size: 2, &b) }.to yield_successive_args([result, result], [result])
+    expect(spec).to receive(:view_parameters=)
+      .with({key: 'x', limit: 2, startkey: 'k1', startkey_docid: 'id1', skip: 1})
+
+    db.view_in_batches(spec, batch_size: 2) { |results| }
+  end
+
+  it 'yields processed results to the block' do
+    allow(view_query).to receive(:query_view!)
+      .and_return({'rows' => [{'key' => 'k1', 'id' => 'id1'}]})
+    allow(spec).to receive(:view_parameters=)
+
+    expect { |x| db.view_in_batches(spec, batch_size: 2, &x) }.to yield_with_args(processed_result)
+  end
+
+  it 'yields batches until running out of data' do
+    allow(view_query).to receive(:query_view!)
+      .and_return({'rows' => [{}, {}]}, {'rows' => [{}]})
+    allow(spec).to receive(:process_results).and_return([processed_result, processed_result], [processed_result])
+
+    expect { |b| db.view_in_batches(spec, batch_size: 2, &b) }.to yield_successive_args([processed_result, processed_result], [processed_result])
   end
 end
 
