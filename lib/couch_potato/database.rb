@@ -65,12 +65,27 @@ module CouchPotato
     # to a given block in batches of the given size, making multiple
     # requests with according skip/limit params sent to CouchDB.
     def view_in_batches(spec, batch_size: default_batch_size)
+      rows = nil
       batch = 0
       loop do
-        spec.view_parameters = spec.view_parameters.merge({ skip: batch * batch_size, limit: batch_size })
-        results = view(spec)
-        yield results
-        break if results.size < batch_size
+        spec.view_parameters = spec
+          .view_parameters
+          .merge({limit: batch_size})
+          .merge(
+            if rows
+              {
+                startkey: rows&.last&.dig('key'),
+                startkey_docid: rows&.last&.dig('id'),
+                skip: 1
+              }
+            else
+              {}
+            end
+          )
+        result = raw_view(spec)
+        rows = result['rows']
+        yield process_view_results(result, spec)
+        break if rows.size < batch_size
 
         batch += 1
       end
@@ -198,27 +213,34 @@ module CouchPotato
 
     def view_without_caching(spec)
       ActiveSupport::Notifications.instrument('couch_potato.view', name: "#{spec.design_document}/#{spec.view_name}") do
-        results = CouchPotato::View::ViewQuery.new(
-          couchrest_database,
-          spec.design_document,
-          { spec.view_name => {
-            map: spec.map_function,
-            reduce: spec.reduce_function
-          } },
-          ({ spec.list_name => spec.list_function } unless spec.list_name.nil?),
-          spec.lib,
-          spec.language
-        ).query_view!(spec.view_parameters)
-        processed_results = spec.process_results results
-        if processed_results.respond_to?(:database=)
-          processed_results.database = self
-        elsif processed_results.respond_to?(:each)
-          processed_results.each do |document|
-            document.database = self if document.respond_to?(:database=)
-          end
-        end
-        processed_results
+        process_view_results(raw_view(spec), spec)
       end
+    end
+
+    def process_view_results(results, spec)
+      processed_results = spec.process_results results
+      if processed_results.respond_to?(:database=)
+        processed_results.database = self
+      elsif processed_results.respond_to?(:each)
+        processed_results.each do |document|
+          document.database = self if document.respond_to?(:database=)
+        end
+      end
+      processed_results
+    end
+
+    def raw_view(spec)
+      CouchPotato::View::ViewQuery.new(
+        couchrest_database,
+        spec.design_document,
+        { spec.view_name => {
+          map: spec.map_function,
+          reduce: spec.reduce_function
+        } },
+        ({ spec.list_name => spec.list_function } unless spec.list_name.nil?),
+        spec.lib,
+        spec.language
+      ).query_view!(spec.view_parameters)
     end
 
     def load_document_without_caching(id)

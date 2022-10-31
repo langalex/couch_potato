@@ -405,4 +405,15 @@ describe 'views' do
       expect(@db.view(Build.timeline(stale: 'ok'))).to be_empty
     end
   end
+
+  describe 'view_in_batches' do
+    it 'yields docs in batches until all gone' do
+      build1 = Build.new(time: 1).tap {|b| @db.save!(b) }
+      build2 = Build.new(time: 2).tap {|b| @db.save!(b) }
+      build3 = Build.new(time: 3).tap {|b| @db.save!(b) }
+
+      expect {|block| @db.view_in_batches(Build.timeline, batch_size: 2, &block)}
+        .to yield_successive_args([build1, build2], [build3])
+    end
+  end
 end
