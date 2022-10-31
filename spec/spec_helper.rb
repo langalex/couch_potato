@@ -10,7 +10,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
 
 require 'couch_potato'
 
-CouchPotato::Config.database_name = 'http://admin:admin@localhost:5984/couch_potato_test'
+CouchPotato::Config.database_name = ENV['DATABASE'] || 'couch_potato_test'
 
 # silence deprecation warnings from ActiveModel as the Spec uses Errors#on
 begin
