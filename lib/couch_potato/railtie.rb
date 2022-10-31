@@ -8,7 +8,10 @@ module CouchPotato
     path = Rails.root.join('config/couchdb.yml')
     if File.exist?(path)
       require 'yaml'
-      config = YAML.safe_load(ERB.new(File.read(path)).result, [Symbol], [], ['default'])[Rails.env]
+      config = YAML.safe_load(
+        ERB.new(File.read(path)).result, 
+        permitted_classes: [Symbol], 
+      )[Rails.env]
       CouchPotato.configure(config)
     else
       Rails.logger.warn 'Rails.root/config/couchdb.yml does not exist. Not configuring a database.'
