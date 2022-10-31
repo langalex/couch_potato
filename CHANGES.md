@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.12.1
+
+- re-enable aliases when parsing config yaml file
+
 # 1.12.0
 
 - remove active_support 5.x
