@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.7, "3.0", "jruby"]
+        ruby: [2.7, "3.0", "3.1", "jruby"]
         gemfile:
           - "active_support_6_0"
           - "active_support_6_1"
