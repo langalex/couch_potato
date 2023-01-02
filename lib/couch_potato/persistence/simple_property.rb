@@ -15,12 +15,13 @@ module CouchPotato
     end
 
     class SimpleProperty  #:nodoc:
-      attr_accessor :name, :type
+      attr_accessor :name, :type, :default_value
 
       def initialize(owner_clazz, name, options = {})
         self.name = name
         @setter_name = "#{name}="
         self.type = options[:type]
+        self.default_value = options[:default]
         @type_caster = TypeCaster.new
         owner_clazz.send :include, PropertyMethods unless owner_clazz.ancestors.include?(PropertyMethods)
 
