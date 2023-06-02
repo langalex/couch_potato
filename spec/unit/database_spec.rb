@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'fixtures/address'
 
 class DbTestUser
   include CouchPotato::Persistence
