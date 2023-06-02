@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'fixtures/address'
 
 class DbTestUser
   include CouchPotato::Persistence
@@ -324,6 +325,34 @@ describe CouchPotato::Database, 'first!' do
     expect do
       @db.first!(@spec)
     end.to raise_error(CouchPotato::NotFound)
+  end
+end
+
+describe CouchPotato::Database, 'all' do
+  it "returns all of a model's instances" do
+    couchrest_db = double(:couchrest_db)
+    db = CouchPotato::Database.new couchrest_db
+
+    @result = double('result')
+    allow(couchrest_db).to receive(:view).with("address/all_model_instances", {include_docs: true, reduce: false}).and_return('rows' => [{'doc' => @result}])
+    expect(db.all(Address)).to(eq([@result]))
+  end
+
+  it 'returns empty array if no records are found' do
+    couchrest_db = double(:couchrest_db)
+    allow(couchrest_db).to receive(:view).and_return({'rows' => []})
+    db = CouchPotato::Database.new couchrest_db
+    expect(db.all(Address)).to(eq([]))
+  end
+
+  it "doesn't call update_view, since these requests are supposed to be one-off" do
+    couchrest_db = double(:couchrest_db)
+    db = CouchPotato::Database.new couchrest_db
+
+    @result = double('result')
+    allow(couchrest_db).to receive(:view).with("address/all_model_instances", {include_docs: true, reduce: false}).and_return({'rows' => []})
+    expect(CouchPotato::View::ViewQuery).not_to(receive(:update_view))
+    db.all(Address)
   end
 end
 

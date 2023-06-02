@@ -17,7 +17,7 @@ module CouchPotato
       end
 
       def query_view!(parameters = {})
-        update_view unless view_has_been_updated?
+        update_view unless view_has_been_updated? || @view_name == 'all_model_instances' # all_model_instances is not for use in production code and should thus not be saved.
         begin
           query_view parameters
         rescue CouchRest::NotFound

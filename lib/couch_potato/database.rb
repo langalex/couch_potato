@@ -97,9 +97,15 @@ module CouchPotato
       view(spec).first
     end
 
-    # returns th first result from a #view or raises CouchPotato::NotFound
+    # returns the first result from a #view or raises CouchPotato::NotFound
     def first!(spec)
       first(spec) || raise(CouchPotato::NotFound)
+    end
+
+    # returns all instances for a model
+    def all(model)
+      spec = CouchPotato::View::ModelViewSpec.new(model, 'all_model_instances', {}, {})
+      view(spec)
     end
 
     # saves a document. returns true on success, false on failure.
