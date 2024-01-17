@@ -9,7 +9,6 @@ end
 class Plant
   include CouchPotato::Persistence
   property :leaf_count
-  property :typed_leaf_count, type: Fixnum
   property :integer_something, type: Integer
   property :typed_leaf_size, type: Float
   property :branch, type: Branch
@@ -42,7 +41,7 @@ describe 'attributes' do
 
       expect(plant.attributes).to eq('leaf_count' => 1, 'created_at' => nil,
         'integer_something' => nil,
-        'updated_at' => nil, 'typed_leaf_count' => nil,
+        'updated_at' => nil,
         'typed_leaf_size' => nil, 'branch' => nil)
     end
 
@@ -112,25 +111,25 @@ describe 'attributes' do
     end
 
     describe 'integer' do
-      it 'rounds a float to a fixnum' do
+      it 'rounds a float to an integer' do
         @plant.integer_something = 4.5
 
         expect(@plant.integer_something).to eq(5)
       end
 
-      it 'converts a string into a fixnum' do
+      it 'converts a string into an integer' do
         @plant.integer_something = '4'
 
         expect(@plant.integer_something).to eq(4)
       end
 
-      it 'converts a string into a negative fixnum' do
+      it 'converts a string into a negative integer' do
         @plant.integer_something = '-4'
 
         expect(@plant.integer_something).to eq(-4)
       end
 
-      it 'leaves a fixnum as is' do
+      it 'leaves an integer as is' do
         @plant.integer_something = 4
 
         expect(@plant.integer_something).to eq(4)
@@ -158,57 +157,6 @@ describe 'attributes' do
         @plant.integer_something = ''
 
         expect(@plant.integer_something).to be_nil
-      end
-    end
-
-
-    describe 'fixnum' do
-      it 'rounds a float to a fixnum' do
-        @plant.typed_leaf_count = 4.5
-
-        expect(@plant.typed_leaf_count).to eq(5)
-      end
-
-      it 'converts a string into a fixnum' do
-        @plant.typed_leaf_count = '4'
-
-        expect(@plant.typed_leaf_count).to eq(4)
-      end
-
-      it 'converts a string into a negative fixnum' do
-        @plant.typed_leaf_count = '-4'
-
-        expect(@plant.typed_leaf_count).to eq(-4)
-      end
-
-      it 'leaves a fixnum as is' do
-        @plant.typed_leaf_count = 4
-
-        expect(@plant.typed_leaf_count).to eq(4)
-      end
-
-      it 'leaves nil as is' do
-        @plant.typed_leaf_count = nil
-
-        expect(@plant.typed_leaf_count).to be_nil
-      end
-
-      it 'sets the attributes to zero if a string given' do
-        @plant.typed_leaf_count = 'x'
-
-        expect(@plant.typed_leaf_count).to eq(0)
-      end
-
-      it 'parses numbers out of a string' do
-        @plant.typed_leaf_count = 'x123'
-
-        expect(@plant.typed_leaf_count).to eq(123)
-      end
-
-      it 'sets the attributes to nil if given a blank string' do
-        @plant.typed_leaf_count = ''
-
-        expect(@plant.typed_leaf_count).to be_nil
       end
     end
 
