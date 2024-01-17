@@ -93,7 +93,11 @@ module CouchPotato
           active_support_module.module_eval do
             undef_method(name) if instance_methods.include?(name)
           end
-          cache = send(:attribute_method_matchers_cache)
+          cache = if respond_to?(:attribute_method_matchers_cache, true) # activemodel 7.0
+            send(:attribute_method_matchers_cache) 
+          else # activemodel 7.1
+            send(:attribute_method_patterns_cache) 
+          end
           cache.delete(name)
 
           define_attribute_method name
