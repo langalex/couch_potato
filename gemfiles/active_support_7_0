@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'railties', '~>7.0.4'
+gem 'railties', '~>7.0.8'
 gem 'activemodel'
 gem 'execjs'
 

@@ -32,7 +32,7 @@ module CouchPotato
       def cast_native(value, type)
         if type && !value.is_a?(type)
 
-          if %w[Integer Bignum Fixnum].include?(type.to_s)
+          if %w[Integer Bignum].include?(type.to_s)
             value.to_s.scan(NUMBER_REGEX).join.to_d.round unless value.blank?
           elsif type == Float
             value.to_s.scan(NUMBER_REGEX).join.to_f unless value.blank?
