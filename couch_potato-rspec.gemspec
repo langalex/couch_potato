@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.version     = CouchPotato::RSPEC_VERSION
   s.platform    = Gem::Platform::RUBY
 
-  s.add_dependency 'rspec', '~>3.4'
+  s.add_dependency 'rspec', '~>3.12'
   s.add_development_dependency 'rake'
   s.add_dependency 'execjs', '~>2.7'
 

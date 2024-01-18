@@ -1,5 +1,12 @@
 ## Changes
 
+# 1.13.0
+
+- add Ruby 3.2 support
+- remove Ruby 2.7 support
+- add active_support 7.1 support
+- remove active_support 6.x support
+
 # 1.12.1
 
 - re-enable aliases when parsing config yaml file
