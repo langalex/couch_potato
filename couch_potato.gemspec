@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'json', '~> 2.3'
 
   s.add_development_dependency 'rake', '~>12.0'
-  s.add_development_dependency 'rspec', '~>3.10.0'
+  s.add_development_dependency 'rspec', '~>3.12.0'
   s.add_development_dependency 'timecop'
   s.add_development_dependency 'tzinfo'
 
