@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.14.0
+
+- add database_collection to models to help avoid n+1 requests
+
 # 1.13.0
 
 - add Ruby 3.2 support
