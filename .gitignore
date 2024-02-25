@@ -7,3 +7,4 @@ pkg
 
 .ruby-version
 .tool-versions
+.vscode/settings.json
