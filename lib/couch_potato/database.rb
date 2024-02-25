@@ -224,6 +224,7 @@ module CouchPotato
       elsif processed_results.respond_to?(:each)
         processed_results.each do |document|
           document.database = self if document.respond_to?(:database=)
+          document.database_collection = processed_results if document.respond_to?(:database_collection=)
         end
       end
       processed_results
@@ -297,6 +298,7 @@ module CouchPotato
       docs = response['rows'].map { |row| row['doc'] }.compact
       docs.each do |doc|
         doc.database = self if doc.respond_to?(:database=)
+        doc.database_collection = docs if doc.respond_to?(:database_collection=)
       end
     end
 
