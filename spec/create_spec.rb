@@ -34,14 +34,24 @@ describe "create" do
   end
 
   describe "multi-db" do
-    TEST_DBS = ['comment_a', 'comment_b', 'comment_c']
+    let(:test_dbs) do 
+      ['comment_a', 'comment_b', 'comment_c'].map do |name|
+        if ENV['DATABASE']
+          uri = URI.parse(ENV['DATABASE'])
+          uri.path  = "/#{name}"
+          uri.to_s
+        else
+          name
+        end
+      end
+    end
 
     before(:each) do
-      TEST_DBS.each { |db_name| CouchPotato.couchrest_database_for_name(db_name).recreate! }
+      test_dbs.each { |db_name| CouchPotato.couchrest_database_for_name(db_name).recreate! }
     end
 
     it "should create documents in multiple dbs" do
-      TEST_DBS.each do |db_name|
+      test_dbs.each do |db_name|
         @comment = Comment.new(:title => 'my_title')
         CouchPotato.with_database(db_name) do |couch|
           couch.save_document! @comment
