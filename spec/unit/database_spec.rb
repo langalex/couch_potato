@@ -56,6 +56,16 @@ describe CouchPotato::Database, 'load' do
     db.load '1'
   end
 
+  it 'does not set database_collection on the model' do
+    user = double('user', 'database_collection=': nil).as_null_object
+    allow(DbTestUser).to receive(:new).and_return(user)
+    allow(couchrest_db).to receive(:get).and_return DbTestUser.json_create({ JSON.create_id => 'DbTestUser' })
+    
+    db.load '1'
+
+    expect(user).not_to have_received(:database_collection=).with(db)
+  end
+
   it 'should load namespaced models' do
     allow(couchrest_db).to receive(:get).and_return Parent::Child.json_create({ JSON.create_id => 'Parent::Child' })
     expect(db.load('1').class).to eq(Parent::Child)
@@ -89,12 +99,30 @@ describe CouchPotato::Database, 'load' do
 
     it 'does not write itself to a document that has no database= method' do
       doc1 = double(:doc1)
-      allow(doc1).to receive(:respond_to?).with(:database=) { false }
+      allow(doc1).to receive(:respond_to?) { false }
       allow(couchrest_db).to receive(:bulk_load) do
         { 'rows' => [{ 'doc' => doc1 }] }
       end
 
       expect(doc1).not_to receive(:database=)
+
+      db.load(['1'])
+    end
+
+    it 'sets database_collection on each of the documents' do
+      db.load(%w[1 2]).each do |doc|
+        expect(doc.database_collection).to eql([doc1, doc2])
+      end
+    end
+
+    it 'does not set database_collection on a document that has no database_collection= method' do
+      doc1 = double(:doc1)
+      allow(doc1).to receive(:respond_to?) { false }
+      allow(couchrest_db).to receive(:bulk_load) do
+        { 'rows' => [{ 'doc' => doc1 }] }
+      end
+
+      expect(doc1).not_to receive(:database_collection=)
 
       db.load(['1'])
     end
@@ -336,7 +364,7 @@ describe CouchPotato::Database, 'view' do
     allow(CouchPotato::View::ViewQuery).to receive_messages(new: double('view query', query_view!: { 'rows' => [@result] }))
   end
 
-  it 'initialzes a view query with map/reduce/list/lib funtions' do
+  it 'initializes a view query with map/reduce/list/lib funtions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
                                      map_function: '<map_code>', reduce_function: '<reduce_code>',
                                      lib: { test: '<test_code>' },
@@ -355,7 +383,7 @@ describe CouchPotato::Database, 'view' do
     @db.view(@spec)
   end
 
-  it 'initialzes a view query with map/reduce/list funtions' do
+  it 'initializes a view query with map/reduce/list funtions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
                                      map_function: '<map_code>', reduce_function: '<reduce_code>',
                                      lib: nil, list_name: 'my_list', list_function: '<list_code>',
@@ -374,7 +402,7 @@ describe CouchPotato::Database, 'view' do
     @db.view(@spec)
   end
 
-  it 'initialzes a view query with only map/reduce/lib functions' do
+  it 'initializes a view query with only map/reduce/lib functions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
                                      map_function: '<map_code>', reduce_function: '<reduce_code>',
                                      list_name: nil, list_function: nil,
@@ -390,7 +418,7 @@ describe CouchPotato::Database, 'view' do
     @db.view(@spec)
   end
 
-  it 'initialzes a view query with only map/reduce functions' do
+  it 'initializes a view query with only map/reduce functions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
                                      map_function: '<map_code>', reduce_function: '<reduce_code>',
                                      lib: nil, list_name: nil, list_function: nil)
@@ -405,16 +433,35 @@ describe CouchPotato::Database, 'view' do
     @db.view(@spec)
   end
 
-  it 'sets itself on returned results that have an accessor' do
+  it 'sets itself on returned docs that have an accessor' do
+    allow(@result).to receive(:respond_to?).and_return(false)
     allow(@result).to receive(:respond_to?).with(:database=).and_return(true)
     expect(@result).to receive(:database=).with(@db)
     @db.view(@spec)
   end
 
-  it "does not set itself on returned results that don't have an accessor" do
-    allow(@result).to receive(:respond_to?).with(:database=).and_return(false)
+  it "does not set itself on returned docs that don't have an accessor" do
+    allow(@result).to receive(:respond_to?).and_return(false)
     expect(@result).not_to receive(:database=).with(@db)
     @db.view(@spec)
+  end
+
+  it 'sets the result of the view call on each returned doc' do
+    allow(@result).to receive(:respond_to?).and_return(false)
+    allow(@result).to receive(:respond_to?).with(:database_collection=).and_return(true)
+    allow(@result).to receive(:database_collection=)
+
+    @db.view(@spec)
+
+    expect(@result).to have_received(:database_collection=).with([@result])
+  end
+
+  it "does not set the result of the view call on docs that don't have an accessor" do
+    allow(@result).to receive(:respond_to?).and_return(false)
+
+    @db.view(@spec)
+
+    expect(@result).not_to receive(:database_collection=).with([@result])
   end
 
   it 'does not try to set itself on result sets that are not collections' do

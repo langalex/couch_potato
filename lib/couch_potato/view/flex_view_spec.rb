@@ -73,9 +73,11 @@ module CouchPotato
         end
 
         def docs
+          all_docs = rows.map { |r| r['doc'] }
           rows.map do |row|
             doc = row['doc']
             doc.database = database if doc.respond_to?(:database=)
+            doc.database_collection = all_docs if doc.respond_to?(:database_collection=)
             doc
           end
         end

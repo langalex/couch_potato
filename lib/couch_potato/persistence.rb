@@ -27,7 +27,7 @@ module CouchPotato
         ForbiddenAttributesProtection, Revisions
       base.send :include, Validation
       base.class_eval do
-        attr_accessor :_id, :_rev, :_deleted, :database
+        attr_accessor :_id, :_rev, :_deleted, :database, :database_collection
         alias_method :id, :_id
         alias_method :id=, :_id=
 
