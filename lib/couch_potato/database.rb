@@ -197,6 +197,8 @@ module CouchPotato
     # returns the underlying CouchRest::Database instance
     attr_reader :couchrest_database
 
+    attr_accessor :switched_databases
+
     # returns a new database instance connected to the CouchDB database
     # with the given name. the name is passed through the
     # additional_databases configuration to resolve it to a database
@@ -204,21 +206,29 @@ module CouchPotato
     # if the current database has a cache, the new database will receive
     # a cleared copy of it.
     def switch_to(database_name)
-      resolved_database_name = CouchPotato.resolve_database_name(database_name)
-      self
+      self.switched_databases ||= {}
+      if (db = switched_databases[database_name || :default])
+        return db
+      end
+      switched_databases[name || :default] ||= self
+
+
+      resolved_database_name = CouchPotato.resolve_database_name(database_name) unless database_name == :default
+      couchrest_database = resolved_database_name ? CouchPotato.couchrest_database_for_name(resolved_database_name) : CouchPotato.couchrest_database
+      new_db = self
         .class
-        .new(CouchPotato.couchrest_database_for_name(resolved_database_name), name: database_name)
+        .new(couchrest_database, name: database_name == :default ? nil : database_name)
         .tap(&copy_clear_cache_proc)
+
+      new_db.switched_databases = switched_databases
+      new_db
     end
 
     # returns a new database instance connected to the default CouchDB database.
     # if the current database has a cache, the new database will receive
     # a cleared copy of it.
     def switch_to_default
-      self
-        .class
-        .new(CouchPotato.couchrest_database)
-        .tap(&copy_clear_cache_proc)
+      switch_to(:default)
     end
 
     private

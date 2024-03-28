@@ -571,6 +571,14 @@ describe CouchPotato::Database, '#switch_to' do
 
     expect(new_db.cache).to be_nil
   end
+
+  it 're-uses the original cache when switching back to the original database' do
+    db.cache = { key: 'value' }
+    new_db = db.switch_to('db2')
+    original_db = new_db.switch_to_default
+
+    expect(original_db.cache).to have_key(:key)
+  end
 end
 
 describe CouchPotato::Database, '#switch_to_default' do
