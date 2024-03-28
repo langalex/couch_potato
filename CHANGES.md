@@ -1,5 +1,10 @@
 ## Changes
 
+# 1.15.0
+
+- cache loading multiple documents
+- keep the database cache when switching to another database and back to the original one
+
 # 1.14.0
 
 - add database_collection to models to help avoid n+1 requests
