@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/enumerable'
+
 module CouchPotato
   class Database
     class ValidationsFailedError < ::StandardError; end
@@ -143,7 +145,9 @@ module CouchPotato
     # returns nil if the single document could not be found. when passing an array and some documents
     # could not be found these are omitted from the returned array
     def load_document(id)
-      cached = cache && id.is_a?(String) && cache[id]
+      return load_documents(id) if id.is_a?(Array)
+      
+      cached = cache && cache[id]
       if cache
         if cached
           ActiveSupport::Notifications.instrument('couch_potato.load.cached') do
@@ -158,6 +162,23 @@ module CouchPotato
       end
     end
     alias load load_document
+
+    def load_documents(ids)
+      return [] if ids.empty?
+
+      uncached_ids = ids - (cache&.keys || [])
+      uncached_docs_by_id = bulk_load(uncached_ids).index_by {|doc| doc.id if doc.respond_to?(:id) }
+      if cache
+        uncached_ids.each do |id|
+          doc = uncached_docs_by_id[id]
+          cache[id] = doc if doc
+        end
+      end
+      cached_docs_by_id = ActiveSupport::Notifications.instrument('couch_potato.load.cached') do
+        cache&.slice(*ids) || {}
+      end
+      ids.filter_map { |id| (cached_docs_by_id[id]) || uncached_docs_by_id[id] }
+    end
 
     # loads one or more documents by its id(s)
     # behaves like #load except it raises a CouchPotato::NotFound if any of the documents could not be found
@@ -248,14 +269,10 @@ module CouchPotato
       raise "Can't load a document without an id (got nil)" if id.nil?
 
       ActiveSupport::Notifications.instrument('couch_potato.load') do
-        if id.is_a?(Array)
-          bulk_load id
-        else
-          instance = couchrest_database.get(id)
-          instance.database = self if instance
-          instance
-        end
-      end
+        instance = couchrest_database.get(id)
+        instance.database = self if instance
+        instance
+    end
     end
 
     def view_cache_id(spec)
@@ -294,11 +311,13 @@ module CouchPotato
     def bulk_load(ids)
       return [] if ids.empty?
 
-      response = couchrest_database.bulk_load ids
-      docs = response['rows'].map { |row| row['doc'] }.compact
-      docs.each do |doc|
-        doc.database = self if doc.respond_to?(:database=)
-        doc.database_collection = docs if doc.respond_to?(:database_collection=)
+      ActiveSupport::Notifications.instrument('couch_potato.load') do
+        response = couchrest_database.bulk_load ids
+        docs = response['rows'].map { |row| row['doc'] }.compact
+        docs.each do |doc|
+          doc.database = self if doc.respond_to?(:database=)
+          doc.database_collection = docs if doc.respond_to?(:database_collection=)
+        end
       end
     end
 

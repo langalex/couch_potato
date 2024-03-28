@@ -72,8 +72,8 @@ describe CouchPotato::Database, 'load' do
   end
 
   context 'when several ids given' do
-    let(:doc1) { DbTestUser.new }
-    let(:doc2) { DbTestUser.new }
+    let(:doc1) { DbTestUser.new(id: '1') }
+    let(:doc2) { DbTestUser.new(id: '2') }
     let(:response) do
       { 'rows' => [{ 'doc' => nil }, { 'doc' => doc1 }, { 'doc' => doc2 }] }
     end
@@ -98,7 +98,7 @@ describe CouchPotato::Database, 'load' do
     end
 
     it 'does not write itself to a document that has no database= method' do
-      doc1 = double(:doc1)
+      doc1 = double(:doc1, id: '1')
       allow(doc1).to receive(:respond_to?) { false }
       allow(couchrest_db).to receive(:bulk_load) do
         { 'rows' => [{ 'doc' => doc1 }] }
@@ -116,7 +116,7 @@ describe CouchPotato::Database, 'load' do
     end
 
     it 'does not set database_collection on a document that has no database_collection= method' do
-      doc1 = double(:doc1)
+      doc1 = double(:doc1, id: '1')
       allow(doc1).to receive(:respond_to?) { false }
       allow(couchrest_db).to receive(:bulk_load) do
         { 'rows' => [{ 'doc' => doc1 }] }
