@@ -7,5 +7,9 @@ module CouchPotato
         super
       end
     end
+
+    def respond_to_missing?(name)
+      _document && _document[name.to_s]
+    end
   end
 end

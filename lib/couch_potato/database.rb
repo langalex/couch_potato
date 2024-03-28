@@ -134,7 +134,7 @@ module CouchPotato
       begin
         destroy_document_without_conflict_handling document
       rescue CouchRest::Conflict
-        retry if document = document.reload
+        retry if (document = document.reload)
       end
     end
     alias_method :destroy, :destroy_document

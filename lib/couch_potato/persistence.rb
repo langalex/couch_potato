@@ -133,7 +133,7 @@ module CouchPotato
     end
 
     def hash
-      _id.hash * (_id.hash.to_s.size**10) + _rev.hash
+      [_id, _rev].hash
     end
 
     # Returns a reloaded instance. Does not touch the original instance.

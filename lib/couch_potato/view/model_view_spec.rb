@@ -43,16 +43,16 @@ module CouchPotato
           end
         end
 
-        def formatted_key(_key = nil)
-          _key ||= key
-          if _key.is_a? Array
+        def formatted_key(key = nil)
+          key ||= self.key
+          if key.is_a? Array
             parts = []
-            _key.each_with_index { |k, i|
+            key.each_with_index { |k, i|
               parts << "Key_#{i} = proplists:get_value(<<\"#{k}\">>, Doc, null)"
             }
             parts.join(",\n")
           else
-            "Key = proplists:get_value(<<\"#{_key}\">>, Doc, null)"
+            "Key = proplists:get_value(<<\"#{key}\">>, Doc, null)"
           end
         end
 
@@ -95,12 +95,12 @@ module CouchPotato
           end
         end
 
-        def formatted_key(_key = nil)
-          _key ||= @options[:key]
-          if _key.is_a? Array
-            "[" + _key.map { |key_part| formatted_key(key_part) }.join(", ") + "]"
+        def formatted_key(key = nil)
+          key ||= @options[:key]
+          if key.is_a? Array
+            "[#{key.map { |key_part| formatted_key(key_part) }.join(", ")}]"
           else
-            "doc['#{_key}']"
+            "doc['#{key}']"
           end
         end
 
@@ -126,11 +126,11 @@ module CouchPotato
       delegate :map_function, :map_body, :formatted_key, to: :generator
 
       def view_parameters
-        _super = super
-        if _super[:reduce]
-          _super
+        params = super
+        if params[:reduce]
+          params
         else
-          {include_docs: true, reduce: false}.merge(_super)
+          {include_docs: true, reduce: false}.merge(params)
         end
       end
 
