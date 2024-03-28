@@ -294,7 +294,6 @@ describe "properties" do
     end
 
     it "should handle nil values" do
-      address = Address.new(verified: 1)
       w = Watch.new custom_address: nil
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id

@@ -88,16 +88,13 @@ RSpec.describe "database caching" do
       doc1 = {
         "id" => "1"
       }
-      doc2 = {
-        "id" => "2"
-      }
-      allow(couchrest_db).to receive(:bulk_load).with(["1", "2"])
-        .and_return("rows" => [{"doc" => doc1}, {"doc" => doc1}])
+      allow(couchrest_db).to receive(:bulk_load).with(["1"])
+        .and_return("rows" => [{"doc" => doc1}])
 
-      db.load_document(["1", "2"])
-      db.load_document(["1", "2"])
+      db.load_document(["1"])
+      db.load_document(["1"])
 
-      expect(couchrest_db).to have_received(:bulk_load).with(["1", "2"]).exactly(2).times
+      expect(couchrest_db).to have_received(:bulk_load).with(["1"]).exactly(2).times
     end
   end
 

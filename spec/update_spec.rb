@@ -35,6 +35,6 @@ describe "create" do
   it "should update the attributes" do
     @comment.title = "new title"
     CouchPotato.database.save_document! @comment
-    expect(CouchPotato.couchrest_database.get("#{@comment.id}").title).to eq("new title")
+    expect(CouchPotato.couchrest_database.get(@comment.id.to_s).title).to eq("new title")
   end
 end

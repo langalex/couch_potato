@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rake", "~>12.0"
   s.add_development_dependency "rspec", "~>3.12.0"
+  s.add_development_dependency "standard", "~>1.0"
   s.add_development_dependency "timecop"
   s.add_development_dependency "tzinfo"
 

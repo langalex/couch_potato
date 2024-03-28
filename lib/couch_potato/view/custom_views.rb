@@ -35,7 +35,7 @@ module CouchPotato
         end
 
         def view_spec_class(type) # :nodoc:
-          if type && type.is_a?(Class)
+          if type&.is_a?(Class)
             type
           else
             name = type.nil? ? "Model" : type.to_s.camelize

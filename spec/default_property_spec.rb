@@ -36,7 +36,7 @@ describe "default properties" do
   end
 
   it "does not return the default value when the actual value is empty" do
-    t = expect(Test.new(complex: []).complex).to eq([])
+    expect(Test.new(complex: []).complex).to eq([])
   end
 
   it "uses the default value also if the default is false" do

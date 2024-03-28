@@ -36,7 +36,7 @@ module CouchPotato
         def inherited_properties
           superclazz = @clazz.superclass
           properties = []
-          while superclazz && superclazz.respond_to?(:properties)
+          while superclazz&.respond_to?(:properties)
             properties << superclazz.properties.list
             superclazz = superclazz.superclass
           end

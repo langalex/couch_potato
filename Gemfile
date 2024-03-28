@@ -6,5 +6,3 @@ gemspec name: "couch_potato"
 group :test do
   gem "execjs"
 end
-
-gem "standard", group: [:development, :test]
