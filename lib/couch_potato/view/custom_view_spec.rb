@@ -18,23 +18,23 @@ module CouchPotato
       end
 
       def view_parameters
-        {:include_docs => options[:include_docs] || false}.merge(super)
+        {include_docs: options[:include_docs] || false}.merge(super)
       end
 
       def process_results(results)
         processed = if count?
-                      results['rows'].first.try(:[], 'value') || 0
-                    else
-                      results['rows'].map do |row|
-                        if row['doc'].kind_of?(klass)
-                          row['doc']
-                        else
-                          result = row['doc'] || (row['value'].merge(:_id => row['id'] || row['key']) unless view_parameters[:include_docs])
-                          klass.json_create result if result
-                        end
-                      end.compact
-                    end
-        super processed
+          results["rows"].first.try(:[], "value") || 0
+        else
+          results["rows"].map do |row|
+            if row["doc"].is_a?(klass)
+              row["doc"]
+            else
+              result = row["doc"] || (row["value"].merge(_id: row["id"] || row["key"]) unless view_parameters[:include_docs])
+              klass.json_create result if result
+            end
+          end.compact
+        end
+        super(processed)
       end
 
       private

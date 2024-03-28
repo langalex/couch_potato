@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 class CallbackRecorderWithNoRequiredProperties
   include CouchPotato::Persistence
@@ -10,15 +10,14 @@ class CallbackRecorderWithNoRequiredProperties
     :before_save, :before_create, :before_create,
     :after_save, :after_create, :after_create,
     :before_update, :after_update,
-    :before_destroy, :after_destroy
-  ].each do |callback|
+    :before_destroy, :after_destroy].each do |callback|
     define_method callback do
       callbacks << callback
     end
-    self.send callback, callback
+    send callback, callback
   end
 
-  view :all, :key  => :required_property
+  view :all, key: :required_property
 
   def callbacks
     @callbacks ||= []
@@ -29,7 +28,6 @@ class CallbackRecorderWithNoRequiredProperties
   def method_callback_with_argument(db)
     db.view CallbackRecorder.all
   end
-
 end
 
 class CallbackRecorder < CallbackRecorderWithNoRequiredProperties
@@ -37,7 +35,6 @@ class CallbackRecorder < CallbackRecorderWithNoRequiredProperties
 end
 
 describe "multiple callbacks at once" do
-
   class Monkey
     include CouchPotato::Persistence
     attr_accessor :eaten_banana, :eaten_apple
@@ -63,17 +60,16 @@ describe "multiple callbacks at once" do
   end
 end
 
-describe 'create callbacks' do
-
+describe "create callbacks" do
   before(:each) do
     @recorder = CallbackRecorder.new
-    couchrest_database = double 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}, :info => nil
+    couchrest_database = double "couchrest_database", save_doc: {"id" => "1", "rev" => "2"}, view: {"rows" => []}, info: nil
     @db = CouchPotato::Database.new(couchrest_database)
   end
 
   describe "successful create" do
     before(:each) do
-       @recorder.required_property = 1
+      @recorder.required_property = 1
     end
 
     it "should call before_validation" do
@@ -114,7 +110,7 @@ describe 'create callbacks' do
 
   describe "successful create with no changes (object not dirty)" do
     before(:each) do
-       @recorder = CallbackRecorderWithNoRequiredProperties.new
+      @recorder = CallbackRecorderWithNoRequiredProperties.new
     end
 
     it "should call before_validation" do
@@ -151,11 +147,9 @@ describe 'create callbacks' do
       @db.save_document! @recorder
       expect(@recorder.callbacks).to include(:after_create)
     end
-
   end
 
   describe "failed create" do
-
     it "should call before_validation" do
       @recorder.valid?
       expect(@recorder.callbacks).to include(:before_validation)
@@ -194,11 +188,10 @@ describe 'create callbacks' do
 end
 
 describe "update callbacks" do
-
   before(:each) do
-    @recorder = CallbackRecorder.new :required_property => 1
+    @recorder = CallbackRecorder.new required_property: 1
 
-    couchrest_database = double 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :view => {'rows' => []}, :info => nil
+    couchrest_database = double "couchrest_database", save_doc: {"id" => "1", "rev" => "2"}, view: {"rows" => []}, info: nil
     @db = CouchPotato::Database.new(couchrest_database)
     @db.save_document! @recorder
 
@@ -206,7 +199,6 @@ describe "update callbacks" do
   end
 
   describe "successful update" do
-
     before(:each) do
       @recorder.required_property = 2
       @db.save_document! @recorder
@@ -239,11 +231,9 @@ describe "update callbacks" do
     it "should call after_update" do
       expect(@recorder.callbacks).to include(:after_update)
     end
-
   end
 
   describe "successful update with no changes (object is not dirty)" do
-
     before(:each) do
       @db.save_document! @recorder
     end
@@ -275,15 +265,12 @@ describe "update callbacks" do
     it "should call after_update" do
       expect(@recorder.callbacks).to include(:after_update)
     end
-
   end
 
-
   describe "failed update" do
-
     before(:each) do
-       @recorder.required_property = nil
-       @db.save_document @recorder
+      @recorder.required_property = nil
+      @db.save_document @recorder
     end
 
     it "should call before_validation" do
@@ -313,16 +300,13 @@ describe "update callbacks" do
     it "should not call after_update" do
       expect(@recorder.callbacks).not_to include(:after_update)
     end
-
   end
-
 end
 
 describe "destroy callbacks" do
-
   before(:each) do
-    @recorder = CallbackRecorder.new :required_property => 1
-    couchrest_database = double 'couchrest_database', :save_doc => {'id' => '1', 'rev' => '2'}, :delete_doc => nil, :view => {'rows' => []}, :info => nil
+    @recorder = CallbackRecorder.new required_property: 1
+    couchrest_database = double "couchrest_database", save_doc: {"id" => "1", "rev" => "2"}, delete_doc: nil, view: {"rows" => []}, info: nil
     @db = CouchPotato::Database.new(couchrest_database)
     @db.save_document! @recorder
 
@@ -349,28 +333,28 @@ describe "validation callbacks" do
     validates_presence_of :name
 
     def check_name
-      errors.add(:name, 'should be Paul') unless name == "Paul"
+      errors.add(:name, "should be Paul") unless name == "Paul"
     end
   end
 
   it "should keep error messages set in custom before_validation filters" do
-    user = ValidatedUser.new(:name => "john")
+    user = ValidatedUser.new(name: "john")
     expect(user.valid?).to eq(false)
     expect(user.errors[:name]).to eq(["should be Paul"])
   end
 
   it "should combine the errors from validations and callbacks" do
-    user = ValidatedUser.new(:name => nil)
+    user = ValidatedUser.new(name: nil)
     expect(user.valid?).to eq(false)
-    expect(user.errors[:name].any? {|msg| msg =~ /can't be (empty|blank)/ }).to eq(true)
-    expect(user.errors[:name].any? {|msg| msg == "should be Paul" }).to eq(true)
+    expect(user.errors[:name].any? { |msg| msg =~ /can't be (empty|blank)/ }).to eq(true)
+    expect(user.errors[:name].any? { |msg| msg == "should be Paul" }).to eq(true)
     expect(user.errors[:name].size).to eq(2)
   end
 
   it "should clear the errors on subsequent calls to valid?" do
-    user = ValidatedUser.new(:name => nil)
+    user = ValidatedUser.new(name: nil)
     expect(user.valid?).to eq(false)
-    user.name = 'Paul'
+    user.name = "Paul"
     expect(user.valid?).to eq(true)
     expect(user.errors[:name]).to eq([])
   end
@@ -385,7 +369,7 @@ describe "validation callbacks and filter halt" do
     before_validation_on_update :abort_callback
 
     def check_name
-      errors.add(:name, 'should be Paul') unless name == "Paul"
+      errors.add(:name, "should be Paul") unless name == "Paul"
     end
 
     def abort_callback
@@ -402,7 +386,7 @@ describe "validation callbacks and filter halt" do
     before_validation_on_create :abort_callback
 
     def check_name
-      errors.add(:name, 'should be Paul') unless name == "Paul"
+      errors.add(:name, "should be Paul") unless name == "Paul"
     end
 
     def abort_callback
@@ -439,27 +423,27 @@ describe "validation callbacks and filter halt" do
   end
 
   it "should keep error messages set in custom before_validation if an update filter returns false" do
-    @user = FilterValidationUpdateUser.new(:name => "Paul")
+    @user = FilterValidationUpdateUser.new(name: "Paul")
     expect(@db.save_document(@user)).to eq(true)
-    @user.name = 'Bert'
+    @user.name = "Bert"
     expect(@db.save_document(@user)).to eq(false)
   end
 
   it "should keep error messages set in custom before_validation if a create filter returns false" do
-    @user = FilterValidationCreateUser.new(:name => "Bert")
+    @user = FilterValidationCreateUser.new(name: "Bert")
     expect(@db.save_document(@user)).to eq(false)
   end
 
   if ActiveModel.version.segments.first < 5
     it "should return false on saving a document when a before update filter returned false" do
-      @user = FilterSaveUpdateUser.new(:name => "Paul")
+      @user = FilterSaveUpdateUser.new(name: "Paul")
       expect(@db.save_document(@user)).to eq(true)
-      @user.name = 'Bert'
+      @user.name = "Bert"
       expect(@db.save_document(@user)).to eq(false)
     end
 
     it "should return false on saving a document when a before save or before create filter returned false" do
-      @user = FilterSaveCreateUser.new(:name => "Bert")
+      @user = FilterSaveCreateUser.new(name: "Bert")
       expect(@db.save_document(@user)).to eq(false)
     end
   else
@@ -476,16 +460,15 @@ describe "validation callbacks and filter halt" do
     end
 
     it "returns false on saving a document when a before update filter throws :abort" do
-      @user = FilterSaveUpdateUser5.new(:name => "Paul")
+      @user = FilterSaveUpdateUser5.new(name: "Paul")
       expect(@db.save_document(@user)).to eq(true)
-      @user.name = 'Bert'
+      @user.name = "Bert"
       expect(@db.save_document(@user)).to eq(false)
     end
 
     it "returns false on saving a document when a before save or before create filter throws :abort" do
-      @user = FilterSaveCreateUser5.new(:name => "Bert")
+      @user = FilterSaveCreateUser5.new(name: "Bert")
       expect(@db.save_document(@user)).to eq(false)
     end
   end
-
 end

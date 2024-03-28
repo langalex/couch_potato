@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'bigdecimal/util'
+require "bigdecimal/util"
 module CouchPotato
   module Persistence
-    class TypeCaster #:nodoc:
-      NUMBER_REGEX = /-?\d*\.?\d*/.freeze
+    class TypeCaster # :nodoc:
+      NUMBER_REGEX = /-?\d*\.?\d*/
 
       def cast(value, type)
         if type == :boolean
@@ -22,7 +22,7 @@ module CouchPotato
       def cast_boolean(value)
         if [FalseClass, TrueClass].include?(value.class) || value.nil?
           value
-        elsif [0, '0', 'false'].include?(value)
+        elsif [0, "0", "false"].include?(value)
           false
         else
           true

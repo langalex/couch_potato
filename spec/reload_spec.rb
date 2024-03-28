@@ -1,10 +1,10 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe CouchPotato::Persistence, '#reload' do
+describe CouchPotato::Persistence, "#reload" do
   let(:db) { CouchPotato.database }
 
-  it 'returns a new instance from the database' do
-    comment = Comment.new title: 'hello'
+  it "returns a new instance from the database" do
+    comment = Comment.new title: "hello"
     db.save! comment
 
     reloaded = comment.reload

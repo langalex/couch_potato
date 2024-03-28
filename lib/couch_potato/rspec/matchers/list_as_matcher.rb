@@ -48,7 +48,6 @@ module CouchPotato
       def failure_message_when_negated
         "Expected to not list as #{@expected_ruby.inspect} but did."
       end
-
     end
   end
 end

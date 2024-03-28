@@ -1,25 +1,23 @@
-require 'digest/md5'
-require File.dirname(__FILE__) + '/database'
-require File.dirname(__FILE__) + '/persistence/active_model_compliance'
-require File.dirname(__FILE__) + '/persistence/properties'
-require File.dirname(__FILE__) + '/persistence/magic_timestamps'
-require File.dirname(__FILE__) + '/persistence/callbacks'
-require File.dirname(__FILE__) + '/persistence/json'
-require File.dirname(__FILE__) + '/persistence/dirty_attributes'
-require File.dirname(__FILE__) + '/persistence/ghost_attributes'
-require File.dirname(__FILE__) + '/persistence/attachments'
-require File.dirname(__FILE__) + '/persistence/type_caster'
-require File.dirname(__FILE__) + '/persistence/revisions'
-require File.dirname(__FILE__) + '/forbidden_attributes_protection'
-require File.dirname(__FILE__) + '/view/custom_views'
-require File.dirname(__FILE__) + '/view/lists'
-require File.dirname(__FILE__) + '/view/view_query'
-
+require "digest/md5"
+require File.dirname(__FILE__) + "/database"
+require File.dirname(__FILE__) + "/persistence/active_model_compliance"
+require File.dirname(__FILE__) + "/persistence/properties"
+require File.dirname(__FILE__) + "/persistence/magic_timestamps"
+require File.dirname(__FILE__) + "/persistence/callbacks"
+require File.dirname(__FILE__) + "/persistence/json"
+require File.dirname(__FILE__) + "/persistence/dirty_attributes"
+require File.dirname(__FILE__) + "/persistence/ghost_attributes"
+require File.dirname(__FILE__) + "/persistence/attachments"
+require File.dirname(__FILE__) + "/persistence/type_caster"
+require File.dirname(__FILE__) + "/persistence/revisions"
+require File.dirname(__FILE__) + "/forbidden_attributes_protection"
+require File.dirname(__FILE__) + "/view/custom_views"
+require File.dirname(__FILE__) + "/view/lists"
+require File.dirname(__FILE__) + "/view/view_query"
 
 module CouchPotato
   module Persistence
-
-    def self.included(base) #:nodoc:
+    def self.included(base) # :nodoc:
       base.send :include, Properties, Callbacks, Json, CouchPotato::View::CustomViews,
         CouchPotato::View::Lists
       base.send :include, DirtyAttributes, GhostAttributes, Attachments
@@ -39,7 +37,6 @@ module CouchPotato
 
       CouchPotato.models << base
     end
-
 
     # initialize a new instance of the model optionally passing it a hash of attributes.
     # the attributes have to be declared using the #property method.
@@ -82,7 +79,7 @@ module CouchPotato
     #   book.year # => 2009
     def attributes=(hash)
       hash.each do |attribute, value|
-        self.send "#{attribute}=", value
+        send :"#{attribute}=", value
       end
     end
 
@@ -97,14 +94,13 @@ module CouchPotato
     #   book = Book.new :year => 2009
     #   book.attributes # => {'title' => nil, 'year' => 2009}
     def attributes
-      self.class.properties.inject(ActiveSupport::HashWithIndifferentAccess.new) do |res, property|
+      self.class.properties.each_with_object(ActiveSupport::HashWithIndifferentAccess.new) do |property, res|
         property.value(res, self)
-        res
       end
     end
 
     def []=(attribute, value)
-      send "#{attribute}=", value
+      send :"#{attribute}=", value
     end
 
     def [](attribute)
@@ -128,8 +124,8 @@ module CouchPotato
       _id
     end
 
-    def ==(other) #:nodoc:
-      super || (self.class == other.class && self._id.present? && self._id == other._id)
+    def ==(other) # :nodoc:
+      super || (self.class == other.class && _id.present? && _id == other._id)
     end
 
     def eql?(other)
@@ -137,7 +133,7 @@ module CouchPotato
     end
 
     def hash
-      _id.hash * (_id.hash.to_s.size ** 10) + _rev.hash
+      _id.hash * (_id.hash.to_s.size**10) + _rev.hash
     end
 
     # Returns a reloaded instance. Does not touch the original instance.
@@ -146,8 +142,8 @@ module CouchPotato
     end
 
     def inspect
-      attributes_as_string = attributes.map {|attribute, value| "#{attribute}: #{value.inspect}"}.join(", ")
-      %Q{#<#{self.class} _id: "#{_id}", _rev: "#{_rev}", #{attributes_as_string}>}
+      attributes_as_string = attributes.map { |attribute, value| "#{attribute}: #{value.inspect}" }.join(", ")
+      %(#<#{self.class} _id: "#{_id}", _rev: "#{_rev}", #{attributes_as_string}>)
     end
   end
 end

@@ -50,19 +50,19 @@ module CouchPotato
         end
 
         def ids
-          rows.map { |row| row['id'] }
+          rows.map { |row| row["id"] }
         end
 
         def keys
-          rows.map { |row| row['key'] }
+          rows.map { |row| row["key"] }
         end
 
         def values
-          rows.map { |row| row['value'] }
+          rows.map { |row| row["value"] }
         end
 
         def reduce_value
-          rows.dig(0, 'value')
+          rows.dig(0, "value")
         end
 
         # returns a count from a CouchDB reduce. returns 0 when the result
@@ -73,9 +73,9 @@ module CouchPotato
         end
 
         def docs
-          all_docs = rows.map { |r| r['doc'] }
+          all_docs = rows.map { |r| r["doc"] }
           rows.map do |row|
-            doc = row['doc']
+            doc = row["doc"]
             doc.database = database if doc.respond_to?(:database=)
             doc.database_collection = all_docs if doc.respond_to?(:database_collection=)
             doc
@@ -83,7 +83,7 @@ module CouchPotato
         end
 
         def rows
-          @raw_results['rows']
+          @raw_results["rows"]
         end
       end
 
@@ -96,7 +96,7 @@ module CouchPotato
       end
 
       delegate :view_name, :view_parameters, :design_document, :map_function,
-               :reduce_function, :list_name, :lib, :language, to: :view_spec_delegate
+        :reduce_function, :list_name, :lib, :language, to: :view_spec_delegate
 
       def process_results(results)
         results = Results.new(results)

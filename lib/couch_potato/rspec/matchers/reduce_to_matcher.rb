@@ -34,7 +34,7 @@ module CouchPotato
             return JSON.stringify({result: reduce(keys, values, #{@rereduce})});
           })()
         JS
-        @actual_ruby = JSON.parse(ExecJS.eval(js))['result']
+        @actual_ruby = JSON.parse(ExecJS.eval(js))["result"]
         values_match? @expected_ruby, @actual_ruby
       end
 

@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/simple_property'
-require File.dirname(__FILE__) + '/deep_tracked_property'
+require File.dirname(__FILE__) + "/simple_property"
+require File.dirname(__FILE__) + "/deep_tracked_property"
 
 module CouchPotato
   module Persistence
@@ -15,8 +15,8 @@ module CouchPotato
           @hash = {}
         end
 
-        def each(&block)
-          (list + inherited_properties).each(&block)
+        def each(&)
+          (list + inherited_properties).each(&)
         end
 
         def <<(property)
@@ -44,7 +44,7 @@ module CouchPotato
         end
       end
 
-      def self.included(base) #:nodoc:
+      def self.included(base) # :nodoc:
         base.extend ClassMethods
         base.class_eval do
           def self.properties
@@ -55,7 +55,7 @@ module CouchPotato
         end
       end
 
-      def type_caster #:nodoc:
+      def type_caster # :nodoc:
         @type_caster ||= TypeCaster.new
       end
 
@@ -94,9 +94,9 @@ module CouchPotato
             undef_method(name) if instance_methods.include?(name)
           end
           cache = if respond_to?(:attribute_method_matchers_cache, true) # activemodel 7.0
-            send(:attribute_method_matchers_cache) 
+            send(:attribute_method_matchers_cache)
           else # activemodel 7.1
-            send(:attribute_method_patterns_cache) 
+            send(:attribute_method_patterns_cache)
           end
           cache.delete(name)
 

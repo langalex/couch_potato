@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'rspec/mocks'
-require 'active_support/core_ext/array'
+require "rspec/mocks"
+require "active_support/core_ext/array"
 
 module CouchPotato::RSpec
   module StubView
@@ -21,7 +21,7 @@ module CouchPotato::RSpec
       end
 
       def and_return(return_value)
-        view_stub = double("#{@clazz}.#{@view}(#{@args.try(:join, ', ')}) view")
+        view_stub = double("#{@clazz}.#{@view}(#{@args.try(:join, ", ")}) view")
         stub = allow(@clazz).to receive(@view)
         stub.with(*@args) if @args
         stub.and_return(view_stub)

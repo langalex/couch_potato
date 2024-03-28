@@ -19,8 +19,8 @@ module CouchPotato
 
         def map_function
           raise NotImplementedError.new("conditions in Erlang not implemented") if @options[:conditions]
-            raise NotImplementedError.new("emit_value in Erlang not implemented") if @options[:emit_value]
-            <<-ERL
+          raise NotImplementedError.new("emit_value in Erlang not implemented") if @options[:emit_value]
+          <<-ERL
             fun({Doc}) ->
                case proplists:get_value(<<"#{JSON.create_id}">>, Doc) of
                <<"#{@klass.name}">> ->
@@ -30,13 +30,13 @@ module CouchPotato
                  ok
                end
              end.
-            ERL
+          ERL
         end
 
         private
 
         def composite_key_brackets(key)
-          if key.include?(',')
+          if key.include?(",")
             "[#{key}]"
           else
             key
@@ -47,7 +47,7 @@ module CouchPotato
           _key ||= key
           if _key.is_a? Array
             parts = []
-            _key.each_with_index{|k, i|
+            _key.each_with_index { |k, i|
               parts << "Key_#{i} = proplists:get_value(<<\"#{k}\">>, Doc, null)"
             }
             parts.join(",\n")
@@ -59,12 +59,12 @@ module CouchPotato
         def emit_key
           if key.is_a?(Array)
             parts = []
-            key.each_with_index{|k, i|
+            key.each_with_index { |k, i|
               parts << "Key_#{i}"
             }
-            parts.join(', ')
+            parts.join(", ")
           else
-            'Key'
+            "Key"
           end
         end
 
@@ -98,7 +98,7 @@ module CouchPotato
         def formatted_key(_key = nil)
           _key ||= @options[:key]
           if _key.is_a? Array
-            '[' + _key.map{|key_part| formatted_key(key_part)}.join(', ') + ']'
+            "[" + _key.map { |key_part| formatted_key(key_part) }.join(", ") + "]"
           else
             "doc['#{_key}']"
           end
@@ -123,14 +123,14 @@ module CouchPotato
         end
       end
 
-      delegate :map_function, :map_body, :formatted_key, :to => :generator
+      delegate :map_function, :map_body, :formatted_key, to: :generator
 
       def view_parameters
         _super = super
         if _super[:reduce]
           _super
         else
-          {:include_docs => true, :reduce => false}.merge(_super)
+          {include_docs: true, reduce: false}.merge(_super)
         end
       end
 
@@ -140,13 +140,13 @@ module CouchPotato
 
       def process_results(results)
         processed = if count?
-                      results['rows'].first.try(:[], 'value') || 0
-                    else
-                      results['rows'].map {|row|
-                        row['doc'] || (row['id'] unless view_parameters[:include_docs])
-                      }.compact
-                    end
-        super processed
+          results["rows"].first.try(:[], "value") || 0
+        else
+          results["rows"].map { |row|
+            row["doc"] || (row["id"] unless view_parameters[:include_docs])
+          }.compact
+        end
+        super(processed)
       end
 
       private
@@ -169,7 +169,6 @@ module CouchPotato
       def invalid_language
         raise "unsupported language #{language}"
       end
-
     end
   end
 end

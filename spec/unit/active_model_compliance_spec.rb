@@ -1,13 +1,13 @@
-require 'spec_helper'
+require "spec_helper"
 
 begin
-  require 'active_model'
+  require "active_model"
 
-  describe 'ActiveModel conformance of couch potato objects' do
+  describe "ActiveModel conformance of couch potato objects" do
     include ActiveModel::Lint::Tests
 
-    instance_methods.sort.select{|method| method.to_s.scan(/^test_/).first}.each do |method|
-      it "should #{method.to_s.sub(/^test_/, '').gsub('_', ' ')}" do
+    instance_methods.sort.select { |method| method.to_s.scan(/^test_/).first }.each do |method|
+      it "should #{method.to_s.sub(/^test_/, "").tr("_", " ")}" do
         send method
       end
     end
@@ -25,16 +25,16 @@ begin
       property :name
       property :email
       validates_presence_of :name, :email
-      validates_format_of :email, :with => /.+@.+/
+      validates_format_of :email, with: /.+@.+/
     end
 
     before(:each) do
       @model = ActiveComment.new
     end
 
-    describe '#to_partial_path' do
-      it 'returns a path based on the class name' do
-        expect(@model.to_partial_path).to eq('active_comments/active_comment')
+    describe "#to_partial_path" do
+      it "returns a path based on the class name" do
+        expect(@model.to_partial_path).to eq("active_comments/active_comment")
       end
     end
 
@@ -44,7 +44,7 @@ begin
       end
 
       it "should be true if it was saved" do
-        @comment = ActiveComment.new(:name => 'Thilo', :email => 'test@local.host')
+        @comment = ActiveComment.new(name: "Thilo", email: "test@local.host")
         CouchPotato.database.save_document! @comment
         expect(@comment).to be_persisted
       end
@@ -56,12 +56,11 @@ begin
       end
 
       it "should return the id of the document if it was persisted" do
-        @comment = ActiveComment.new(:name => 'Thilo', :email => 'test@local.host')
+        @comment = ActiveComment.new(name: "Thilo", email: "test@local.host")
         CouchPotato.database.save_document! @comment
         expect(@comment.to_key).to eq([@comment.id])
       end
     end
-
 
     describe "#errors" do
       it "should return a single error as array" do
@@ -94,7 +93,7 @@ begin
       end
     end
 
-    def assert(boolean, message = '')
+    def assert(boolean, message = "")
       boolean || raise(message)
     end
 
@@ -102,7 +101,6 @@ begin
       expect(object).to be_a(klass)
     end
   end
-
 rescue LoadError
-  STDERR.puts "WARNING: active_model gem not installed. Not running ActiveModel specs."
+  warn "WARNING: active_model gem not installed. Not running ActiveModel specs."
 end

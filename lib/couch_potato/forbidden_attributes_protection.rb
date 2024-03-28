@@ -6,7 +6,7 @@ module CouchPotato
           include ActiveModel::ForbiddenAttributesProtection
 
           def attributes=(attributes)
-            super sanitize_for_mass_assignment(attributes)
+            super(sanitize_for_mass_assignment(attributes))
           end
         end
       end

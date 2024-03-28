@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/enumerable'
+require "active_support/core_ext/enumerable"
 
 module CouchPotato
   class Database
@@ -51,7 +51,7 @@ module CouchPotato
       cached = cache && id.is_a?(String) && cache[id]
       if cache
         if cached
-          ActiveSupport::Notifications.instrument('couch_potato.view.cached') do
+          ActiveSupport::Notifications.instrument("couch_potato.view.cached") do
             cached
           end
         else
@@ -76,8 +76,8 @@ module CouchPotato
           .merge(
             if rows
               {
-                startkey: rows&.last&.dig('key'),
-                startkey_docid: rows&.last&.dig('id'),
+                startkey: rows&.last&.dig("key"),
+                startkey_docid: rows&.last&.dig("id"),
                 skip: 1
               }
             else
@@ -85,7 +85,7 @@ module CouchPotato
             end
           )
         result = raw_view(spec)
-        rows = result['rows']
+        rows = result["rows"]
         yield process_view_results(result, spec)
         break if rows.size < batch_size
 
@@ -95,7 +95,7 @@ module CouchPotato
 
     # returns the first result from a #view query or nil
     def first(spec)
-      spec.view_parameters = spec.view_parameters.merge({ limit: 1 })
+      spec.view_parameters = spec.view_parameters.merge({limit: 1})
       view(spec).first
     end
 
@@ -121,13 +121,13 @@ module CouchPotato
         end
       end
     end
-    alias save save_document
+    alias_method :save, :save_document
 
     # saves a document, raises a CouchPotato::Database::ValidationsFailedError on failure
     def save_document!(document)
       save_document(document) || raise(ValidationsFailedError, document.errors.full_messages)
     end
-    alias save! save_document!
+    alias_method :save!, :save_document!
 
     def destroy_document(document)
       cache&.clear
@@ -137,7 +137,7 @@ module CouchPotato
         retry if document = document.reload
       end
     end
-    alias destroy destroy_document
+    alias_method :destroy, :destroy_document
 
     # loads a document by its id(s)
     # id - either a single id or an array of ids
@@ -146,11 +146,11 @@ module CouchPotato
     # could not be found these are omitted from the returned array
     def load_document(id)
       return load_documents(id) if id.is_a?(Array)
-      
+
       cached = cache && cache[id]
       if cache
         if cached
-          ActiveSupport::Notifications.instrument('couch_potato.load.cached') do
+          ActiveSupport::Notifications.instrument("couch_potato.load.cached") do
             cached
           end
         else
@@ -161,20 +161,20 @@ module CouchPotato
         load_document_without_caching(id)
       end
     end
-    alias load load_document
+    alias_method :load, :load_document
 
     def load_documents(ids)
       return [] if ids.empty?
 
       uncached_ids = ids - (cache&.keys || [])
-      uncached_docs_by_id = bulk_load(uncached_ids).index_by {|doc| doc.id if doc.respond_to?(:id) }
+      uncached_docs_by_id = bulk_load(uncached_ids).index_by { |doc| doc.id if doc.respond_to?(:id) }
       if cache
         uncached_ids.each do |id|
           doc = uncached_docs_by_id[id]
           cache[id] = doc if doc
         end
       end
-      cached_docs_by_id = ActiveSupport::Notifications.instrument('couch_potato.load.cached') do
+      cached_docs_by_id = ActiveSupport::Notifications.instrument("couch_potato.load.cached") do
         cache&.slice(*ids) || {}
       end
       ids.filter_map { |id| (cached_docs_by_id[id]) || uncached_docs_by_id[id] }
@@ -185,12 +185,12 @@ module CouchPotato
     def load!(id)
       doc = load(id)
       missing_docs = id - doc.map(&:id) if id.is_a?(Array)
-      raise(CouchPotato::NotFound, missing_docs.try(:join, ', ')) if doc.nil? || missing_docs.try(:any?)
+      raise(CouchPotato::NotFound, missing_docs.try(:join, ", ")) if doc.nil? || missing_docs.try(:any?)
 
       doc
     end
 
-    def inspect #:nodoc:
+    def inspect # :nodoc:
       "#<CouchPotato::Database @root=\"#{couchrest_database.root}\">"
     end
 
@@ -212,12 +212,11 @@ module CouchPotato
       end
       switched_databases[name || :default] ||= self
 
-
       resolved_database_name = CouchPotato.resolve_database_name(database_name) unless database_name == :default
       couchrest_database = resolved_database_name ? CouchPotato.couchrest_database_for_name(resolved_database_name) : CouchPotato.couchrest_database
       new_db = self
         .class
-        .new(couchrest_database, name: database_name == :default ? nil : database_name)
+        .new(couchrest_database, name: (database_name == :default) ? nil : database_name)
         .tap(&copy_clear_cache_proc)
 
       new_db.switched_databases = switched_databases
@@ -243,7 +242,7 @@ module CouchPotato
     end
 
     def view_without_caching(spec)
-      ActiveSupport::Notifications.instrument('couch_potato.view', name: "#{spec.design_document}/#{spec.view_name}") do
+      ActiveSupport::Notifications.instrument("couch_potato.view", name: "#{spec.design_document}/#{spec.view_name}") do
         process_view_results(raw_view(spec), spec)
       end
     end
@@ -265,11 +264,11 @@ module CouchPotato
       CouchPotato::View::ViewQuery.new(
         couchrest_database,
         spec.design_document,
-        { spec.view_name => {
+        {spec.view_name => {
           map: spec.map_function,
           reduce: spec.reduce_function
-        } },
-        ({ spec.list_name => spec.list_function } unless spec.list_name.nil?),
+        }},
+        ({spec.list_name => spec.list_function} unless spec.list_name.nil?),
         spec.lib,
         spec.language
       ).query_view!(spec.view_parameters)
@@ -278,18 +277,18 @@ module CouchPotato
     def load_document_without_caching(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
 
-      ActiveSupport::Notifications.instrument('couch_potato.load') do
+      ActiveSupport::Notifications.instrument("couch_potato.load") do
         instance = couchrest_database.get(id)
         instance.database = self if instance
         instance
-    end
+      end
     end
 
     def view_cache_id(spec)
       spec.send(:klass).to_s + spec.view_name.to_s + spec.view_parameters.to_s
     end
 
-    def handle_write_conflict(document, validate, retries, &block)
+    def handle_write_conflict(document, validate, retries, &)
       cache&.clear
       if retries == 5
         raise CouchPotato::Conflict
@@ -297,7 +296,7 @@ module CouchPotato
         reloaded = document.reload
         document.attributes = reloaded.attributes
         document._rev = reloaded._rev
-        save_document document, validate, retries + 1, &block
+        save_document(document, validate, retries + 1, &)
       end
     end
 
@@ -321,9 +320,9 @@ module CouchPotato
     def bulk_load(ids)
       return [] if ids.empty?
 
-      ActiveSupport::Notifications.instrument('couch_potato.load') do
+      ActiveSupport::Notifications.instrument("couch_potato.load") do
         response = couchrest_database.bulk_load ids
-        docs = response['rows'].map { |row| row['doc'] }.compact
+        docs = response["rows"].map { |row| row["doc"] }.compact
         docs.each do |doc|
           doc.database = self if doc.respond_to?(:database=)
           doc.database_collection = docs if doc.respond_to?(:database_collection=)
@@ -346,8 +345,8 @@ module CouchPotato
       return false if document.run_callbacks(:save) do
         return false if document.run_callbacks(:create) do
           res = couchrest_database.save_doc document.to_hash
-          document._rev = res['rev']
-          document._id = res['id']
+          document._rev = res["rev"]
+          document._id = res["id"]
         end == false
       end == false
 
@@ -367,7 +366,7 @@ module CouchPotato
       return false if document.run_callbacks(:save) do
         return false if document.run_callbacks(:update) do
           res = couchrest_database.save_doc document.to_hash
-          document._rev = res['rev']
+          document._rev = res["rev"]
         end == false
       end == false
 

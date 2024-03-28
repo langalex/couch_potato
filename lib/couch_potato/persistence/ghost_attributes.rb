@@ -1,7 +1,7 @@
 module CouchPotato
-  module GhostAttributes #:nodoc:
+  module GhostAttributes # :nodoc:
     def method_missing(name, *args)
-      if(value = _document && _document[name.to_s])
+      if (value = _document && _document[name.to_s])
         value
       else
         super
@@ -9,4 +9,3 @@ module CouchPotato
     end
   end
 end
-

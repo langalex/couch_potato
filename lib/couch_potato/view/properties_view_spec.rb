@@ -24,13 +24,13 @@ module CouchPotato
       end
 
       def process_results(results)
-        results['rows'].map do |row|
-          klass.json_create row['value'].merge(:_id => row['id'])
+        results["rows"].map do |row|
+          klass.json_create row["value"].merge(_id: row["id"])
         end
       end
 
       def view_parameters
-        {:include_docs => false}.merge(super)
+        {include_docs: false}.merge(super)
       end
 
       def language
@@ -44,7 +44,7 @@ module CouchPotato
       end
 
       def properties_for_map(properties)
-        '{' + properties.map{|p| "#{p}: doc.#{p}"}.join(', ') + '}'
+        "{" + properties.map { |p| "#{p}: doc.#{p}" }.join(", ") + "}"
       end
     end
   end

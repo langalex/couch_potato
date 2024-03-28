@@ -1,6 +1,6 @@
-require 'spec_helper'
-require 'fixtures/address'
-require 'fixtures/person'
+require "spec_helper"
+require "fixtures/address"
+require "fixtures/person"
 
 class Watch
   include CouchPotato::Persistence
@@ -19,7 +19,7 @@ class Watch
   end
 
   def overwritten_write=(value)
-    super value.to_s
+    super(value.to_s)
   end
 end
 
@@ -34,13 +34,13 @@ class SportsWatch < Watch
   property :bpm
 end
 
-describe 'properties' do
+describe "properties" do
   before(:all) do
     recreate_db
   end
 
-  context 'inheritance' do
-    it 'has access to superclass properties' do
+  context "inheritance" do
+    it "has access to superclass properties" do
       expect(CuckooClock.new.cuckoo).to be_nil
     end
 
@@ -52,11 +52,11 @@ describe 'properties' do
   end
 
   it "should allow me to overwrite read accessor and call super" do
-    expect(Watch.new(:overwritten_read => 1).overwritten_read).to eq('1')
+    expect(Watch.new(overwritten_read: 1).overwritten_read).to eq("1")
   end
 
   it "should allow me to overwrite write accessor and call super" do
-    expect(Watch.new(:overwritten_write => 1).overwritten_write).to eq('1')
+    expect(Watch.new(overwritten_write: 1).overwritten_write).to eq("1")
   end
 
   it "should return the property names" do
@@ -64,73 +64,73 @@ describe 'properties' do
   end
 
   it "should persist a string" do
-    c = Comment.new :title => 'my title'
+    c = Comment.new title: "my title"
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
-    expect(c.title).to eq('my title')
+    expect(c.title).to eq("my title")
   end
 
   it "should persist a number" do
-    c = Comment.new :title => 3
+    c = Comment.new title: 3
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
     expect(c.title).to eq(3)
   end
 
   it "should persist a float with leading digits" do
-    w = Watch.new :diameter => "46.5"
+    w = Watch.new diameter: "46.5"
     CouchPotato.database.save_document! w
     w = CouchPotato.database.load_document w.id
     expect(w.diameter).to eq(46.5)
   end
 
   it "should persist a float with no leading digits" do
-    w = Watch.new :diameter => ".465"
+    w = Watch.new diameter: ".465"
     CouchPotato.database.save_document! w
     w = CouchPotato.database.load_document w.id
     expect(w.diameter).to eq(0.465)
   end
 
   it "should persist a big decimal" do
-    require 'bigdecimal'
-    c = BigDecimalContainer.new :number => BigDecimal( '42.42' )
+    require "bigdecimal"
+    c = BigDecimalContainer.new number: BigDecimal("42.42")
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
-    expect(c.number).to eq(BigDecimal( '42.42' ))
+    expect(c.number).to eq(BigDecimal("42.42"))
   end
 
   it "should persist a hash" do
-    c = Comment.new :title => {'key' => 'value'}
+    c = Comment.new title: {"key" => "value"}
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
-    expect(c.title).to eq({'key' => 'value'})
+    expect(c.title).to eq({"key" => "value"})
   end
 
   it "should persist a HashWithIndifferentAccess" do
-    c = Person.new :information => HashWithIndifferentAccess.new({"key" => "value"})
+    c = Person.new information: HashWithIndifferentAccess.new({"key" => "value"})
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
-    expect(c.information).to eq({'key' => 'value'})
+    expect(c.information).to eq({"key" => "value"})
   end
 
   it "should persist subclasses of the specified type" do
-    w = Watch.new(:custom_address => [Address2.new(id: 'a1', city: 'Berlin')])
+    w = Watch.new(custom_address: [Address2.new(id: "a1", city: "Berlin")])
     CouchPotato.database.save_document! w
     w = CouchPotato.database.load_document w.id
 
     expect(w.custom_address[0]).to be_an_instance_of Address2
   end
 
-  it 'initializes an typed array property from an array of hashes' do
-    w = Watch.new(custom_address: [{id: 'a1', city: 'Berlin'}])
+  it "initializes an typed array property from an array of hashes" do
+    w = Watch.new(custom_address: [{id: "a1", city: "Berlin"}])
 
     expect(w.custom_address.map(&:class)).to eq([Address])
-    expect(w.custom_address.map(&:id)).to eq(['a1'])
-    expect(w.custom_address.map(&:city)).to eq(['Berlin'])
+    expect(w.custom_address.map(&:id)).to eq(["a1"])
+    expect(w.custom_address.map(&:city)).to eq(["Berlin"])
   end
 
   def it_should_persist value
-    c = Comment.new :title => value
+    c = Comment.new title: value
     CouchPotato.database.save_document! c
     c = CouchPotato.database.load_document c.id
     expect(c.title.to_json).to eq(value.to_json)
@@ -139,15 +139,15 @@ describe 'properties' do
   end
 
   it "should persist a child class" do
-    it_should_persist Child.new('text' => 'some text')
+    it_should_persist Child.new("text" => "some text")
   end
 
   it "should persist a hash with a child class" do
-    it_should_persist 'child' => Child.new('text' => 'some text')
+    it_should_persist "child" => Child.new("text" => "some text")
   end
 
   it "should persist an array with a child class" do
-    it_should_persist [Child.new('text' => 'some text')]
+    it_should_persist [Child.new("text" => "some text")]
   end
 
   it "should persist something very complex" do
@@ -155,16 +155,16 @@ describe 'properties' do
       [
         [
           {
-            'what' => [
+            "what" => [
               {
-                'ever' => Child.new('text' => 'some text')
+                "ever" => Child.new("text" => "some text")
               }
             ],
-            'number' => 3
+            "number" => 3
           },
           "string"
         ],
-        Child.new('text' => 'nothing')
+        Child.new("text" => "nothing")
       ]
     ]
     it_should_persist something_very_complex
@@ -172,7 +172,7 @@ describe 'properties' do
 
   it "should persist an object" do
     p = Person.new
-    a = Address.new :city => 'Denver'
+    a = Address.new city: "Denver"
     p.ship_address = a
     CouchPotato.database.save_document! p
     p = CouchPotato.database.load_document p.id
@@ -209,29 +209,29 @@ describe 'properties' do
   describe "time properties" do
     it "should persist a Time as utc" do
       time = Time.now
-      w = Watch.new :time => time
+      w = Watch.new time: time
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.time.to_s).to eq(time.utc.to_s)
     end
 
     it "should parse a string and persist it as utc time" do
-      w = Watch.new :time => '2009-01-01 13:25 +0100'
+      w = Watch.new time: "2009-01-01 13:25 +0100"
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.time).to be_a(Time)
-      expect(w.time).to eq(Time.parse('2009-01-01 12:25 +0000'))
+      expect(w.time).to eq(Time.parse("2009-01-01 12:25 +0000"))
     end
 
     it "should store nil" do
-      w = Watch.new :time => nil
+      w = Watch.new time: nil
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.time).to be_nil
     end
 
     it "should store an empty string as nil" do
-      w = Watch.new :time => ''
+      w = Watch.new time: ""
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.time).to be_nil
@@ -241,28 +241,28 @@ describe 'properties' do
   describe "date properties" do
     it "should persist a date" do
       date = Date.today
-      w = Watch.new :date => date
+      w = Watch.new date: date
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.date).to eq(date)
     end
 
     it "should parse a string and persist it as a date" do
-      w = Watch.new :date => '2009-01-10'
+      w = Watch.new date: "2009-01-10"
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
-      expect(w.date).to eq(Date.parse('2009-01-10'))
+      expect(w.date).to eq(Date.parse("2009-01-10"))
     end
 
     it "should store nil" do
-      w = Watch.new :date => nil
+      w = Watch.new date: nil
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.date).to be_nil
     end
 
     it "should store an empty string as nil" do
-      w = Watch.new :date => ''
+      w = Watch.new date: ""
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.date).to be_nil
@@ -271,7 +271,7 @@ describe 'properties' do
 
   describe "array properties" do
     it "should persist an array of strings" do
-      w = Watch.new :custom => ["moin"]
+      w = Watch.new custom: ["moin"]
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.custom).to eql(["moin"])
@@ -279,23 +279,23 @@ describe 'properties' do
 
     it "should persist an array of dates" do
       date = Date.today
-      w = Watch.new :custom_date => [date]
+      w = Watch.new custom_date: [date]
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.custom_date).to eql([date])
     end
 
     it "should persist an array of nested documents" do
-      address = Address.new(:verified => 1)
-      w = Watch.new :custom_address => [address]
+      address = Address.new(verified: 1)
+      w = Watch.new custom_address: [address]
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.custom_address.to_json).to eql([address].to_json)
     end
 
     it "should handle nil values" do
-      address = Address.new(:verified => 1)
-      w = Watch.new :custom_address => nil
+      address = Address.new(verified: 1)
+      w = Watch.new custom_address: nil
       CouchPotato.database.save_document! w
       w = CouchPotato.database.load_document w.id
       expect(w.custom_address).to eql(nil)
@@ -305,7 +305,7 @@ describe 'properties' do
   describe "boolean properties" do
     it "should persist '0' as false" do
       a = Address.new
-      a.verified = '0'
+      a.verified = "0"
       CouchPotato.database.save_document! a
       a = CouchPotato.database.load_document a.id
       expect(a.verified).to be_falsey
@@ -321,7 +321,7 @@ describe 'properties' do
 
     it "should persist 'false' as false" do
       a = Address.new
-      a.verified = 'false'
+      a.verified = "false"
       CouchPotato.database.save_document! a
       a = CouchPotato.database.load_document a.id
       expect(a.verified).to be_falsey
@@ -329,7 +329,7 @@ describe 'properties' do
 
     it "should persist '1' as true" do
       a = Address.new
-      a.verified = '1'
+      a.verified = "1"
       CouchPotato.database.save_document! a
       a = CouchPotato.database.load_document a.id
       expect(a.verified).to be_truthy
@@ -354,7 +354,7 @@ describe 'properties' do
 
   describe "predicate" do
     it "should return true if property set" do
-      expect(Comment.new(:title => 'title').title?).to be_truthy
+      expect(Comment.new(title: "title").title?).to be_truthy
     end
 
     it "should return false if property nil" do
@@ -362,11 +362,11 @@ describe 'properties' do
     end
 
     it "should return false if property false" do
-      expect(Comment.new(:title => false).title?).to be_falsey
+      expect(Comment.new(title: false).title?).to be_falsey
     end
 
     it "should return false if property blank" do
-      expect(Comment.new(:title => '').title?).to be_falsey
+      expect(Comment.new(title: "").title?).to be_falsey
     end
   end
 
@@ -377,15 +377,15 @@ describe 'properties' do
     end
 
     it "should return attributes of superclasses" do
-      clock = CuckooClock.new(:time => Time.now, :cuckoo => 'bavarian')
+      clock = CuckooClock.new(time: Time.now, cuckoo: "bavarian")
       expect(clock.attributes[:time]).not_to be_nil
-      expect(clock.attributes[:cuckoo]).to eql('bavarian')
+      expect(clock.attributes[:cuckoo]).to eql("bavarian")
     end
   end
 
   describe "inspecting an object" do
     let(:comment) do
-      comment = Comment.new(:title => 'title')
+      comment = Comment.new(title: "title")
       comment.instance_eval do
         @_id = "123456abcdef"
         @_rev = "1-654321fedcba"
@@ -394,7 +394,7 @@ describe 'properties' do
     end
 
     it "should not include change-tracking variables" do
-      expect(comment.inspect).not_to include('title_was')
+      expect(comment.inspect).not_to include("title_was")
     end
 
     it "should include the normal persistent variables" do
@@ -402,26 +402,26 @@ describe 'properties' do
     end
 
     it "should include the id" do
-      expect(comment.inspect).to include(%Q{_id: "123456abcdef",})
+      expect(comment.inspect).to include(%(_id: "123456abcdef",))
     end
 
     it "should include the revision" do
-      expect(comment.inspect).to include(%Q{_rev: "1-654321fedcba",})
+      expect(comment.inspect).to include(%(_rev: "1-654321fedcba",))
     end
 
     it "should return a complete string" do
       # stub to work around (un)sorted hash on different rubies
-      allow(comment).to receive(:attributes).and_return([['created_at', ''], ['updated_at', ''], ['title', 'title']])
+      allow(comment).to receive(:attributes).and_return([["created_at", ""], ["updated_at", ""], ["title", "title"]])
       doc = '#<Comment _id: "123456abcdef", _rev: "1-654321fedcba", created_at: "", updated_at: "", title: "title">'
       expect(comment.inspect).to eql(doc)
     end
 
     it "should include complex datatypes fully inspected" do
-      comment.title = {'en' => 'Blog post'}
+      comment.title = {"en" => "Blog post"}
       expect(comment.inspect).to include('title: {"en"=>"Blog post"}')
 
       comment.title = nil
-      expect(comment.inspect).to include('title: nil')
+      expect(comment.inspect).to include("title: nil")
     end
   end
 end

@@ -1,9 +1,9 @@
-require 'execjs'
+require "execjs"
 
-require 'couch_potato/rspec/matchers/map_to_matcher'
-require 'couch_potato/rspec/matchers/reduce_to_matcher'
-require 'couch_potato/rspec/matchers/map_reduce_to_matcher'
-require 'couch_potato/rspec/matchers/list_as_matcher'
+require "couch_potato/rspec/matchers/map_to_matcher"
+require "couch_potato/rspec/matchers/reduce_to_matcher"
+require "couch_potato/rspec/matchers/map_reduce_to_matcher"
+require "couch_potato/rspec/matchers/list_as_matcher"
 
 module RSpec
   module Matchers

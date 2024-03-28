@@ -18,7 +18,7 @@ module CouchPotato
         @klass = klass
         @options = options
         @view_name = compute_view_name(view_name,
-                                       options.key?(:digest_view_name) ? options[:digest_view_name] : Config.digest_view_names)
+          options.key?(:digest_view_name) ? options[:digest_view_name] : Config.digest_view_names)
         @design_document = translate_to_design_doc_name(klass.to_s, @view_name, @list_name)
         @list_params = normalized_view_parameters.delete :list_params
 
@@ -63,7 +63,7 @@ module CouchPotato
         klass_name = klass_name.dup
         klass_name.gsub!(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
         klass_name.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
-        klass_name.tr!('-', '_')
+        klass_name.tr!("-", "_")
         doc_name = klass_name.downcase
 
         if CouchPotato::Config.split_design_documents_per_view

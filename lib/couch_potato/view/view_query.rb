@@ -40,32 +40,36 @@ module CouchPotato
       private
 
       def update_view
-        design_doc = @database.get "_design/#{@design_document_name}" rescue nil
-        original_views = design_doc && design_doc['views'].dup
-        original_lists = design_doc && design_doc['lists'] && design_doc['lists'].dup
+        design_doc = begin
+          @database.get "_design/#{@design_document_name}"
+        rescue
+          nil
+        end
+        original_views = design_doc && design_doc["views"].dup
+        original_lists = design_doc && design_doc["lists"] && design_doc["lists"].dup
         view_updated unless design_doc.nil?
         design_doc ||= empty_design_document
-        design_doc['views'][@view_name.to_s] = view_functions
+        design_doc["views"][@view_name.to_s] = view_functions
         if @lib
-          design_doc['views']['lib'] = (design_doc['views']['lib'] || {}).merge(@lib)
+          design_doc["views"]["lib"] = (design_doc["views"]["lib"] || {}).merge(@lib)
         end
         if @list_function
-          design_doc['lists'] ||= {}
-          design_doc['lists'][@list_name.to_s] = @list_function
+          design_doc["lists"] ||= {}
+          design_doc["lists"][@list_name.to_s] = @list_function
         end
-        @database.save_doc(design_doc) if original_views != design_doc['views'] || original_lists != design_doc['lists']
+        @database.save_doc(design_doc) if original_views != design_doc["views"] || original_lists != design_doc["lists"]
       end
 
       def view_functions
         if @reduce_function
-          {'map' => @map_function, 'reduce' => @reduce_function}
+          {"map" => @map_function, "reduce" => @reduce_function}
         else
-          {'map' => @map_function}
+          {"map" => @map_function}
         end
       end
 
       def empty_design_document
-        {'views' => {}, 'lists' => {}, "_id" => "_design/#{@design_document_name}", "language" => @language.to_s}
+        {"views" => {}, "lists" => {}, "_id" => "_design/#{@design_document_name}", "language" => @language.to_s}
       end
 
       def view_has_been_updated?

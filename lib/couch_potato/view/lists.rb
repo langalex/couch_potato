@@ -4,12 +4,12 @@ module CouchPotato
       def self.included(base)
         base.send :extend, ClassMethods
       end
-      
+
       module ClassMethods
         def list(name, function)
           lists[name] = function
         end
-        
+
         def lists(name = nil)
           if name.nil?
             @lists ||= {}

@@ -1,23 +1,24 @@
 # frozen_string_literal: true
 
-require 'couchrest'
-require 'json'
+require "couchrest"
+require "json"
 
-require 'ostruct'
+require "ostruct"
 
-JSON.create_id = 'ruby_class'
+JSON.create_id = "ruby_class"
 CouchRest.decode_json_objects = true
 
 module CouchPotato
   Config = Struct.new(:database_host, :database_name, :digest_view_names,
-                      :split_design_documents_per_view, :default_language, :additional_databases).new
+    :split_design_documents_per_view, :default_language, :additional_databases).new
   Config.split_design_documents_per_view = false
   Config.digest_view_names = false
   Config.default_language = :javascript
-  Config.database_host = 'http://127.0.0.1:5984'
+  Config.database_host = "http://127.0.0.1:5984"
   Config.additional_databases = {}
 
   class NotFound < StandardError; end
+
   class Conflict < StandardError; end
 
   def self.configure(config)
@@ -25,12 +26,12 @@ module CouchPotato
       Config.database_name = config
     else
       config = config.stringify_keys
-      Config.database_name = config['database']
-      Config.database_host = config['database_host'] if config['database_host']
-      Config.additional_databases = config['additional_databases'].stringify_keys if config['additional_databases']
-      Config.split_design_documents_per_view = config['split_design_documents_per_view'] if config['split_design_documents_per_view']
-      Config.digest_view_names = config['digest_view_names'] if config['digest_view_names']
-      Config.default_language = config['default_language'] if config['default_language']
+      Config.database_name = config["database"]
+      Config.database_host = config["database_host"] if config["database_host"]
+      Config.additional_databases = config["additional_databases"].stringify_keys if config["additional_databases"]
+      Config.split_design_documents_per_view = config["split_design_documents_per_view"] if config["split_design_documents_per_view"]
+      Config.digest_view_names = config["digest_view_names"] if config["digest_view_names"]
+      Config.default_language = config["default_language"] if config["default_language"]
     end
   end
 
@@ -86,9 +87,9 @@ module CouchPotato
   end
 
   def self.full_url_to_database(database_name = CouchPotato::Config.database_name, database_host = CouchPotato::Config.database_host)
-    raise('No Database configured. Set CouchPotato::Config.database_name') unless database_name
+    raise("No Database configured. Set CouchPotato::Config.database_name") unless database_name
 
-    if database_name.match(%r{https?://})
+    if %r{https?://}.match?(database_name)
       database_name
     else
       "#{database_host}/#{database_name}"
@@ -98,8 +99,8 @@ end
 
 $LOAD_PATH << File.dirname(__FILE__)
 
-require 'core_ext/time'
-require 'core_ext/date'
-require 'couch_potato/validation'
-require 'couch_potato/persistence'
-require 'couch_potato/railtie' if defined?(Rails)
+require "core_ext/time"
+require "core_ext/date"
+require "couch_potato/validation"
+require "couch_potato/persistence"
+require "couch_potato/railtie" if defined?(Rails)

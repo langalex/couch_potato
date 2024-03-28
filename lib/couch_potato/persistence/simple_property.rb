@@ -14,7 +14,7 @@ module CouchPotato
       end
     end
 
-    class SimpleProperty  #:nodoc:
+    class SimpleProperty  # :nodoc:
       attr_accessor :name, :type, :default_value
 
       def initialize(owner_clazz, name, options = {})
@@ -36,12 +36,12 @@ module CouchPotato
       def serialize(json, object)
         json[name] = object.send name
       end
-      alias :value :serialize
+      alias_method :value, :serialize
 
       private
 
       def module_for(clazz, module_name)
-        module_name = "#{clazz.name.to_s.gsub('::', '__')}#{module_name}"
+        module_name = "#{clazz.name.to_s.gsub("::", "__")}#{module_name}"
         unless clazz.const_defined?(module_name)
           accessors_module = clazz.const_set(module_name, Module.new)
           clazz.send(:include, accessors_module)
@@ -69,21 +69,21 @@ module CouchPotato
               else
                 clone_attribute(options[:default])
               end
-              self.instance_variable_set(ivar_name, default)
+              instance_variable_set(ivar_name, default)
               default
             else
               value
             end
           end
 
-          define_method "#{name}=" do |value|
+          define_method :"#{name}=" do |value|
             typecasted_value = type_caster.cast(value, options[:type])
-            send("#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
-            self.instance_variable_set(ivar_name, typecasted_value)
+            send(:"#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
+            instance_variable_set(ivar_name, typecasted_value)
           end
 
-          define_method "#{name}?" do
-            !self.send(name).nil? && !self.send(name).try(:blank?)
+          define_method :"#{name}?" do
+            !send(name).nil? && !send(name).try(:blank?)
           end
         end
       end

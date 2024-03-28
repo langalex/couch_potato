@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
-require 'rubygems'
-require 'rspec'
-require 'time'
-require 'active_support'
-require 'timecop'
+require "rubygems"
+require "rspec"
+require "time"
+require "active_support"
+require "timecop"
 
-$LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(File.dirname(__FILE__) + "/../lib")
 
-require 'couch_potato'
+require "couch_potato"
 
-CouchPotato::Config.database_name = ENV['DATABASE'] || 'couch_potato_test'
+CouchPotato::Config.database_name = ENV["DATABASE"] || "couch_potato_test"
 
 # silence deprecation warnings from ActiveModel as the Spec uses Errors#on
 begin
   ActiveSupport::Deprecation.silenced = true
-rescue StandardError
+rescue
   # ignore errors, ActiveSupport is probably not installed
 end
 
@@ -64,6 +64,6 @@ RSpec::Matchers.define :eql_ignoring_indentation do |expected|
   end
 
   def strip_indentation(string)
-    string.gsub(/^\s+/m, '')
+    string.gsub(/^\s+/m, "")
   end
 end

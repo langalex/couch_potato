@@ -1,45 +1,44 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe "create" do
-  
   describe "succeeds" do
     before(:each) do
       Time.zone = nil
     end
-    
+
     def create_comment
-      comment = Comment.new :title => 'my_title'
-      CouchPotato::Database.new(double('database', :save_doc => {'rev' => '123', 'id' => '456'}, :info => nil)).save_document!(comment)
+      comment = Comment.new title: "my_title"
+      CouchPotato::Database.new(double("database", save_doc: {"rev" => "123", "id" => "456"}, info: nil)).save_document!(comment)
       comment
     end
 
     it "should assign the id" do
-      expect(create_comment._id).to eq('456')
+      expect(create_comment._id).to eq("456")
     end
 
     it "should assign the revision" do
-      expect(create_comment._rev).to eq('123')
+      expect(create_comment._rev).to eq("123")
     end
 
     it "should set created at in the current time zone" do
-      Time.zone = 'Europe/Berlin'
-      Timecop.travel Time.zone.parse('2010-01-01 12:00 +0100') do
-        expect(create_comment.created_at.to_s).to eq('2010-01-01 12:00:00 +0100')
+      Time.zone = "Europe/Berlin"
+      Timecop.travel Time.zone.parse("2010-01-01 12:00 +0100") do
+        expect(create_comment.created_at.to_s).to eq("2010-01-01 12:00:00 +0100")
       end
     end
 
     it "should set updated at in the current time zone" do
-      Time.zone = 'Europe/Berlin'
-      Timecop.travel Time.zone.parse('2010-01-01 12:00 +0100') do
-        expect(create_comment.updated_at.to_s).to eq('2010-01-01 12:00:00 +0100')
+      Time.zone = "Europe/Berlin"
+      Timecop.travel Time.zone.parse("2010-01-01 12:00 +0100") do
+        expect(create_comment.updated_at.to_s).to eq("2010-01-01 12:00:00 +0100")
       end
     end
   end
-  
+
   describe "fails" do
     before(:each) do
       @comment = Comment.new
-      @db = CouchPotato::Database.new(double('database', :info => nil))
+      @db = CouchPotato::Database.new(double("database", info: nil))
       @db.save_document(@comment)
     end
 
@@ -58,7 +57,7 @@ describe "create" do
     it "should set updated at" do
       expect(@comment.updated_at).to be_nil
     end
-    
+
     describe "with !" do
       it "should raise an exception" do
         expect {

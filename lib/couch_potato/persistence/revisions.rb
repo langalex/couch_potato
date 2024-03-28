@@ -6,8 +6,8 @@ module CouchPotato
       def _revisions
         with_revs = database.couchrest_database.get(id, revs: true, revs_info: true)._document
         revs_info = with_revs[:_revs_info]
-        revs = revs_info.select {|info| info[:status] == 'available' }.map {|info| info[:rev] }
-        revs.reverse.map {|rev| database.couchrest_database.get(id, rev: rev) }
+        revs = revs_info.select { |info| info[:status] == "available" }.map { |info| info[:rev] }
+        revs.reverse.map { |rev| database.couchrest_database.get(id, rev: rev) }
       end
     end
   end

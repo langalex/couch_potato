@@ -1,5 +1,4 @@
-require 'json'
-
+require "json"
 
 module CouchPotato
   module RSpec
