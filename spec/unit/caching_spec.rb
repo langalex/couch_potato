@@ -18,6 +18,10 @@ RSpec.describe 'database caching' do
     {}
   end
 
+  after(:each) do
+    ActiveSupport::Notifications.unsubscribe(@subscriber) if @subscriber
+  end
+
   context 'for a single document' do
     it 'gets an object from the cache the 2nd time via #load_documemt' do
       expect(couchrest_db).to receive(:get).with('1').exactly(1).times
@@ -47,6 +51,29 @@ RSpec.describe 'database caching' do
       db.load_document '1'
       expect(db.load_document('1')).to eql(doc)
     end
+
+    it 'instruments the load call' do
+      doc = double("doc").as_null_object
+      allow(couchrest_db).to receive(:get).and_return(doc)
+      events = []
+      @subscriber = ActiveSupport::Notifications.subscribe(
+        'couch_potato.load.cached'
+      ) do |event|
+        events << event
+      end
+  
+      db.load("1")
+      db.load("1")
+  
+      expect(events.size).to eq(1)
+      expect(events.first.payload).to eq(
+        {
+          id: "1",
+          doc: 
+        }
+      )
+  
+    end
   end
 
   context 'for multiple documents' do
@@ -63,6 +90,31 @@ RSpec.describe 'database caching' do
 
       expect(couchrest_db).to have_received(:bulk_load).with(['1']).exactly(1).times
       expect(couchrest_db).to have_received(:bulk_load).with(['2']).exactly(1).times
+    end
+
+    it 'instruments the load call' do
+      allow(couchrest_db).to receive(:bulk_load).with(['1'])
+        .and_return('rows' => [{'doc' => doc1}])
+      allow(couchrest_db).to receive(:bulk_load).with(['2'])
+        .and_return('rows' => [{'doc' => doc2}])
+      events = []
+      @subscriber = ActiveSupport::Notifications.subscribe(
+        'couch_potato.load.cached'
+      ) do |event|
+        events << event
+      end
+
+
+      db.load_document(['1'])
+      db.load_document(['1', '2'])
+
+      expect(events.size).to eq(1)
+      expect(events.first.payload).to eq(
+        {
+          ids: ["1"],
+          docs: [doc1]
+        }
+      )
     end
 
     it 'loads nothing if all documents are cached' do
@@ -94,7 +146,7 @@ RSpec.describe 'database caching' do
         'id' => '2',
       }
       allow(couchrest_db).to receive(:bulk_load).with(['1', '2'])
-        .and_return('rows' => [{'doc' => doc1}, {'doc' => doc1}])
+        .and_return('rows' => [{'doc' => doc1}, {'doc' => doc2}])
 
       db.load_document(['1', '2'])
       db.load_document(['1', '2'])
