@@ -69,7 +69,7 @@ RSpec.describe 'database caching' do
       expect(events.first.payload).to eq(
         {
           id: "1",
-          doc: 
+          doc: doc
         }
       )
   
