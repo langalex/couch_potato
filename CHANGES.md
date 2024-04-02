@@ -1,5 +1,10 @@
 ## Changes
 
+# 1.16.0
+
+- add payload to ActiveSupport instrumentation calls
+- only notify load.cached when there are cached documents
+
 # 1.15.0
 
 - cache loading multiple documents
