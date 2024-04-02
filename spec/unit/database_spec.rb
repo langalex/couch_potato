@@ -42,6 +42,11 @@ describe CouchPotato::Database, 'load' do
   let(:couchrest_db) { double('couchrest db', info: nil).as_null_object }
   let(:db) { CouchPotato::Database.new couchrest_db }
 
+
+  after(:each) do
+    ActiveSupport::Notifications.unsubscribe(@subscriber) if @subscriber
+  end
+
   it 'should raise an exception if nil given' do
     expect do
       db.load nil
@@ -130,6 +135,46 @@ describe CouchPotato::Database, 'load' do
     it 'returns an empty array when passing an empty array' do
       expect(db.load([])).to eq([])
     end
+
+    it 'instruments the load call' do
+      events = []
+      @subscriber = ActiveSupport::Notifications.subscribe(
+        'couch_potato.load'
+      ) do |event|
+        events << event
+      end
+  
+      db.load(["1", "2"])
+  
+      expect(events.size).to eq(1)
+      expect(events.first.payload).to eq(
+        {
+          ids: ["1", "2"],
+          docs: [doc1, doc2]
+        }
+      )
+    end
+  end
+
+  it 'instruments the load call' do
+    doc = double("doc").as_null_object
+    allow(couchrest_db).to receive(:get).and_return(doc)
+    events = []
+    @subscriber = ActiveSupport::Notifications.subscribe(
+      'couch_potato.load'
+    ) do |event|
+      events << event
+    end
+
+    db.load("1")
+
+    expect(events.size).to eq(1)
+    expect(events.first.payload).to eq(
+      {
+        id: "1",
+        doc: doc
+      }
+    )
   end
 end
 

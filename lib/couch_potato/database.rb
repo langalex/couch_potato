@@ -150,7 +150,7 @@ module CouchPotato
       cached = cache && cache[id]
       if cache
         if cached
-          ActiveSupport::Notifications.instrument('couch_potato.load.cached') do
+          ActiveSupport::Notifications.instrument('couch_potato.load.cached', id: id, doc: cached) do
             cached
           end
         else
@@ -168,14 +168,17 @@ module CouchPotato
 
       uncached_ids = ids - (cache&.keys || [])
       uncached_docs_by_id = bulk_load(uncached_ids).index_by {|doc| doc.id if doc.respond_to?(:id) }
+      cached_docs_by_id = cache&.slice(*ids) || {}
+      if cached_docs_by_id.any?
+        ActiveSupport::Notifications.instrument('couch_potato.load.cached', ids: cached_docs_by_id.keys, docs: cached_docs_by_id.values) do
+          cached_docs_by_id
+        end
+      end
       if cache
         uncached_ids.each do |id|
           doc = uncached_docs_by_id[id]
           cache[id] = doc if doc
         end
-      end
-      cached_docs_by_id = ActiveSupport::Notifications.instrument('couch_potato.load.cached') do
-        cache&.slice(*ids) || {}
       end
       ids.filter_map { |id| (cached_docs_by_id[id]) || uncached_docs_by_id[id] }
     end
@@ -278,9 +281,11 @@ module CouchPotato
     def load_document_without_caching(id)
       raise "Can't load a document without an id (got nil)" if id.nil?
 
-      ActiveSupport::Notifications.instrument('couch_potato.load') do
+      payload = {id: id}
+      ActiveSupport::Notifications.instrument('couch_potato.load', payload) do
         instance = couchrest_database.get(id)
         instance.database = self if instance
+        payload[:doc] = instance
         instance
     end
     end
@@ -321,9 +326,11 @@ module CouchPotato
     def bulk_load(ids)
       return [] if ids.empty?
 
-      ActiveSupport::Notifications.instrument('couch_potato.load') do
+      payload = {ids: ids}
+      ActiveSupport::Notifications.instrument('couch_potato.load', payload) do
         response = couchrest_database.bulk_load ids
-        docs = response['rows'].map { |row| row['doc'] }.compact
+        docs = response["rows"].map { |row| row["doc"] }.compact
+        payload[:docs] = docs
         docs.each do |doc|
           doc.database = self if doc.respond_to?(:database=)
           doc.database_collection = docs if doc.respond_to?(:database_collection=)
