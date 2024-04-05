@@ -37,6 +37,15 @@ RSpec.describe 'database caching' do
       db.load '1'
     end
 
+    it 'caches nil' do
+      allow(couchrest_db).to receive(:get).with('1').and_return(nil)
+
+      db.load '1'
+      db.load '1'
+
+      expect(couchrest_db).to have_received(:get).with('1').exactly(1).times
+    end
+
     it 'gets an object from the cache the 2nd time via #load!' do
       expect(couchrest_db).to receive(:get).with('1').exactly(1).times
 
@@ -92,6 +101,17 @@ RSpec.describe 'database caching' do
       expect(couchrest_db).to have_received(:bulk_load).with(['2']).exactly(1).times
     end
 
+    it 'caches nil' do
+      allow(couchrest_db).to receive(:bulk_load).with(['1']).and_return('rows' => [{'doc' => nil}])
+      allow(couchrest_db).to receive(:bulk_load).with(['2']).and_return('rows' => [{'doc' => doc2}])
+      
+
+      db.load_document(['1'])
+      db.load_document(['1', '2'])
+
+      expect(couchrest_db).to have_received(:bulk_load).with(['1']).exactly(1).times
+    end
+
     it 'instruments the load call' do
       allow(couchrest_db).to receive(:bulk_load).with(['1'])
         .and_return('rows' => [{'doc' => doc1}])
@@ -136,22 +156,6 @@ RSpec.describe 'database caching' do
       result = db.load_document(['1', '2'])
 
       expect(result).to eql([doc1, doc2])
-    end
-
-    it 'does not cache documents that do not respond to id' do
-      doc1 = {
-        'id' => '1',
-      }
-      doc2 = {
-        'id' => '2',
-      }
-      allow(couchrest_db).to receive(:bulk_load).with(['1', '2'])
-        .and_return('rows' => [{'doc' => doc1}, {'doc' => doc2}])
-
-      db.load_document(['1', '2'])
-      db.load_document(['1', '2'])
-
-      expect(couchrest_db).to have_received(:bulk_load).with(['1', '2']).exactly(2).times
     end
   end
 

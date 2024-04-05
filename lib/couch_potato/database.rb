@@ -149,7 +149,7 @@ module CouchPotato
       
       cached = cache && cache[id]
       if cache
-        if cached
+        if cache.key?(id)
           ActiveSupport::Notifications.instrument('couch_potato.load.cached', id: id, doc: cached) do
             cached
           end
@@ -178,7 +178,7 @@ module CouchPotato
       if cache
         uncached_ids.each do |id|
           doc = uncached_docs_by_id[id]
-          cache[id] = doc if doc
+          cache[id] = doc
         end
       end
       ids.filter_map { |id| (cached_docs_by_id[id]) || uncached_docs_by_id[id] }
