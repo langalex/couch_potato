@@ -1,5 +1,10 @@
 ## Changes
 
+# 1.17.0
+
+- filter out nil ids for loading multiple documents
+- cache nil documents
+
 # 1.16.0
 
 - add payload to ActiveSupport instrumentation calls
