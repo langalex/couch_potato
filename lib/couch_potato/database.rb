@@ -164,6 +164,7 @@ module CouchPotato
     alias load load_document
 
     def load_documents(ids)
+      ids = ids.compact
       return [] if ids.empty?
 
       uncached_ids = ids - (cache&.keys || [])

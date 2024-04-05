@@ -92,6 +92,12 @@ describe CouchPotato::Database, 'load' do
       db.load %w[1 2 3]
     end
 
+    it 'does not request anything when nil is given' do
+      expect(db.load([nil])).to eq([])
+
+      expect(couchrest_db).not_to have_received(:bulk_load)
+    end
+
     it 'returns only found documents' do
       expect(db.load(%w[1 2 3]).size).to eq(2)
     end
