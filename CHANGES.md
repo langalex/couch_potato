@@ -1,5 +1,11 @@
 ## Changes
 
+# 1.18.0
+
+- add testing Rails 7.2/8 on CI
+- change gemspec to allow for Rails 8
+- remove support for Rails < 7.2
+
 # 1.17.0
 
 - filter out nil ids for loading multiple documents
