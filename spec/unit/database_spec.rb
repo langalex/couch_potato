@@ -415,11 +415,10 @@ describe CouchPotato::Database, 'view' do
     allow(CouchPotato::View::ViewQuery).to receive_messages(new: double('view query', query_view!: { 'rows' => [@result] }))
   end
 
-  it 'initializes a view query with map/reduce/list/lib funtions' do
+  it 'initializes a view query with map/reduce/lib funtions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
                                      map_function: '<map_code>', reduce_function: '<reduce_code>',
-                                     lib: { test: '<test_code>' },
-                                     list_name: 'my_list', list_function: '<list_code>', language: 'javascript')
+                                     lib: { test: '<test_code>' }, language: 'javascript')
     expect(CouchPotato::View::ViewQuery).to receive(:new).with(
       @couchrest_db,
       'design_doc',
@@ -427,17 +426,16 @@ describe CouchPotato::Database, 'view' do
         map: '<map_code>',
         reduce: '<reduce_code>'
       } },
-      { 'my_list' => '<list_code>' },
       { test: '<test_code>' },
       'javascript'
     )
     @db.view(@spec)
   end
 
-  it 'initializes a view query with map/reduce/list funtions' do
+  it 'initializes a view query with map/reduce funtions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
                                      map_function: '<map_code>', reduce_function: '<reduce_code>',
-                                     lib: nil, list_name: 'my_list', list_function: '<list_code>',
+                                     lib: nil,
                                      language: 'javascript')
     expect(CouchPotato::View::ViewQuery).to receive(:new).with(
       @couchrest_db,
@@ -446,7 +444,6 @@ describe CouchPotato::Database, 'view' do
         map: '<map_code>',
         reduce: '<reduce_code>'
       } },
-      { 'my_list' => '<list_code>' },
       nil,
       'javascript'
     )
@@ -456,7 +453,6 @@ describe CouchPotato::Database, 'view' do
   it 'initializes a view query with only map/reduce/lib functions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
                                      map_function: '<map_code>', reduce_function: '<reduce_code>',
-                                     list_name: nil, list_function: nil,
                                      lib: { test: '<test_code>' })
     expect(CouchPotato::View::ViewQuery).to receive(:new).with(
       @couchrest_db,
@@ -464,22 +460,21 @@ describe CouchPotato::Database, 'view' do
       { 'my_view' => {
         map: '<map_code>',
         reduce: '<reduce_code>'
-      } }, nil, { test: '<test_code>' }, anything
+      } }, { test: '<test_code>' }, anything
     )
     @db.view(@spec)
   end
 
   it 'initializes a view query with only map/reduce functions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
-                                     map_function: '<map_code>', reduce_function: '<reduce_code>',
-                                     lib: nil, list_name: nil, list_function: nil)
+                                     map_function: '<map_code>', reduce_function: '<reduce_code>')
     expect(CouchPotato::View::ViewQuery).to receive(:new).with(
       @couchrest_db,
       'design_doc',
       { 'my_view' => {
         map: '<map_code>',
         reduce: '<reduce_code>'
-      } }, nil, nil, anything
+      } }, anything, anything
     )
     @db.view(@spec)
   end

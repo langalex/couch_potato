@@ -33,8 +33,7 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
           :group_level => 1,
           :reduce => false,
           :include_docs => true,
-          :inclusive_end => true,
-          :list_params => {}
+          :inclusive_end => true
         }
       }.not_to raise_error
     end
@@ -54,70 +53,62 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       expect(spec.view_parameters).to eq({:key => '2'})
     end
 
-    it 'merges the list params' do
-      spec = CouchPotato::View::BaseViewSpec.new Object, 'all', {}, key: '2', list_params: {:x => 'y'}
-      expect(spec.view_parameters).to eq({:key => '2', :x => 'y'})
+    context 'when single design document is enabled' do
+      before(:each) do
+        CouchPotato::Config.single_design_document = true
+      end
+      
+      
     end
 
-    it "generates the design document path by snake_casing the class name but keeping double colons" do
-      spec = CouchPotato::View::BaseViewSpec.new 'Foo::BarBaz', '', {}, ''
-      expect(spec.design_document).to eq('foo::bar_baz')
-    end
+    context 'when single design document is disabled' do
+      before(:each) do
+        CouchPotato::Config.single_design_document = false
+      end
+      
+      context 'and split design documents per view is enabled' do
+        before(:each) do
+          CouchPotato::Config.split_design_documents_per_view = true
+        end
+        
+        it "generates one design document per view" do
+          spec = CouchPotato::View::BaseViewSpec.new 'User', 'by_login_and_email', {}, ''
+          expect(spec.design_document).to eq('user_view_by_login_and_email')
+        end
+    
+        it 'adds the view name digest to the design doc name' do
+          spec = CouchPotato::View::RawViewSpec.new 'User', 'by_login_and_email',
+            {digest_view_name: true, map: 'function(doc) {}'}, ''
+    
+          expect(spec.design_document).to eq('user_view_by_login_and_email-375c815fcb4f977f330a2edfadc7f74d')
+        end
 
-    it "generates the design document independent of the view name by default" do
-      CouchPotato::Config.split_design_documents_per_view = false
-      spec = CouchPotato::View::BaseViewSpec.new 'User', 'by_login_and_email', {}, ''
-      expect(spec.design_document).to eq('user')
-    end
+        it 'builds the name digest by hashing the map and reduce function if there is one' do
+          spec = CouchPotato::View::RawViewSpec.new 'User', 'by_login_and_email',
+            {digest_view_name: true, map: 'function(doc) {}', reduce: 'function(key, values) {}'}, ''
+    
+          expect(spec.design_document).to eq('user_view_by_login_and_email-c9f83cec3dab954a8ca56330006f187e')
+        end
 
-    it "generates the design document per view if configured to" do
-      CouchPotato::Config.split_design_documents_per_view = true
-      spec = CouchPotato::View::BaseViewSpec.new 'User', 'by_login_and_email', {}, ''
-      expect(spec.design_document).to eq('user_view_by_login_and_email')
-    end
+    
+      end
 
-    it 'adds the view name digest to the design doc name' do
-      CouchPotato::Config.split_design_documents_per_view = true
-      spec = CouchPotato::View::RawViewSpec.new 'User', 'by_login_and_email',
-        {digest_view_name: true, map: 'function(doc) {}'}, ''
-
-      expect(spec.design_document).to eq('user_view_by_login_and_email-375c815fcb4f977f330a2edfadc7f74d')
-    end
-
-    it 'builds the name digest by hashing the map and reduce function if there is one' do
-      CouchPotato::Config.split_design_documents_per_view = true
-      spec = CouchPotato::View::RawViewSpec.new 'User', 'by_login_and_email',
-        {digest_view_name: true, map: 'function(doc) {}', reduce: 'function(key, values) {}'}, ''
-
-      expect(spec.design_document).to eq('user_view_by_login_and_email-c9f83cec3dab954a8ca56330006f187e')
-    end
-
-
-    it "generates the design document independent of the list name by default" do
-      CouchPotato::Config.split_design_documents_per_view = false
-      spec = CouchPotato::View::BaseViewSpec.new double(lists: nil, :to_s => 'User'), '', {list: 'test_list'}, {}
-      expect(spec.design_document).to eq('user')
-    end
-
-    it "generates the design document per view if configured to" do
-      CouchPotato::Config.split_design_documents_per_view = true
-      spec = CouchPotato::View::BaseViewSpec.new double(lists: nil, :to_s => 'User'), '', {list: :test_list}, {}
-      expect(spec.design_document).to eq('user_list_test_list')
-    end
-
-    it "extracts the list name from the options" do
-      spec = CouchPotato::View::BaseViewSpec.new double(lists: nil), 'all', {list: :test_list}, {}
-      expect(spec.list_name).to eq(:test_list)
-    end
-
-    it "extracts the list from the view parameters" do
-      spec = CouchPotato::View::BaseViewSpec.new double(lists: nil), 'all', {}, {list: :test_list}
-      expect(spec.list_name).to eq(:test_list)
-    end
-
-    it "prefers the list name from the view parameters over the one from the options" do
-      spec = CouchPotato::View::BaseViewSpec.new double(lists: nil), 'all', {list: 'my_list'}, list: :test_list
-      expect(spec.list_name).to eq(:test_list)
+      context 'and split design documents per view is disabled' do
+        before(:each) do
+          CouchPotato::Config.split_design_documents_per_view = false
+        end
+        
+        it "generates the design document path by snake_casing the class name but keeping double colons" do
+          spec = CouchPotato::View::BaseViewSpec.new 'Foo::BarBaz', '', {}, ''
+          expect(spec.design_document).to eq('foo::bar_baz')
+        end
+    
+        it "generates the design document independent of the view name" do
+          spec = CouchPotato::View::BaseViewSpec.new 'User', 'by_login_and_email', {}, ''
+          expect(spec.design_document).to eq('user')
+        end
+      end
+      
     end
 
     it 'returns the view name' do
@@ -144,13 +135,6 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       ensure
         CouchPotato::Config.digest_view_names = false
       end
-    end
-
-    it "returns the list function" do
-      klass = double 'class'
-      allow(klass).to receive(:lists).with('test_list').and_return('<list_code>')
-      spec = CouchPotato::View::BaseViewSpec.new klass, 'all', {list: 'test_list'}, {}
-      expect(spec.list_function).to eq('<list_code>')
     end
 
     it 'reads the language from the couch potato config by default' do

@@ -273,7 +273,6 @@ module CouchPotato
           map: spec.map_function,
           reduce: spec.reduce_function
         } },
-        ({ spec.list_name => spec.list_function } unless spec.list_name.nil?),
         spec.lib,
         spec.language
       ).query_view!(spec.view_parameters)

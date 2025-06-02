@@ -283,35 +283,3 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
   end
 end
 
-describe CouchPotato::RSpec::ListAsMatcher do
-  before(:each) do
-    @view_spec = double(:list_function => "function() {var row = getRow(); send(JSON.stringify([{text: row.text + ' world'}]));}")
-  end
-
-  it "should pass if the function return the expected json" do
-    expect(@view_spec).to list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello world'}])
-  end
-
-  it "should not pass if the function does not return the expected json" do
-    expect(@view_spec).not_to list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
-  end
-
-  it "should work with date values" do
-    spec = double(:list_function => "function() { send(JSON.stringify([{date: new Date(1368802800000)}])); }")
-    expect(spec).to list({"rows" => [{}]}).as([{"date" => "2013-05-17T15:00:00.000Z"}])
-  end
-
-  describe "failing specs" do
-    it "should have a nice error message for failing should" do
-      expect {
-        expect(@view_spec).to list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
-      }.to raise_error('Expected to list as [{"text"=>"hello there"}] but got [{"text"=>"hello world"}].')
-    end
-
-    it "should have a nice error message for failing should not" do
-      expect {
-        expect(@view_spec).not_to list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello world'}])
-      }.to raise_error('Expected to not list as [{"text"=>"hello world"}] but did.')
-    end
-  end
-end
