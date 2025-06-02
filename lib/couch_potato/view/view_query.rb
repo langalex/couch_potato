@@ -53,20 +53,13 @@ module CouchPotato
         CouchPotato.views.flat_map do |klass|
           specs =  klass.views.map { |view_name, view| klass.execute_view(view_name, {}) }
           specs.map do |klass_spec|
-            { klass_spec.view_name => {
-              'map' => klass_spec.map_function,
-              'reduce' => klass_spec.reduce_function
-            } }
+            { klass_spec.view_name => view_functions(klass_spec.map_function, klass_spec.reduce_function) }
           end
         end.inject(&:merge)
       end
 
-      def view_functions
-        if @reduce_function
-          {'map' => @map_function, 'reduce' => @reduce_function}
-        else
-          {'map' => @map_function}
-        end
+      def view_functions(map_function = @map_function, reduce_function = @reduce_function)
+        {'map' => @map_function, 'reduce' => @reduce_function}.compact
       end
 
       def empty_design_document
