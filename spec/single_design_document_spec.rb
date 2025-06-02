@@ -20,10 +20,16 @@ describe 'single design document' do
     view :all, key: :name
   end
 
+  class Thing3 < Thing1 # should work with inheritance
+    property :tag
+
+    view :by_tag, key: :tag
+  end
+
   before(:each) do
     recreate_db
     CouchPotato::Config.single_design_document = true
-    CouchPotato.views.select! { |v| [Thing1, Thing2].include?(v) } # clear classes from other specs
+    CouchPotato.views.select! { |v| [Thing1, Thing2, Thing3].include?(v) } # clear classes from other specs
   end
 
   after(:each) do
@@ -38,7 +44,8 @@ describe 'single design document' do
 
     db.view(Thing1.all) # create all views when querying the first one
 
-    expect(couchrest_db.get('_design/couch_potato')['views'].keys).to eq(['thing1-all', 'thing2-all'])
+    expect(couchrest_db.get('_design/couch_potato')['views'].keys)
+      .to(eq(['thing1-all', 'thing2-all', 'thing3-by_tag']))
   end
 
   it 'returns the correct models' do
@@ -46,8 +53,11 @@ describe 'single design document' do
     db.save! thing1
     thing2 = Thing2.new name: 'n2'
     db.save! thing2
+    thing3 = Thing3.new tag: 'tag1'
+    db.save! thing3
 
     expect(db.view(Thing1.all('t1'))).to eq([thing1])
     expect(db.view(Thing2.all('n2'))).to eq([thing2])
+    expect(db.view(Thing3.by_tag('tags1'))).to eq([thing3])
   end
 end

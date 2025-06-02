@@ -17,6 +17,12 @@ require File.dirname(__FILE__) + '/view/view_query'
 
 module CouchPotato
   module Persistence
+    module TrackModels
+      def inherited(child)
+        super
+        CouchPotato.models << child
+      end
+    end
 
     def self.included(base) #:nodoc:
       base.send :include, Properties, Callbacks, Json, CouchPotato::View::CustomViews
@@ -29,9 +35,8 @@ module CouchPotato
         alias_method :id, :_id
         alias_method :id=, :_id=
 
-        def self.inherited(child)
-          super
-          CouchPotato.models << child
+        class << self
+          prepend TrackModels
         end
       end
 

@@ -9,10 +9,21 @@ require 'couch_potato/view/view_parameters'
 module CouchPotato
   module View
     module CustomViews
+      module TrackViews
+        def inherited(child)
+          super
+          CouchPotato.views << child
+        end
+      end
 
       def self.included(base) #:nodoc:
         base.extend ClassMethods
         CouchPotato.views << base
+        base.class_eval do
+          class << self
+            prepend TrackViews
+          end
+        end
       end
 
       module ClassMethods
