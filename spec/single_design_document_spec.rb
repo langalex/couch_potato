@@ -58,6 +58,6 @@ describe 'single design document' do
 
     expect(db.view(Thing1.all('t1'))).to eq([thing1])
     expect(db.view(Thing2.all('n2'))).to eq([thing2])
-    expect(db.view(Thing3.by_tag('tags1'))).to eq([thing3])
+    expect(db.view(Thing3.by_tag('tag1'))).to eq([thing3])
   end
 end
