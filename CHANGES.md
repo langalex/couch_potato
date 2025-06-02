@@ -1,5 +1,10 @@
 ## Changes
 
+# 1.19.0
+
+- add `single_design_document` config option
+- remove support for lists
+
 # 1.18.0
 
 - add testing Rails 7.2/8 on CI

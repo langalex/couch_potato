@@ -80,6 +80,12 @@ Another switch allows you to store each CouchDB view in its own design document.
 CouchPotato::Config.split_design_documents_per_view = true
 ```
 
+With the following switch, couch potato only creates a single design document for all views:
+
+```ruby
+CouchPotato::Config.single_design_document = true
+```
+
 If you are using more than one database from your app, you can create aliases:
 
 ```ruby
@@ -299,7 +305,7 @@ user.valid? # => false
 user.errors[:name] # => ['can't be blank']
 ```
 
-#### Finding stuff / views / lists
+#### Finding stuff / views
 
 In order to find data in your CouchDB you have to create a [view](http://books.couchdb.org/relax/design-documents/views) first. Couch Potato offers you to create and manage those views for you. All you have to do is declare them in your classes:
 
@@ -449,49 +455,6 @@ You can pass in your own view specifications by passing in `:type => MyViewSpecC
 ##### Digest view names
 
 If turned on, Couch Potato will append an MD5 digest of the map function to each view name. This makes sure (together with split_design_documents_per_view) that no views/design documents are ever updated. Instead, new ones are created. Since reindexing can take a long time once your database is larger, you want to avoid blocking your app while CouchDB is busy. Instead, you create a new view, warm it up, and only then start using it.
-
-##### Lists
-
-CouchPotato also supports [CouchDB lists](http://books.couchdb.org/relax/design-documents/lists). With lists you can process the result of a view query with another JavaScript function. This can be useful for example if you want to filter your results, or add some data to each document.
-
-Defining a list works similarly to views:
-
-```ruby
-class User
-  include CouchPotato::Persistence
-
-  property :first_name
-  view :with_full_name, key: first_namne, list: :add_last_name
-  view :all, key: :first_name
-
-  list :add_last_name, <<-JS
-    function(head, req) {
-      var row;
-      send('{"rows": [');
-      while(row = getRow()) {
-        row.doc.name = row.doc.first_name + ' doe';
-        send(JSON.stringify(row));
-      };
-      send(']}');
-    }
-  JS
-end
-
-CouchPotato.database.save User.new(first_name: 'joe')
-CouchPotato.database.view(User.with_full_name).first.name # => 'joe doe'
-```
-
-You can also pass in the list at query time:
-
-```ruby
-CouchPotato.database.view(User.all(list: :add_last_name))
-```
-
-And you can pass parameters to the list:
-
-```ruby
-CouchPotato.database.view(User.all(list: :add_last_name, list_params: {filter: '*'}))
-```
 
 #### Associations
 

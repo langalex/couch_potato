@@ -9,9 +9,10 @@ JSON.create_id = 'ruby_class'
 CouchRest.decode_json_objects = true
 
 module CouchPotato
-  Config = Struct.new(:database_host, :database_name, :digest_view_names,
+  Config = Struct.new(:database_host, :database_name, :digest_view_names, :single_design_document,
                       :split_design_documents_per_view, :default_language, :additional_databases).new
   Config.split_design_documents_per_view = false
+  Config.single_design_document = false
   Config.digest_view_names = false
   Config.default_language = :javascript
   Config.database_host = 'http://127.0.0.1:5984'
@@ -29,6 +30,7 @@ module CouchPotato
       Config.database_host = config['database_host'] if config['database_host']
       Config.additional_databases = config['additional_databases'].stringify_keys if config['additional_databases']
       Config.split_design_documents_per_view = config['split_design_documents_per_view'] if config['split_design_documents_per_view']
+      Config.single_design_document = config['single_design_document'] if config['single_design_document']
       Config.digest_view_names = config['digest_view_names'] if config['digest_view_names']
       Config.default_language = config['default_language'] if config['default_language']
     end
