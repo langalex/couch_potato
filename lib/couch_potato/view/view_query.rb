@@ -12,7 +12,7 @@ module CouchPotato
       end
 
       def query_view!(parameters = {})
-        update_view if !view_has_been_updated? || CouchPotato::Config.single_design_document
+        update_view if !view_has_been_updated?
         begin
           query_view parameters
         rescue CouchRest::NotFound
