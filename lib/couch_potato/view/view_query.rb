@@ -12,7 +12,7 @@ module CouchPotato
       end
 
       def query_view!(parameters = {})
-        update_view if !view_has_been_updated?
+        update_view unless view_has_been_updated?
         begin
           query_view parameters
         rescue CouchRest::NotFound
@@ -37,7 +37,7 @@ module CouchPotato
       def update_view
         design_doc = @database.get "_design/#{@design_document_name}" rescue nil
         original_views = design_doc && design_doc['views'].dup
-        view_updated unless design_doc.nil?
+        view_updated
         design_doc ||= empty_design_document
         if CouchPotato::Config.single_design_document
           design_doc['views'] = all_views
@@ -59,7 +59,7 @@ module CouchPotato
       end
 
       def view_functions(map_function = @map_function, reduce_function = @reduce_function)
-        {'map' => @map_function, 'reduce' => @reduce_function}.compact
+        {'map' => map_function, 'reduce' => reduce_function}.compact
       end
 
       def empty_design_document

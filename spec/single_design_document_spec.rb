@@ -40,4 +40,14 @@ describe 'single design document' do
 
     expect(couchrest_db.get('_design/couch_potato')['views'].keys).to eq(['thing1-all', 'thing2-all'])
   end
+
+  it 'returns the correct models' do
+    thing1 = Thing1.new title: 't1'
+    db.save! thing1
+    thing2 = Thing2.new name: 'n2'
+    db.save! thing2
+
+    expect(db.view(Thing1.all('t1'))).to eq([thing1])
+    expect(db.view(Thing2.all('n2'))).to eq([thing2])
+  end
 end
