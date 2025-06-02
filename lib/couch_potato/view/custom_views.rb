@@ -12,6 +12,7 @@ module CouchPotato
 
       def self.included(base) #:nodoc:
         base.extend ClassMethods
+        CouchPotato.views << base
       end
 
       module ClassMethods

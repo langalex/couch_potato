@@ -101,6 +101,7 @@ Create a `config/couchdb.yml`:
 default: &default
   split_design_documents_per_view: true # optional, default is false
   digest_view_names: true # optional, default is false
+  single_design_document: true # optional, default is false
   default_language: :erlang # optional, default is javascript
   database_host: "http://127.0.0.1:5984"
 

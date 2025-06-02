@@ -57,8 +57,16 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       before(:each) do
         CouchPotato::Config.single_design_document = true
       end
+
+      after(:each) do
+        CouchPotato::Config.single_design_document = false
+      end
       
-      
+      it 'generates one design document for all views' do
+        spec = CouchPotato::View::BaseViewSpec.new 'User', 'by_login_and_email', {}, ''
+
+        expect(spec.design_document).to eq('couch_potato')
+      end
     end
 
     context 'when single design document is disabled' do
@@ -69,6 +77,10 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
       context 'and split design documents per view is enabled' do
         before(:each) do
           CouchPotato::Config.split_design_documents_per_view = true
+        end
+
+        after(:each) do
+          CouchPotato::Config.split_design_documents_per_view = false
         end
         
         it "generates one design document per view" do
@@ -89,8 +101,6 @@ describe CouchPotato::View::BaseViewSpec, 'initialize' do
     
           expect(spec.design_document).to eq('user_view_by_login_and_email-c9f83cec3dab954a8ca56330006f187e')
         end
-
-    
       end
 
       context 'and split design documents per view is disabled' do

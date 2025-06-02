@@ -42,6 +42,12 @@ module CouchPotato
     @models
   end
 
+  # returns all the classes that include the CouchPotato::View::CustomViews module
+  def self.views
+    @views ||= []
+    @views
+  end
+
   # Returns a database instance which you can then use to create objects and query views. You have to set the CouchPotato::Config.database_name before this works.
   def self.database
     Thread.current[:__couch_potato_database] ||= Database.new(couchrest_database)

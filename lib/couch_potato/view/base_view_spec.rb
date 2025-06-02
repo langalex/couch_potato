@@ -19,7 +19,7 @@ module CouchPotato
         @options = options
         @view_name = compute_view_name(view_name,
                                        options.key?(:digest_view_name) ? options[:digest_view_name] : Config.digest_view_names)
-        @design_document = translate_to_design_doc_name(klass.to_s, @view_name)
+        @design_document = design_doc_name
         @view_parameters = {}
         %i[group include_docs descending group_level limit].each do |key|
           @view_parameters[key] = options[key] if options.include?(key)
@@ -38,10 +38,16 @@ module CouchPotato
       private
 
       def compute_view_name(view_name, digest)
-        if digest
-          "#{view_name}-#{Digest::MD5.hexdigest(map_function + reduce_function.to_s)}"
-        else
+        name = if CouchPotato::Config.single_design_document
+          "#{translate_to_design_doc_name(klass.to_s, view_name)}-#{view_name}"
+        else 
           view_name
+        end
+
+        if digest
+          "#{name}-#{Digest::MD5.hexdigest(map_function + reduce_function.to_s)}"
+        else
+          name
         end
       end
 
@@ -53,6 +59,14 @@ module CouchPotato
 
       def valid_view_parameters
         %w[key keys startkey startkey_docid endkey endkey_docid limit stale descending skip group group_level reduce include_docs inclusive_end]
+      end
+
+      def design_doc_name
+        if CouchPotato::Config.single_design_document
+          'couch_potato'
+        else
+          translate_to_design_doc_name(klass.to_s, view_name)
+        end
       end
 
       def translate_to_design_doc_name(klass_name, view_name)

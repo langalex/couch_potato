@@ -13,7 +13,7 @@ module CouchPotato
       end
 
       def query_view!(parameters = {})
-        update_view unless view_has_been_updated?
+        update_view if !view_has_been_updated? || CouchPotato::Config.single_design_document
         begin
           query_view parameters
         rescue CouchRest::NotFound
@@ -40,11 +40,29 @@ module CouchPotato
         original_views = design_doc && design_doc['views'].dup
         view_updated unless design_doc.nil?
         design_doc ||= empty_design_document
-        design_doc['views'][@view_name.to_s] = view_functions
+        if CouchPotato::Config.single_design_document
+          design_doc['views'] = all_views
+        else
+          design_doc['views'][@view_name.to_s] = view_functions
+        end
         if @lib
           design_doc['views']['lib'] = (design_doc['views']['lib'] || {}).merge(@lib)
         end
-        @database.save_doc(design_doc) if original_views != design_doc['views']
+        if original_views != design_doc['views']
+          @database.save_doc(design_doc) 
+        end
+      end
+
+      def all_views
+        CouchPotato.views.flat_map do |klass|
+          specs =  klass.views.map { |view_name, view| klass.execute_view(view_name, {}) }
+          specs.map do |klass_spec|
+            { klass_spec.view_name => {
+              'map' => klass_spec.map_function,
+              'reduce' => klass_spec.reduce_function
+            } }
+          end
+        end.inject(&:merge)
       end
 
       def view_functions
