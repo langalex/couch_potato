@@ -67,7 +67,11 @@ module CouchPotato
       end
 
       def view_has_been_updated?
-        updated_views[[@design_document_name, @view_name]]
+        if CouchPotato::Config.single_design_document
+          updated_views.any?
+        else
+          updated_views[[@design_document_name, @view_name]]
+        end
       end
 
       def view_updated
