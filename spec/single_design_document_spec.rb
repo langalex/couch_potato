@@ -23,6 +23,7 @@ describe 'single design document' do
   before(:each) do
     recreate_db
     CouchPotato::Config.single_design_document = true
+    CouchPotato.views.select! { |v| [Thing1, Thing2].include?(v) } # clear classes from other specs
   end
 
   after(:each) do

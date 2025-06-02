@@ -8,6 +8,7 @@ describe CouchPotato, '.configure' do
     CouchPotato::Config.database_name = nil
     CouchPotato::Config.split_design_documents_per_view = false
     CouchPotato::Config.digest_view_names = false
+    CouchPotato::Config.single_design_document = false
     CouchPotato::Config.default_language = :javascript
     CouchPotato::Config.database_host = 'http://127.0.0.1:5984'
     CouchPotato::Config.additional_databases = {}

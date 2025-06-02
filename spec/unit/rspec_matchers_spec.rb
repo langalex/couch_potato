@@ -36,22 +36,6 @@ describe CouchPotato::RSpec::MapToMatcher do
     expect(spec).to map({}).to([nil, "2013-05-17T15:00:00.000Z"])
   end
 
-  it "should work with commonJS modules that use 'exports'" do
-    spec = double(
-      :map_function => "function(doc) { var test = require('views/lib/test'); emit(null, test.test); }",
-      :lib => {:test => "exports.test = 'test';"}
-    )
-    expect(spec).to map({}).to([nil, "test"])
-  end
-
-  it "should work with commonJS modules that use 'module.exports'" do
-    spec = double(
-      :map_function => "function(doc) { var test = require('views/lib/test'); emit(null, test.test); }",
-      :lib => {:test => "module.exports.test = 'test';"}
-    )
-    expect(spec).to map({}).to([nil, "test"])
-  end
-
   describe "failing specs" do
     before(:each) do
       @view_spec = double(:map_function => "function(doc) {emit(doc.name, null)}")
@@ -143,22 +127,6 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     spec = double(:map_function => "function() { emit(null, null); }",
       :reduce_function => "function() { return new Date(1368802800000); }")
     expect(spec).to map_reduce({}).to({"key" => nil, "value" => "2013-05-17T15:00:00.000Z"})
-  end
-
-  it "should handle CommonJS requires for modules that use 'exports'" do
-    spec = double(
-      :map_function => "function() { var test = require('views/lib/test'); emit(null, test.test); }",
-      :reduce_function => "function(keys, values) { return 'test' }",
-      :lib => {:test => "exports.test = 'test'"})
-    expect(spec).to map_reduce({}).to({"key" => nil, "value" => "test"})
-  end
-
-  it "should handle CommonJS requires for modules that use 'module.exports'" do
-    spec = double(
-      :map_function => "function() { var test = require('views/lib/test'); emit(null, test.test); }",
-      :reduce_function => "function(keys, values) { return 'test' }",
-      :lib => {:test => "module.exports.test = 'test'"})
-    expect(spec).to map_reduce({}).to({"key" => nil, "value" => "test"})
   end
 
   it "should handle sum function" do

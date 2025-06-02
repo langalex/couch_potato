@@ -3,7 +3,7 @@
 # 1.19.0
 
 - add `single_design_document` config option
-- remove support for lists
+- remove support for lists and lib
 
 # 1.18.0
 

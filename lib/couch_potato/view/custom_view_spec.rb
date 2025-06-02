@@ -13,10 +13,6 @@ module CouchPotato
         options[:reduce]
       end
 
-      def lib
-        options[:lib]
-      end
-
       def view_parameters
         {:include_docs => options[:include_docs] || false}.merge(super)
       end

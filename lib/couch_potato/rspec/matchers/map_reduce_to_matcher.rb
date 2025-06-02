@@ -72,7 +72,6 @@ module CouchPotato
             var options = #{@options.to_json};
             var map = #{view_spec.map_function};
             var reduce = #{view_spec.reduce_function};
-            var lib = #{view_spec.respond_to?(:lib) && view_spec.lib.to_json};
             var collate = (function() { var module = {exports: {}}; var exports = module.exports; eval(#{File.read(File.expand_path(File.dirname(__FILE__) + '/../../../../vendor/pouchdb-collate/pouchdb-collate.js')).to_json}); return module.exports.collate;})();
 
             // Map the input docs
@@ -80,7 +79,7 @@ module CouchPotato
               var module = {exports: {}};
               var exports = module.exports;
               var pathArray = modulePath.split("/").slice(2);
-              var result = lib;
+              var result = {};
               for (var i in pathArray) {
                 result = result[pathArray[i]];
               }

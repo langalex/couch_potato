@@ -2,13 +2,12 @@ module CouchPotato
   module View
     # Used to query views (and create them if they don't exist). Usually you won't have to use this class directly. Instead it is used internally by the CouchPotato::Database.view method.
     class ViewQuery
-      def initialize(couchrest_database, design_document_name, view, lib = nil, language = :javascript)
+      def initialize(couchrest_database, design_document_name, view, language = :javascript)
         @database = couchrest_database
         @design_document_name = design_document_name
         @view_name = view.keys[0]
         @map_function = view.values[0][:map]
         @reduce_function = view.values[0][:reduce]
-        @lib = lib
         @language = language
       end
 
@@ -44,9 +43,6 @@ module CouchPotato
           design_doc['views'] = all_views
         else
           design_doc['views'][@view_name.to_s] = view_functions
-        end
-        if @lib
-          design_doc['views']['lib'] = (design_doc['views']['lib'] || {}).merge(@lib)
         end
         if original_views != design_doc['views']
           @database.save_doc(design_doc) 

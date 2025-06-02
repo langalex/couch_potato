@@ -410,14 +410,6 @@ class User
 end
 ```
 
-commonJS modules can also be used in custom views:
-
-```ruby
-class User
-  view :all, :map => "function(doc) { emit(null, require("views/lib/test").test)}", :lib => {:test => "exports.test = 'test'"}, :include_docs => true, :type => :custom
-end
-```
-
 If you don't want the results to be converted into models the raw view is your friend:
 
 ```ruby

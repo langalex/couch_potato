@@ -415,27 +415,10 @@ describe CouchPotato::Database, 'view' do
     allow(CouchPotato::View::ViewQuery).to receive_messages(new: double('view query', query_view!: { 'rows' => [@result] }))
   end
 
-  it 'initializes a view query with map/reduce/lib functions' do
-    allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
-                                     map_function: '<map_code>', reduce_function: '<reduce_code>',
-                                     lib: { test: '<test_code>' }, language: 'javascript')
-    expect(CouchPotato::View::ViewQuery).to receive(:new).with(
-      @couchrest_db,
-      'design_doc',
-      { 'my_view' => {
-        map: '<map_code>',
-        reduce: '<reduce_code>'
-      } },
-      { test: '<test_code>' },
-      'javascript'
-    )
-    @db.view(@spec)
-  end
 
   it 'initializes a view query with map/reduce functions' do
     allow(@spec).to receive_messages(design_document: 'design_doc', view_name: 'my_view',
                                      map_function: '<map_code>', reduce_function: '<reduce_code>',
-                                     lib: nil,
                                      language: 'javascript')
     expect(CouchPotato::View::ViewQuery).to receive(:new).with(
       @couchrest_db,
@@ -444,7 +427,6 @@ describe CouchPotato::Database, 'view' do
         map: '<map_code>',
         reduce: '<reduce_code>'
       } },
-      nil,
       'javascript'
     )
     @db.view(@spec)
