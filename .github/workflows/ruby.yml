@@ -24,9 +24,9 @@ jobs:
           - ruby: "jruby"
             gemfile: "active_support_8_0"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up CouchDB
-        uses: cobot/couchdb-action@eaaa17cf8baf421e7fb07e2d869f5457bb6a4de5
+        uses: cobot/couchdb-action@v5
         with:
           couchdb-version: "2.3.1"
       - name: Set up Ruby
