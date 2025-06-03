@@ -37,4 +37,4 @@ jobs:
       - name: Run tests
         run: bundle exec rake spec_ci
         env:
-          DATABASE: http://admin:admin@localhost:5984
+          DATABASE: http://admin:admin@localhost:5984/couch_potato_test
