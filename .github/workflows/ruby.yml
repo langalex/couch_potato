@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up CouchDB
-        uses: cobot/couchdb-action@0ca874024f27b21437abd2001a4f46755f2ee335
+        uses: cobot/couchdb-action@409ca2b225e5d6d9fdbaae9ae05123143aa11d46
         with:
           couchdb version: "2.3.1"
       - name: Set up Ruby
