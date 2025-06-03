@@ -208,13 +208,13 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     it "should have a nice error message for failing should" do
       expect {
         expect(@view_spec).to map_reduce(@docs).with_options(:group => false).to({"key" => nil, "value" => 9})
-      }.to raise_error('Expected to map/reduce to [{"key"=>nil, "value"=>9}] but got [{"key"=>nil, "value"=>8}].')
+      }.to raise_error(%r{Expected to map/reduce to \[{"key"\s*=>\s*nil, "value"\s*=>\s*9}\] but got \[{"key"\s*=>\s*nil, "value"\s*=>\s*8}\].})
     end
 
     it "should have a nice error message for failing should not" do
       expect {
         expect(@view_spec).not_to map_reduce(@docs).with_options(:group => false).to({"key" => nil, "value" => 8})
-      }.to raise_error('Expected not to map/reduce to [{"key"=>nil, "value"=>8}] but did.')
+      }.to raise_error(%r{Expected not to map/reduce to \[{"key"\s*=>\s*nil, "value"\s*=>\s*8}\] but did.})
     end
   end
 
