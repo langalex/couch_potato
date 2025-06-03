@@ -225,7 +225,7 @@ describe 'views' do
 
   describe 'with array as key' do
     it 'should create a map function with the composite key' do
-      expect(CouchPotato::View::ViewQuery).to receive(:new) do |_db, _design_name, view, _list|
+      expect(CouchPotato::View::ViewQuery).to receive(:new) do |_db, _design_name, view|
         expect(view['key_array_timeline'][:map]).to match(/emit\(\[doc\['time'\], doc\['state'\]\]/)
 
         double('view query', query_view!: { 'rows' => [] })
@@ -359,39 +359,6 @@ describe 'views' do
       @db.save_document CustomBuild.new(state: 'success', time: '2008-01-01', server: 'Jenkins')
       results = @db.view(Build.all)
       expect(results.map(&:class)).to eq([CustomBuild, Build])
-    end
-  end
-
-  describe 'list functions' do
-    class Coworker
-      include CouchPotato::Persistence
-
-      property :name
-
-      view :all_with_list, key: :name, list: :append_doe
-      view :all, key: :name
-
-      list :append_doe, <<-JS
-        function(head, req) {
-          var row;
-          send('{"rows": [');
-          while(row = getRow()) {
-            row.doc.name = row.doc.name + ' doe';
-            send(JSON.stringify(row));
-          };
-          send(']}');
-        }
-      JS
-    end
-
-    it 'should use the list function declared at class level' do
-      @db.save! Coworker.new(name: 'joe')
-      expect(@db.view(Coworker.all_with_list).first.name).to eq('joe doe')
-    end
-
-    it 'should use the list function passed at runtime' do
-      @db.save! Coworker.new(name: 'joe')
-      expect(@db.view(Coworker.all(list: :append_doe)).first.name).to eq('joe doe')
     end
   end
 

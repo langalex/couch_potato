@@ -1,5 +1,10 @@
 ## Changes
 
+# 1.19.0 / rspec-matchers 4.2.0
+
+- add `single_design_document` config option
+- remove support for lists and lib
+
 # 1.18.0
 
 - add testing Rails 7.2/8 on CI

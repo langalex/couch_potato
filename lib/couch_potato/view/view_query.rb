@@ -2,18 +2,13 @@ module CouchPotato
   module View
     # Used to query views (and create them if they don't exist). Usually you won't have to use this class directly. Instead it is used internally by the CouchPotato::Database.view method.
     class ViewQuery
-      def initialize(couchrest_database, design_document_name, view, list = nil, lib = nil, language = :javascript)
+      def initialize(couchrest_database, design_document_name, view, language = :javascript)
         @database = couchrest_database
         @design_document_name = design_document_name
         @view_name = view.keys[0]
         @map_function = view.values[0][:map]
         @reduce_function = view.values[0][:reduce]
-        @lib = lib
         @language = language
-        if list
-          @list_function = list.values[0]
-          @list_name = list.keys[0]
-        end
       end
 
       def query_view!(parameters = {})
@@ -42,34 +37,41 @@ module CouchPotato
       def update_view
         design_doc = @database.get "_design/#{@design_document_name}" rescue nil
         original_views = design_doc && design_doc['views'].dup
-        original_lists = design_doc && design_doc['lists'] && design_doc['lists'].dup
-        view_updated unless design_doc.nil?
+        view_updated
         design_doc ||= empty_design_document
-        design_doc['views'][@view_name.to_s] = view_functions
-        if @lib
-          design_doc['views']['lib'] = (design_doc['views']['lib'] || {}).merge(@lib)
+        if CouchPotato::Config.single_design_document
+          design_doc['views'] = all_views
+        else
+          design_doc['views'][@view_name.to_s] = view_functions
         end
-        if @list_function
-          design_doc['lists'] ||= {}
-          design_doc['lists'][@list_name.to_s] = @list_function
+        if original_views != design_doc['views']
+          @database.save_doc(design_doc) 
         end
-        @database.save_doc(design_doc) if original_views != design_doc['views'] || original_lists != design_doc['lists']
       end
 
-      def view_functions
-        if @reduce_function
-          {'map' => @map_function, 'reduce' => @reduce_function}
-        else
-          {'map' => @map_function}
-        end
+      def all_views
+        CouchPotato.views.flat_map do |klass|
+          specs =  klass.views.map { |view_name, view| klass.execute_view(view_name, {}) }
+          specs.map do |klass_spec|
+            { klass_spec.view_name => view_functions(klass_spec.map_function, klass_spec.reduce_function) }
+          end
+        end.inject(&:merge)
+      end
+
+      def view_functions(map_function = @map_function, reduce_function = @reduce_function)
+        {'map' => map_function, 'reduce' => reduce_function}.compact
       end
 
       def empty_design_document
-        {'views' => {}, 'lists' => {}, "_id" => "_design/#{@design_document_name}", "language" => @language.to_s}
+        {'views' => {}, "_id" => "_design/#{@design_document_name}", "language" => @language.to_s}
       end
 
       def view_has_been_updated?
-        updated_views[[@design_document_name, @view_name]]
+        if CouchPotato::Config.single_design_document
+          updated_views.any?
+        else
+          updated_views[[@design_document_name, @view_name]]
+        end
       end
 
       def view_updated
@@ -81,11 +83,7 @@ module CouchPotato
       end
 
       def query_view(parameters)
-        if @list_name
-          @database.connection.get CouchRest.paramify_url("/#{@database.name}/_design/#{@design_document_name}/_list/#{@list_name}/#{@view_name}", parameters)
-        else
-          @database.view view_url, parameters
-        end
+        @database.view view_url, parameters
       end
 
       def view_url

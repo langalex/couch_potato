@@ -418,7 +418,7 @@ describe 'properties' do
 
     it "should include complex datatypes fully inspected" do
       comment.title = {'en' => 'Blog post'}
-      expect(comment.inspect).to include('title: {"en"=>"Blog post"}')
+      expect(comment.inspect).to match(/title: {"en"\s*=>\s*"Blog post"}/)
 
       comment.title = nil
       expect(comment.inspect).to include('title: nil')

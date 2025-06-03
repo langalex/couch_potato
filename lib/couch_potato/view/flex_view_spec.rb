@@ -96,7 +96,7 @@ module CouchPotato
       end
 
       delegate :view_name, :view_parameters, :design_document, :map_function,
-               :reduce_function, :list_name, :lib, :language, to: :view_spec_delegate
+               :reduce_function, :language, to: :view_spec_delegate
 
       def process_results(results)
         results = Results.new(results)

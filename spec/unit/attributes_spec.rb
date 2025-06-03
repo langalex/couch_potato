@@ -87,7 +87,7 @@ describe 'attributes' do
       plant = Plant.new
       expect do
         plant.length
-      end.to raise_error(NoMethodError, /undefined method `length'/)
+      end.to raise_error(NoMethodError, /undefined method [`']length'/)
     end
   end
 

@@ -36,22 +36,6 @@ describe CouchPotato::RSpec::MapToMatcher do
     expect(spec).to map({}).to([nil, "2013-05-17T15:00:00.000Z"])
   end
 
-  it "should work with commonJS modules that use 'exports'" do
-    spec = double(
-      :map_function => "function(doc) { var test = require('views/lib/test'); emit(null, test.test); }",
-      :lib => {:test => "exports.test = 'test';"}
-    )
-    expect(spec).to map({}).to([nil, "test"])
-  end
-
-  it "should work with commonJS modules that use 'module.exports'" do
-    spec = double(
-      :map_function => "function(doc) { var test = require('views/lib/test'); emit(null, test.test); }",
-      :lib => {:test => "module.exports.test = 'test';"}
-    )
-    expect(spec).to map({}).to([nil, "test"])
-  end
-
   describe "failing specs" do
     before(:each) do
       @view_spec = double(:map_function => "function(doc) {emit(doc.name, null)}")
@@ -145,22 +129,6 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     expect(spec).to map_reduce({}).to({"key" => nil, "value" => "2013-05-17T15:00:00.000Z"})
   end
 
-  it "should handle CommonJS requires for modules that use 'exports'" do
-    spec = double(
-      :map_function => "function() { var test = require('views/lib/test'); emit(null, test.test); }",
-      :reduce_function => "function(keys, values) { return 'test' }",
-      :lib => {:test => "exports.test = 'test'"})
-    expect(spec).to map_reduce({}).to({"key" => nil, "value" => "test"})
-  end
-
-  it "should handle CommonJS requires for modules that use 'module.exports'" do
-    spec = double(
-      :map_function => "function() { var test = require('views/lib/test'); emit(null, test.test); }",
-      :reduce_function => "function(keys, values) { return 'test' }",
-      :lib => {:test => "module.exports.test = 'test'"})
-    expect(spec).to map_reduce({}).to({"key" => nil, "value" => "test"})
-  end
-
   it "should handle sum function" do
     spec = double(
       :map_function => "function(doc) { emit(null, doc.age); }",
@@ -240,13 +208,13 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
     it "should have a nice error message for failing should" do
       expect {
         expect(@view_spec).to map_reduce(@docs).with_options(:group => false).to({"key" => nil, "value" => 9})
-      }.to raise_error('Expected to map/reduce to [{"key"=>nil, "value"=>9}] but got [{"key"=>nil, "value"=>8}].')
+      }.to raise_error(%r{Expected to map/reduce to \[{"key"\s*=>\s*nil, "value"\s*=>\s*9}\] but got \[{"key"\s*=>\s*nil, "value"\s*=>\s*8}\].})
     end
 
     it "should have a nice error message for failing should not" do
       expect {
         expect(@view_spec).not_to map_reduce(@docs).with_options(:group => false).to({"key" => nil, "value" => 8})
-      }.to raise_error('Expected not to map/reduce to [{"key"=>nil, "value"=>8}] but did.')
+      }.to raise_error(%r{Expected not to map/reduce to \[{"key"\s*=>\s*nil, "value"\s*=>\s*8}\] but did.})
     end
   end
 
@@ -283,35 +251,3 @@ describe CouchPotato::RSpec::MapReduceToMatcher do
   end
 end
 
-describe CouchPotato::RSpec::ListAsMatcher do
-  before(:each) do
-    @view_spec = double(:list_function => "function() {var row = getRow(); send(JSON.stringify([{text: row.text + ' world'}]));}")
-  end
-
-  it "should pass if the function return the expected json" do
-    expect(@view_spec).to list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello world'}])
-  end
-
-  it "should not pass if the function does not return the expected json" do
-    expect(@view_spec).not_to list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
-  end
-
-  it "should work with date values" do
-    spec = double(:list_function => "function() { send(JSON.stringify([{date: new Date(1368802800000)}])); }")
-    expect(spec).to list({"rows" => [{}]}).as([{"date" => "2013-05-17T15:00:00.000Z"}])
-  end
-
-  describe "failing specs" do
-    it "should have a nice error message for failing should" do
-      expect {
-        expect(@view_spec).to list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello there'}])
-      }.to raise_error('Expected to list as [{"text"=>"hello there"}] but got [{"text"=>"hello world"}].')
-    end
-
-    it "should have a nice error message for failing should not" do
-      expect {
-        expect(@view_spec).not_to list({'rows' => [{:text => 'hello'}]}).as([{'text' => 'hello world'}])
-      }.to raise_error('Expected to not list as [{"text"=>"hello world"}] but did.')
-    end
-  end
-end

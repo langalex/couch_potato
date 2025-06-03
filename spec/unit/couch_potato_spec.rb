@@ -8,6 +8,7 @@ describe CouchPotato, '.configure' do
     CouchPotato::Config.database_name = nil
     CouchPotato::Config.split_design_documents_per_view = false
     CouchPotato::Config.digest_view_names = false
+    CouchPotato::Config.single_design_document = false
     CouchPotato::Config.default_language = :javascript
     CouchPotato::Config.database_host = 'http://127.0.0.1:5984'
     CouchPotato::Config.additional_databases = {}
@@ -35,12 +36,14 @@ describe CouchPotato, '.configure' do
         test2: 'test2_db'
       },
       split_design_documents_per_view: true,
+      single_design_document: true,
       digest_view_names: true,
       default_language: 'erlang'
     )
 
     expect(CouchPotato::Config.database_name).to eq('testdb')
     expect(CouchPotato::Config.split_design_documents_per_view).to eq(true)
+    expect(CouchPotato::Config.single_design_document).to eq(true)
     expect(CouchPotato::Config.digest_view_names).to eq(true)
     expect(CouchPotato::Config.default_language).to eq('erlang')
     expect(CouchPotato::Config.database_host).to eq('http://10.0.0.1:2000')

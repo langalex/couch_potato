@@ -1,6 +1,6 @@
 module CouchPotato
   module View
-    # A view for custom map/reduce functions that returns the raw data fromcouchdb
+    # A view for custom map/reduce functions that returns the raw data from couchdb
     #
     # example:
     #   view :my_custom_view, :map => "function(doc) { emit(doc._id, null); }", :type => :raw, :reduce => nil
@@ -10,7 +10,7 @@ module CouchPotato
     #   view :my_custom_view, :map => "function(doc) { emit(doc._id, null); }", :type => :raw, :results_filter => lambda{|results| results['rows].map{|row| row['value']}}
     #
     # example:
-    #   view :my_custom_view, :map => "function(doc) { emit(doc._id, null); }", :type => :raw, :lib => {:module => "exports.name = 'module';"
+    #   view :my_custom_view, :map => "function(doc) { emit(doc._id, null); }", :type => :raw"
     class RawViewSpec < BaseViewSpec
       def map_function
         options[:map]
@@ -18,10 +18,6 @@ module CouchPotato
 
       def reduce_function
         options[:reduce]
-      end
-
-      def lib
-        options[:lib]
       end
     end
   end

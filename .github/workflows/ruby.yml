@@ -24,11 +24,11 @@ jobs:
           - ruby: "jruby"
             gemfile: "active_support_8_0"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up CouchDB
-        uses: cobot/couchdb-action@v4
+        uses: cobot/couchdb-action@v5
         with:
-          couchdb version: "2.3.1"
+          couchdb-version: "2.3.1"
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -36,3 +36,5 @@ jobs:
           bundler-cache: true
       - name: Run tests
         run: bundle exec rake spec_ci
+        env:
+          DATABASE: http://admin:admin@localhost:5984/couch_potato_test

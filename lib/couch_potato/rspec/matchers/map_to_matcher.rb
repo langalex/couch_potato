@@ -26,13 +26,12 @@ module CouchPotato
           (function() {
             var doc = #{@input_ruby.to_json};
             var map = #{view_spec.map_function};
-            var lib = #{view_spec.respond_to?(:lib) && view_spec.lib.to_json};
             var result = [];
             var require = function(modulePath) {
               var module = {exports: {}};
               var exports = module.exports;
               var pathArray = modulePath.split("/").slice(2);
-              var result = lib;
+              var result = {};
               for (var i in pathArray) {
                 result = result[pathArray[i]];
               }
