@@ -28,7 +28,7 @@ jobs:
       - name: Set up CouchDB
         uses: cobot/couchdb-action@26926cc0d96744df475eb2b28919c84806652f9a
         with:
-          couchdb version: "2.3.1"
+          couchdb-version: "2.3.1"
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
