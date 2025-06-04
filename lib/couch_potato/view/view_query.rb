@@ -41,6 +41,9 @@ module CouchPotato
         design_doc ||= empty_design_document
         if CouchPotato::Config.single_design_document
           design_doc['views'] = all_views
+          if CouchPotato::Config.digest_view_names
+            design_doc['_id'] = "_design/#{@design_document_name}-#{Digest::SHA256.hexdigest(design_doc['views'].to_json)}"
+          end
         else
           design_doc['views'][@view_name.to_s] = view_functions
         end
