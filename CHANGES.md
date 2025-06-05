@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.19.1
+
+- add digest to design doc name if `single_design_document` and `digest_view_names` are enabled
+
 # 1.19.0 / rspec-matchers 4.2.0
 
 - add `single_design_document` config option
