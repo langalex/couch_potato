@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.19.2
+
+- fix 404/409 error when querying single design doc with `digest_view_names` enabled
+
 # 1.19.1
 
 - add digest to design doc name if `single_design_document` and `digest_view_names` are enabled
