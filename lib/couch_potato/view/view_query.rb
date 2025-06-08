@@ -25,6 +25,8 @@ module CouchPotato
       # only after clearing the cache design docs will be updated/re-created.
       def self.clear_cache
         __updated_views.clear
+        @all_views = nil
+        @all_views_digest = nil
       end
 
       def self.__updated_views
@@ -32,28 +34,8 @@ module CouchPotato
         @updated_views
       end
 
-      private
-
-      def update_view
-        design_doc = @database.get "_design/#{@design_document_name}" rescue nil
-        original_views = design_doc && design_doc['views'].dup
-        view_updated
-        design_doc ||= empty_design_document
-        if CouchPotato::Config.single_design_document
-          design_doc['views'] = all_views
-          if CouchPotato::Config.digest_view_names
-            design_doc['_id'] = "_design/#{@design_document_name}-#{Digest::SHA256.hexdigest(design_doc['views'].to_json)}"
-          end
-        else
-          design_doc['views'][@view_name.to_s] = view_functions
-        end
-        if original_views != design_doc['views']
-          @database.save_doc(design_doc) 
-        end
-      end
-
-      def all_views
-        CouchPotato.views.flat_map do |klass|
+      def self.all_views
+        @all_views ||= CouchPotato.views.flat_map do |klass|
           specs =  klass.views.map { |view_name, view| klass.execute_view(view_name, {}) }
           specs.map do |klass_spec|
             { klass_spec.view_name => view_functions(klass_spec.map_function, klass_spec.reduce_function) }
@@ -61,24 +43,53 @@ module CouchPotato
         end.inject(&:merge)
       end
 
-      def view_functions(map_function = @map_function, reduce_function = @reduce_function)
+      def self.all_views_digest
+        @all_views_digest ||= Digest::SHA256.hexdigest(all_views.to_json)
+      end
+
+      private
+
+      def update_view
+        design_doc = @database.get "_design/#{design_document_name}" rescue nil
+        original_views = design_doc && design_doc['views'].dup
+        view_updated
+        design_doc ||= empty_design_document
+        if CouchPotato::Config.single_design_document
+          design_doc['views'] = self.class.all_views
+        else
+          design_doc['views'][@view_name.to_s] = self.class.view_functions(@map_function, @reduce_function)
+        end
+        if original_views != design_doc['views']
+          @database.save_doc(design_doc) 
+        end
+      end
+
+      def self.view_functions(map_function, reduce_function)
         {'map' => map_function, 'reduce' => reduce_function}.compact
       end
 
       def empty_design_document
-        {'views' => {}, "_id" => "_design/#{@design_document_name}", "language" => @language.to_s}
+        {'views' => {}, "_id" => "_design/#{design_document_name}", "language" => @language.to_s}
+      end
+
+      def design_document_name
+        name = @design_document_name
+        if CouchPotato::Config.digest_view_names && CouchPotato::Config.single_design_document
+          name += "-#{self.class.all_views_digest}"
+        end
+        name
       end
 
       def view_has_been_updated?
         if CouchPotato::Config.single_design_document
           updated_views.any?
         else
-          updated_views[[@design_document_name, @view_name]]
+          updated_views[[design_document_name, @view_name]]
         end
       end
 
       def view_updated
-        updated_views[[@design_document_name, @view_name]] = true
+        updated_views[[design_document_name, @view_name]] = true
       end
 
       def updated_views
@@ -90,7 +101,7 @@ module CouchPotato
       end
 
       def view_url
-        "#{@design_document_name}/#{@view_name}"
+        "#{design_document_name}/#{@view_name}"
       end
     end
   end
