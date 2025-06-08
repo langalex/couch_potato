@@ -30,10 +30,13 @@ describe 'single design document' do
     recreate_db
     CouchPotato::Config.single_design_document = true
     CouchPotato.views.select! { |v| [Thing1, Thing2, Thing3].include?(v) } # clear classes from other specs
+    CouchPotato::View::ViewQuery.clear_cache
   end
 
   after(:each) do
     CouchPotato::Config.single_design_document = false
+    CouchPotato::Config.digest_view_names = false
+    CouchPotato::View::ViewQuery.clear_cache
   end
 
   it 'creates a single design document for all views' do
@@ -59,5 +62,14 @@ describe 'single design document' do
     expect(db.view(Thing1.all('t1'))).to eq([thing1])
     expect(db.view(Thing2.all('n2'))).to eq([thing2])
     expect(db.view(Thing3.by_tag('tag1'))).to eq([thing3])
+  end
+
+  it 'queries the single design doc with digest_view_names enabled' do
+    CouchPotato::Config.digest_view_names = true
+
+    thing1 = Thing1.new title: 't1'
+    db.save! thing1
+
+    expect(db.view(Thing1.all)).to(eq([thing1]))
   end
 end
