@@ -39,6 +39,16 @@ class BigDecimalContainer
   property :number, type: BigDecimal
 end
 
+class WithValidationContext
+  include CouchPotato::Persistence
+
+  property :name
+
+  validates_presence_of :name, on: :create
+  validates_length_of :name, minimum: 5, on: :update
+  validates_length_of :name, minimum: 10, on: :custom
+end
+
 def recreate_db
   CouchPotato.couchrest_database.recreate!
 end

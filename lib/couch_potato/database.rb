@@ -105,17 +105,20 @@ module CouchPotato
     end
 
     # saves a document. returns true on success, false on failure.
+    # By default validations are run before saving. You can disable
+    # validations by passing validate: false as an option.
+    # You can also pass a custom validation context by passing context: :custom_context
     # if passed a block will:
     # * yield the object to be saved to the block and run if once before saving
     # * on conflict: reload the document, run the block again and retry saving
-    def save_document(document, validate = true, retries = 0, &block)
+    def save_document(document, options = {}, retries = 0, &block)
       cache&.clear
       begin
         block&.call document
-        save_document_without_conflict_handling(document, validate)
+        save_document_without_conflict_handling(document, options)
       rescue CouchRest::Conflict
         if block
-          handle_write_conflict document, validate, retries, &block
+          handle_write_conflict document, options, retries, &block
         else
           raise CouchPotato::Conflict
         end
@@ -124,8 +127,8 @@ module CouchPotato
     alias save save_document
 
     # saves a document, raises a CouchPotato::Database::ValidationsFailedError on failure
-    def save_document!(document)
-      save_document(document) || raise(ValidationsFailedError, document.errors.full_messages)
+    def save_document!(document, options = {})
+      save_document(document, options) || raise(ValidationsFailedError, document.errors.full_messages)
     end
     alias save! save_document!
 
@@ -293,7 +296,7 @@ module CouchPotato
       spec.send(:klass).to_s + spec.view_name.to_s + spec.view_parameters.to_s
     end
 
-    def handle_write_conflict(document, validate, retries, &block)
+    def handle_write_conflict(document, options, retries, &block)
       cache&.clear
       if retries == 5
         raise CouchPotato::Conflict
@@ -301,7 +304,7 @@ module CouchPotato
         reloaded = document.reload
         document.attributes = reloaded.attributes
         document._rev = reloaded._rev
-        save_document document, validate, retries + 1, &block
+        save_document document, options, retries + 1, &block
       end
     end
 
@@ -314,11 +317,11 @@ module CouchPotato
       document._rev = nil
     end
 
-    def save_document_without_conflict_handling(document, validate = true)
+    def save_document_without_conflict_handling(document, options = {})
       if document.new?
-        create_document(document, validate)
+        create_document(document, options)
       else
-        update_document(document, validate)
+        update_document(document, options)
       end
     end
 
@@ -337,14 +340,15 @@ module CouchPotato
       end
     end
 
-    def create_document(document, validate)
+    def create_document(document, options)
       document.database = self
+      validate, validation_context = parse_save_options(options)
 
       if validate
         document.errors.clear
         return false if document.run_callbacks(:validation_on_save) do
           return false if document.run_callbacks(:validation_on_create) do
-            return false unless valid_document?(document)
+            return false unless valid_document?(document, validation_context)
           end == false
         end == false
       end
@@ -360,12 +364,25 @@ module CouchPotato
       true
     end
 
-    def update_document(document, validate)
+    def parse_save_options(options)
+      if options.is_a?(Hash)
+        validate = options.fetch(:validate, true)
+        validation_context = options[:context]
+      else
+        validate = !!options
+        validation_context = nil
+      end
+      [validate, validation_context]
+    end
+
+    def update_document(document, options)
+      validate, validation_context = parse_save_options(options)
+
       if validate
         document.errors.clear
         return false if document.run_callbacks(:validation_on_save) do
           return false if document.run_callbacks(:validation_on_update) do
-            return false unless valid_document?(document)
+            return false unless valid_document?(document, validation_context)
           end == false
         end == false
       end
@@ -380,9 +397,9 @@ module CouchPotato
       true
     end
 
-    def valid_document?(document)
+    def valid_document?(document, validation_context = nil)
       original_errors_hash = document.errors.to_hash
-      document.valid?
+      document.valid?(validation_context)
       original_errors_hash.each do |k, v|
         if v.respond_to?(:each)
           v.each { |message| document.errors.add(k, message) }
