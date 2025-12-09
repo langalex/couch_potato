@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.20.0
+
+- add passing validation context to save methods
+
 # 1.19.2
 
 - fix 404/409 error when querying single design doc with `digest_view_names` enabled
