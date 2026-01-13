@@ -366,6 +366,14 @@ describe CouchPotato::Database, 'save_document' do
   end
 end
 
+describe CouchPotato::Database, 'save_document!' do
+  it 'calls the block if provided' do
+    doc = double('doc').as_null_object
+    
+    expect {|b| CouchPotato.database.save_document!(doc, &b)}.to yield_with_args(doc)
+  end
+end
+
 describe CouchPotato::Database, 'first' do
   before(:each) do
     @couchrest_db = double('couchrest db').as_null_object
