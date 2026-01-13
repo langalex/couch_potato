@@ -127,8 +127,8 @@ module CouchPotato
     alias save save_document
 
     # saves a document, raises a CouchPotato::Database::ValidationsFailedError on failure
-    def save_document!(document, options = {})
-      save_document(document, options) || raise(ValidationsFailedError, document.errors.full_messages)
+    def save_document!(document, options = {}, &block)
+      save_document(document, options, &block) || raise(ValidationsFailedError, document.errors.full_messages)
     end
     alias save! save_document!
 
