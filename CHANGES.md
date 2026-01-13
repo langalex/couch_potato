@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.20.1
+
+- fix `database.save!` did not use passed block
+
 # 1.20.0
 
 - add passing validation context to save methods
