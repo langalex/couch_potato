@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.21.0
+
+- add railties 8.1, Ruby 3.4 to CI
+
 # 1.20.1
 
 - fix `database.save!` did not use passed block
