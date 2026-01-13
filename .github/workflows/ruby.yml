@@ -16,13 +16,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "jruby"]
+        ruby: ["3.2", "3.3", "3.4", "jruby"]
         gemfile:
           - "active_support_7_2"
           - "active_support_8_0"
+          - "active_support_8_1"
         exclude:
           - ruby: "jruby"
             gemfile: "active_support_8_0"
+          - ruby: "jruby"
+            gemfile: "active_support_8_1"
     steps:
       - uses: actions/checkout@v4
       - name: Set up CouchDB
