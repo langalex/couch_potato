@@ -1,0 +1,26 @@
+services:
+  app:
+    image: ruby:3.4
+    volumes:
+      - ../..:/workspaces:z
+    command: sleep infinity
+    network_mode: service:couchdb
+    depends_on:
+      - couchdb
+
+  couchdb:
+    image: couchdb:3
+    restart: unless-stopped
+    entrypoint:
+      - /bin/bash
+      - -c
+      - cp /tmp/erlang-query-server.ini /opt/couchdb/etc/local.d/erlang-query-server.ini && exec tini -- /docker-entrypoint.sh /opt/couchdb/bin/couchdb
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: admin
+    volumes:
+      - couchdb-data:/opt/couchdb/data
+      - ./couchdb/erlang-query-server.ini:/tmp/erlang-query-server.ini:ro,z
+
+volumes:
+  couchdb-data:
