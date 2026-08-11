@@ -414,6 +414,85 @@ describe CouchPotato::Database, 'first!' do
   end
 end
 
+describe CouchPotato::Database, 'first with flex view' do
+  before(:each) do
+    @couchrest_db = double('couchrest db').as_null_object
+    @db = CouchPotato::Database.new(@couchrest_db)
+    @doc = double('doc')
+    @view_parameters = { include_docs: true }
+    @results = instance_double(CouchPotato::View::FlexViewSpec::Results, docs: [@doc])
+    allow(@results).to receive(:database=)
+    @spec = instance_double(
+      CouchPotato::View::FlexViewSpec,
+      klass: 'FlexFirstModel',
+      view_name: 'by_name',
+      design_document: 'flex_first_model',
+      map_function: 'map',
+      reduce_function: nil,
+      language: :javascript,
+      process_results: @results
+    )
+    allow(@spec).to receive(:view_parameters) { @view_parameters }
+    allow(@spec).to receive(:view_parameters=) { |params| @view_parameters = params }
+    allow(@spec).to receive(:is_a?).with(CouchPotato::View::FlexViewSpec).and_return(true)
+    allow(CouchPotato::View::ViewQuery).to receive_messages(
+      new: double('view query', query_view!: { 'rows' => [{ 'doc' => @doc }] })
+    )
+  end
+
+  it 'returns the first doc from a flex view' do
+    expect(@db.first(@spec)).to eq(@doc)
+  end
+
+  it 'returns nil if there are no docs' do
+    allow(@results).to receive(:docs).and_return([])
+    expect(@db.first(@spec)).to be_nil
+  end
+
+  it 'sets limit: 1 on the view parameters' do
+    @db.first(@spec)
+    expect(@view_parameters[:limit]).to eq(1)
+  end
+end
+
+describe CouchPotato::Database, 'first! with flex view' do
+  before(:each) do
+    @couchrest_db = double('couchrest db').as_null_object
+    @db = CouchPotato::Database.new(@couchrest_db)
+    @doc = double('doc')
+    @view_parameters = { include_docs: true }
+    @results = instance_double(CouchPotato::View::FlexViewSpec::Results, docs: [@doc])
+    allow(@results).to receive(:database=)
+    @spec = instance_double(
+      CouchPotato::View::FlexViewSpec,
+      klass: 'FlexFirstBangModel',
+      view_name: 'by_name',
+      design_document: 'flex_first_bang_model',
+      map_function: 'map',
+      reduce_function: nil,
+      language: :javascript,
+      process_results: @results
+    )
+    allow(@spec).to receive(:view_parameters) { @view_parameters }
+    allow(@spec).to receive(:view_parameters=) { |params| @view_parameters = params }
+    allow(@spec).to receive(:is_a?).with(CouchPotato::View::FlexViewSpec).and_return(true)
+    allow(CouchPotato::View::ViewQuery).to receive_messages(
+      new: double('view query', query_view!: { 'rows' => [{ 'doc' => @doc }] })
+    )
+  end
+
+  it 'returns the first doc from a flex view' do
+    expect(@db.first!(@spec)).to eq(@doc)
+  end
+
+  it 'raises an error if there are no docs' do
+    allow(@results).to receive(:docs).and_return([])
+    expect do
+      @db.first!(@spec)
+    end.to raise_error(CouchPotato::NotFound)
+  end
+end
+
 describe CouchPotato::Database, 'view' do
   before(:each) do
     @couchrest_db = double('couchrest db').as_null_object

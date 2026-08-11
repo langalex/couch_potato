@@ -42,3 +42,18 @@ RSpec.describe CouchPotato::View::FlexViewSpec::Results, '#docs' do
   it 'returns the docs' do
   end
 end
+
+RSpec.describe CouchPotato::View::FlexViewSpec, '#view_parameters=' do
+  it 'updates view parameters on the delegate' do
+    klass = Class.new do
+      def self.name
+        'FlexViewParamsModel'
+      end
+    end
+    spec = CouchPotato::View::FlexViewSpec.new(klass, 'by_x', { key: :x }, {})
+
+    spec.view_parameters = spec.view_parameters.merge(limit: 1)
+
+    expect(spec.view_parameters[:limit]).to eq(1)
+  end
+end

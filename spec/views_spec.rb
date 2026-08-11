@@ -345,6 +345,26 @@ describe 'views' do
 
       expect(custom).to eq([100, 200])
     end
+
+    it 'returns the first doc via Database#first' do
+      @db.save_document Build.new(id: 'b1', time: '1')
+      @db.save_document Build.new(id: 'b2', time: '2')
+
+      doc = @db.first(Build.flex_with_key(include_docs: true))
+
+      expect(doc).to be_a(Build)
+      expect(doc.id).to eq('b1')
+    end
+
+    it 'returns nil from Database#first when there are no results' do
+      expect(@db.first(Build.flex_with_key(include_docs: true))).to be_nil
+    end
+
+    it 'raises from Database#first! when there are no results' do
+      expect do
+        @db.first!(Build.flex_with_key(include_docs: true))
+      end.to raise_error(CouchPotato::NotFound)
+    end
   end
 
   describe 'inherited views' do

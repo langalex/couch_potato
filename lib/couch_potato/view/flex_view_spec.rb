@@ -98,6 +98,11 @@ module CouchPotato
       delegate :view_name, :view_parameters, :design_document, :map_function,
                :reduce_function, :language, to: :view_spec_delegate
 
+      def view_parameters=(params)
+        @view_parameters = params
+        @view_spec_delegate.view_parameters = params if @view_spec_delegate
+      end
+
       def process_results(results)
         results = Results.new(results)
         results.extend @extend_results_module if @extend_results_module

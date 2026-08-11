@@ -96,7 +96,8 @@ module CouchPotato
     # returns the first result from a #view query or nil
     def first(spec)
       spec.view_parameters = spec.view_parameters.merge({ limit: 1 })
-      view(spec).first
+      result = view(spec)
+      flex_view?(spec) ? result.docs.first : result.first
     end
 
     # returns th first result from a #view or raises CouchPotato::NotFound
@@ -239,6 +240,10 @@ module CouchPotato
     end
 
     private
+
+    def flex_view?(spec)
+      spec.is_a?(CouchPotato::View::FlexViewSpec)
+    end
 
     def copy_clear_cache_proc
       lambda { |db|

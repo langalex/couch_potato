@@ -1,5 +1,9 @@
 ## Changes
 
+# 1.22.00
+
+- support `Database#first` / `#first!` for flex views
+
 # 1.21.0
 
 - add railties 8.1, Ruby 3.4 to CI
