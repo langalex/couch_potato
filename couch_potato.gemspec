@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'activemodel', ['>= 7.2', '< 8.2']
   s.add_dependency 'couchrest', '~>2.0.0'
   s.add_dependency 'json', '~> 2.3'
+  s.add_dependency 'ostruct'
 
   s.add_development_dependency 'rake', '~>12.0'
   s.add_development_dependency 'rspec', '~>3.12.0'
