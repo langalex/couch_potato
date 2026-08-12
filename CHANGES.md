@@ -1,6 +1,10 @@
 # Changes
 
 
+## couch_potato-rspec 4.4.0
+
+- support multiple return values in `stub_view(...).and_return` for consecutive `view` / `first` / `first!` / `view_in_batches` calls
+
 ## couch_potato-rspec 4.3.0
 
 - support flex views in `stub_db` / `stub_view` (array returns a `FlexViewSpec::Results` stub with `docs`; `first`/`first!` stubbed on the db)

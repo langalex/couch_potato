@@ -43,6 +43,40 @@ describe 'stubbing a view' do
     expect(@db.view(WithStubbedView.stubbed_view('123'))).to eq([:result])
   end
 
+  it 'returns successive values on consecutive view calls' do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return([:first], [:second])
+
+    expect(@db.view(WithStubbedView.stubbed_view('123'))).to eq([:first])
+    expect(@db.view(WithStubbedView.stubbed_view('123'))).to eq([:second])
+  end
+
+  it 'returns successive first values on consecutive first calls' do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return([:a], [:b])
+
+    expect(@db.first(WithStubbedView.stubbed_view('123'))).to eq(:a)
+    expect(@db.first(WithStubbedView.stubbed_view('123'))).to eq(:b)
+  end
+
+  it 'returns successive values on consecutive first! calls and raises for a nil first value' do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return([:a], [], [:b])
+
+    expect(@db.first!(WithStubbedView.stubbed_view('123'))).to eq(:a)
+    expect { @db.first!(WithStubbedView.stubbed_view('123')) }.to raise_error(CouchPotato::NotFound)
+    expect(@db.first!(WithStubbedView.stubbed_view('123'))).to eq(:b)
+  end
+
+  it 'yields successive return values on consecutive view_in_batches calls' do
+    @db.stub_view(WithStubbedView, :stubbed_view).with('123').and_return([:a, :b], [:c])
+
+    expect do |b|
+      @db.view_in_batches(WithStubbedView.stubbed_view('123'), batch_size: 2, &b)
+    end.to yield_successive_args([:a, :b])
+
+    expect do |b|
+      @db.view_in_batches(WithStubbedView.stubbed_view('123'), batch_size: 2, &b)
+    end.to yield_successive_args([:c])
+  end
+
   it 'stubs the database to return the first fake result' do
     expect(@db.first(WithStubbedView.stubbed_view('123'))).to eq(:result)
     expect(@db.first!(WithStubbedView.stubbed_view('123'))).to eq(:result)
@@ -116,6 +150,28 @@ describe 'stubbing a flex view' do
   it 'stubs the database to return the first fake result' do
     expect(@db.first(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:result)
     expect(@db.first!(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:result)
+  end
+
+  it 'returns successive results stubs on consecutive view calls' do
+    @db.stub_view(WithStubbedFlexView, :stubbed_flex_view).with('123').and_return([:first], [:second])
+
+    expect(@db.view(WithStubbedFlexView.stubbed_flex_view('123')).docs).to eq([:first])
+    expect(@db.view(WithStubbedFlexView.stubbed_flex_view('123')).docs).to eq([:second])
+  end
+
+  it 'returns successive first values on consecutive first calls' do
+    @db.stub_view(WithStubbedFlexView, :stubbed_flex_view).with('123').and_return([:a], [:b])
+
+    expect(@db.first(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:a)
+    expect(@db.first(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:b)
+  end
+
+  it 'returns successive values on consecutive first! calls and raises for a nil first value' do
+    @db.stub_view(WithStubbedFlexView, :stubbed_flex_view).with('123').and_return([:a], [], [:b])
+
+    expect(@db.first!(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:a)
+    expect { @db.first!(WithStubbedFlexView.stubbed_flex_view('123')) }.to raise_error(CouchPotato::NotFound)
+    expect(@db.first!(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:b)
   end
 
   it 'raises from db.first! when the array is empty' do
