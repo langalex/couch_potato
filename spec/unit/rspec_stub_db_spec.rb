@@ -9,6 +9,12 @@ class WithStubbedView
   view :stubbed_view, key: :x
 end
 
+class WithStubbedFlexView
+  include CouchPotato::Persistence
+
+  view :stubbed_flex_view, type: :flex, key: :x
+end
+
 describe 'stubbing the db' do
   it 'replaces CouchPotato.database with a double' do
     CouchPotato.stub_db
@@ -94,5 +100,35 @@ describe 'stubbing a view' do
     @db.stub_view(WithStubbedView, :stubbed_view) { :results }
 
     expect(@db.view(WithStubbedView.stubbed_view('123'))).to eq(:results)
+  end
+end
+
+describe 'stubbing a flex view' do
+  before(:each) do
+    @db = CouchPotato.stub_db
+    @db.stub_view(WithStubbedFlexView, :stubbed_flex_view).with('123').and_return([:result])
+  end
+
+  it 'stubs the database to return a results stub with docs when given an array' do
+    expect(@db.view(WithStubbedFlexView.stubbed_flex_view('123')).docs).to eq([:result])
+  end
+
+  it 'stubs the database to return the first fake result' do
+    expect(@db.first(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:result)
+    expect(@db.first!(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:result)
+  end
+
+  it 'raises from db.first! when the array is empty' do
+    @db.stub_view(WithStubbedFlexView, :stubbed_flex_view).and_return([])
+
+    expect do
+      @db.first!(WithStubbedFlexView.stubbed_flex_view)
+    end.to raise_error(CouchPotato::NotFound)
+  end
+
+  it 'returns a non-array return value directly' do
+    @db.stub_view(WithStubbedFlexView, :stubbed_flex_view).with('123').and_return(:reduced)
+
+    expect(@db.view(WithStubbedFlexView.stubbed_flex_view('123'))).to eq(:reduced)
   end
 end

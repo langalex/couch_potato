@@ -25,7 +25,13 @@ module CouchPotato::RSpec
         stub = allow(@clazz).to receive(@view)
         stub.with(*@args) if @args
         stub.and_return(view_stub)
-        allow(@db).to receive(:view).with(view_stub).and_return(return_value)
+
+        view_return_value = if flex_view? && return_value.is_a?(Array)
+                              stub_flex_results(return_value)
+                            else
+                              return_value
+                            end
+        allow(@db).to receive(:view).with(view_stub).and_return(view_return_value)
         return unless return_value.respond_to?(:first)
 
         allow(@db).to receive(:first).with(view_stub).and_return(return_value.first)
@@ -41,6 +47,16 @@ module CouchPotato::RSpec
         else
           allow(@db).to receive(:first!).with(view_stub).and_raise(CouchPotato::NotFound)
         end
+      end
+
+      private
+
+      def flex_view?
+        @clazz.execute_view(@view.to_s, {}).is_a?(CouchPotato::View::FlexViewSpec)
+      end
+
+      def stub_flex_results(docs)
+        instance_double(CouchPotato::View::FlexViewSpec::Results, docs:)
       end
     end
 
