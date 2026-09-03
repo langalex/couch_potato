@@ -13,9 +13,9 @@ module CouchPotato
         end
       end
 
-      def assign_attribute(name, value)
+      def assign_attribute(name, value, from_json: false)
         property = self.class.properties.find_property(name)
-        typecasted_value = type_caster.cast(value, property.type)
+        typecasted_value = type_caster.cast(value, property.type, from_json:)
         send("#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
         instance_variable_set("@#{name}", typecasted_value)
       end
@@ -35,7 +35,7 @@ module CouchPotato
       end
 
       def build(object, json)
-        object.send(:assign_attribute, name, json[name])
+        object.send(:assign_attribute, name, json[name], from_json: true)
       end
 
       def serialize(json, object)

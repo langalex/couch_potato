@@ -198,6 +198,32 @@ describe 'properties' do
     expect(p.ship_address).to be_nil
   end
 
+  it "persists a nested object with non-couch potato attributes delegating to properties" do
+    class PersonWithName
+      include CouchPotato::Persistence
+
+      property :first_name
+      property :last_name
+
+      def name=(value)
+        self.first_name = value.split(' ').first
+        self.last_name = value.split(' ').last
+      end
+    end
+    class PersonContainer
+      include CouchPotato::Persistence
+
+      property :person, type: PersonWithName
+    end
+
+    container = PersonContainer.new(person: {name: 'John Doe'})
+    CouchPotato.database.save_document!(container)
+    container = CouchPotato.database.load_document(container.id)
+
+    expect(container.person.first_name).to eq('John')
+    expect(container.person.last_name).to eq('Doe')
+  end
+
   it "should actually pass the null value down in the JSON document " do
     p = Person.new
     p.ship_address = nil

@@ -6,14 +6,14 @@ module CouchPotato
     class TypeCaster #:nodoc:
       NUMBER_REGEX = /-?\d*\.?\d*/.freeze
 
-      def cast(value, type)
+      def cast(value, type, from_json: false)
         if type == :boolean
           cast_boolean(value)
         elsif type.instance_of?(Array)
           nested_type = type.first
-          value&.map { |val| cast_native(val, nested_type) }
+          value&.map { |val| cast_native(val, nested_type, from_json:) }
         else
-          cast_native(value, type)
+          cast_native(value, type, from_json:)
         end
       end
 
@@ -29,7 +29,7 @@ module CouchPotato
         end
       end
 
-      def cast_native(value, type)
+      def cast_native(value, type, from_json:)
         if type && !value.is_a?(type)
 
           if %w[Integer Bignum].include?(type.to_s)
@@ -40,6 +40,8 @@ module CouchPotato
             value.to_d unless value.blank?
           elsif type == Hash
             value.to_hash unless value.blank?
+          elsif type.ancestors.include?(CouchPotato::Persistence) && !from_json
+            type.new value unless value.blank?
           else
             type.json_create value unless value.blank?
           end
