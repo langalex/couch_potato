@@ -12,6 +12,7 @@ class Watch
   property :custom_address, type: [Address]
   property :overwritten_read
   property :overwritten_write
+  property :normalized_title
   property :diameter, type: Float
 
   def overwritten_read
@@ -20,6 +21,10 @@ class Watch
 
   def overwritten_write=(value)
     super value.to_s
+  end
+
+  def normalized_title=(value)
+    super(value.to_s.upcase)
   end
 end
 
@@ -57,6 +62,12 @@ describe 'properties' do
 
   it "should allow me to overwrite write accessor and call super" do
     expect(Watch.new(:overwritten_write => 1).overwritten_write).to eq('1')
+  end
+
+  it "does not call overwritten write accessors when loading from a document" do
+    watch = Watch.json_create('normalized_title' => 'Hello', JSON.create_id => 'Watch')
+
+    expect(watch.normalized_title).to eq('Hello')
   end
 
   it "should return the property names" do

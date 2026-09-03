@@ -1,4 +1,4 @@
 module CouchPotato
-  VERSION = '1.22.0'.freeze
+  VERSION = '1.22.1'.freeze
   RSPEC_VERSION = '4.4.0'.freeze
 end
