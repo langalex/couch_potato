@@ -132,8 +132,8 @@ describe 'properties' do
     expect(w.custom_address[0]).to be_an_instance_of Address2
   end
 
-  it 'initializes an typed array property from an array of hashes' do
-    w = Watch.new(custom_address: [{id: 'a1', city: 'Berlin'}])
+  it 'initializes a typed array property from an array of hashes' do
+    w = Watch.new(custom_address: [{_id: 'a1', city: 'Berlin'}])
 
     expect(w.custom_address.map(&:class)).to eq([Address])
     expect(w.custom_address.map(&:id)).to eq(['a1'])
@@ -196,6 +196,32 @@ describe 'properties' do
     CouchPotato.database.save_document! p
     p = CouchPotato.database.load_document p.id
     expect(p.ship_address).to be_nil
+  end
+
+  it "persists a nested object with non-couch potato attributes delegating to properties" do
+    class PersonWithName
+      include CouchPotato::Persistence
+
+      property :first_name
+      property :last_name
+
+      def name=(value)
+        self.first_name = value.split(' ').first
+        self.last_name = value.split(' ').last
+      end
+    end
+    class PersonContainer
+      include CouchPotato::Persistence
+
+      property :person, type: PersonWithName
+    end
+
+    container = PersonContainer.new(person: {name: 'John Doe'})
+    CouchPotato.database.save_document!(container)
+    container = CouchPotato.database.load_document(container.id)
+
+    expect(container.person.first_name).to eq('John')
+    expect(container.person.last_name).to eq('Doe')
   end
 
   it "should actually pass the null value down in the JSON document " do

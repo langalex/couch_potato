@@ -1,5 +1,8 @@
 # Changes
 
+## 1.22.2
+
+- fix instantiating properties that include CouchPotato::Persistence (call .json_create instead of .new)
 
 ## 1.22.1
 
