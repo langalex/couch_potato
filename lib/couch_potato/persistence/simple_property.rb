@@ -12,6 +12,13 @@ module CouchPotato
           value
         end
       end
+
+      def assign_attribute(name, value)
+        property = self.class.properties.find_property(name)
+        typecasted_value = type_caster.cast(value, property.type)
+        send("#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
+        instance_variable_set("@#{name}", typecasted_value)
+      end
     end
 
     class SimpleProperty  #:nodoc:
@@ -19,7 +26,6 @@ module CouchPotato
 
       def initialize(owner_clazz, name, options = {})
         self.name = name
-        @setter_name = "#{name}="
         self.type = options[:type]
         self.default_value = options[:default]
         @type_caster = TypeCaster.new
@@ -29,8 +35,7 @@ module CouchPotato
       end
 
       def build(object, json)
-        value = json[name]
-        object.send @setter_name, value
+        object.send(:assign_attribute, name, json[name])
       end
 
       def serialize(json, object)
@@ -77,9 +82,7 @@ module CouchPotato
           end
 
           define_method "#{name}=" do |value|
-            typecasted_value = type_caster.cast(value, options[:type])
-            send("#{name}_will_change!") unless @skip_dirty_tracking || typecasted_value == send(name)
-            self.instance_variable_set(ivar_name, typecasted_value)
+            assign_attribute(name, value)
           end
 
           define_method "#{name}?" do

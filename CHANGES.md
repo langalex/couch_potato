@@ -1,6 +1,10 @@
 # Changes
 
 
+## 1.22.1
+
+- fix lazy property loading calling overridden setters (use private `assign_attribute` instead)
+
 ## couch_potato-rspec 4.4.0
 
 - support multiple return values in `stub_view(...).and_return` for consecutive `view` / `first` / `first!` / `view_in_batches` calls
