@@ -112,18 +112,22 @@ module CouchPotato
     # if passed a block will:
     # * yield the object to be saved to the block and run if once before saving
     # * on conflict: reload the document, run the block again and retry saving
+    #
+    # The block is run against a copy of the given
+    # document, leaving the original untouched while the block runs. Once saving
+    # has succeeded the resulting attributes and revision are copied back onto
+    # the original instance.
     def save_document(document, options = {}, retries = 0, &block)
       cache&.clear
-      begin
-        block&.call document
-        save_document_without_conflict_handling(document, options)
-      rescue CouchRest::Conflict
-        if block
-          handle_write_conflict document, options, retries, &block
-        else
-          raise CouchPotato::Conflict
-        end
+      if !block
+        return save_document_with_conflict_handling(document, options, retries, &block)
       end
+
+      working_copy = document.dup
+      result = save_document_with_conflict_handling(working_copy, options, retries, &block)
+      document.attributes = working_copy.attributes
+      document._rev = working_copy._rev
+      result
     end
     alias save save_document
 
@@ -150,7 +154,7 @@ module CouchPotato
     # could not be found these are omitted from the returned array
     def load_document(id)
       return load_documents(id) if id.is_a?(Array)
-      
+
       cached = cache && cache[id]
       if cache
         if cache.key?(id)
@@ -301,16 +305,21 @@ module CouchPotato
       spec.send(:klass).to_s + spec.view_name.to_s + spec.view_parameters.to_s
     end
 
-    def handle_write_conflict(document, options, retries, &block)
-      cache&.clear
-      if retries == 5
-        raise CouchPotato::Conflict
-      else
-        reloaded = document.reload
-        document.attributes = reloaded.attributes
-        document._rev = reloaded._rev
-        save_document document, options, retries + 1, &block
-      end
+    # Saves the given document, running the block before each attempt. On a
+    # conflict the block is re-run against a freshly reloaded instance so that
+    # it can read the current state from the database and the save is retried.
+    # Without a block a conflict is surfaced as a CouchPotato::Conflict.
+    def save_document_with_conflict_handling(document, options, retries, &block)
+      block&.call document
+      save_document_without_conflict_handling document, options
+    rescue CouchRest::Conflict
+      raise CouchPotato::Conflict unless block
+      raise CouchPotato::Conflict if retries == 5
+
+      reloaded = document.reload
+      document.attributes = reloaded.attributes
+      document._rev = reloaded._rev
+      save_document_with_conflict_handling document, options, retries + 1, &block
     end
 
     def destroy_document_without_conflict_handling(document)
