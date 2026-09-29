@@ -21,6 +21,19 @@ describe 'conflict handling' do
     expect(measurement.value).to eql(3)
   end
 
+  it 'does not modify the original instance before save but after it' do
+    measurement = Measurement.new value: 1
+    db.save! measurement
+
+    db.couchrest_database.save_doc measurement.reload._document.merge('value' => 2)
+
+    db.save measurement do |m|
+      m.value = measurement.value + 3 # measurement.value is still 1
+    end
+
+    expect(measurement.value).to eql(4) # now it's updated
+  end
+
   it 'raises an error after 5 tries' do
     couchrest_database = double(:couchrest_database, info: double.as_null_object)
     allow(couchrest_database).to receive(:save_doc).and_raise(CouchRest::Conflict)
